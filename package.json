@@ -3,13 +3,17 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "My personal portfolio website, first website I've ever made. Made with Vue.js and TailwindCSS.",
+  "main": "main.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.3.4"
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.4",
+    "vue3-burger-menu": "^1.1.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
