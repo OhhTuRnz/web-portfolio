@@ -1,16 +1,60 @@
 
 <script>
+export default {
+  methods: {
+    scrollToSection(sectionId) {
+      const sectionElement = this.$refs[sectionId];
+      if (sectionElement) {
+        sectionElement.scrollIntoView({
+          behavior: 'smooth',
+        });
+      }
+    },
+  },
+};
 </script>
 <template>
-    <div class="container mx-auto bg-gray-200 rounded-xl shadow border p-8 m-20">
-    <h1 class="text-3xl text-gray-700 text-center font-bold mb-5 bg-gradient-to-r from-violet-300 to-pink-800 bg-clip-text text-transparent">
-      Welcome!
-    </h1>
-    <p class="break-words text-gray-800 text-lg text-center">
-      Im currently developing my portoflio website!
-      Hope you like it!
-    </p>
- </div>
+    <div class="home-page">
+        <!-- Navigation Menu -->
+        <nav>
+        <ul>
+            <li><a @click="scrollToSection('section1')">Section 1</a></li>
+            <li><a @click="scrollToSection('section2')">Section 2</a></li>
+            <!-- Add more navigation links for your sections -->
+        </ul>
+        </nav>
+
+        <!-- Content Section 1 -->
+        <section ref="section1" id="section1">
+        <!-- Content for Section 1 -->
+            
+            <img src="\src\assets\images\avatar_sample.jpg" alt="Your Presentation Image" class="my-5 mx-auto" />
+            <div class="mb-4">
+                <p class="text-2xl text-gray-600">Software Engineer | Deep Learning Specialist | AI Enthusiast"</p>
+            </div>
+            <div class="bg-blue-200 p-4 rounded-lg shadow-md">
+                <p class="text-4xl text-gray-800 font-semibold">I'm Your Name</p>
+                <p class="text-2xl text-gray-700 mt-4">Passionate about creating amazing web experiences.</p>
+            </div>
+        </section>
+
+        <!-- Content Section 2 -->
+        <section ref="section2" id="section2">
+        <!-- Content for Section 2 -->
+            <div class="container mx-auto bg-gray-200 rounded-xl shadow border p-8 m-20">
+                <h1 class="text-3xl text-gray-700 text-center font-bold mb-5 bg-gradient-to-r from-violet-300 to-pink-800 bg-clip-text text-transparent">
+                    Welcome!
+                </h1>
+                <p class="break-words text-gray-800 text-lg text-center">
+                    I'm currently developing my portfolio website!
+                    Hope you like it!
+                </p>
+            </div>
+        </section>
+        <!-- Add more sections as needed -->
+        
+        <!-- Rest of the content goes here -->
+    </div>
 </template>
 
 <style scoped>

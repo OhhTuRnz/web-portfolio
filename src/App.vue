@@ -17,6 +17,12 @@ export default {
 </script>
 
 <template>
+  <header class="bg-blue-500 py-8">
+    <div class="container mx-auto">
+      <!-- Header content goes here -->
+      <h1 class="text-2xl text-white text-center font-semibold">My Portfolio</h1>
+    </div>
+  </header>
   <div class="app">
     <Slide>
       <!-- "Home" button in the app layout -->
@@ -34,6 +40,7 @@ export default {
           </button>
         </router-link>
       </div>
+      
     </Slide>
     <div>
       <!-- Router view to render the current route's component -->
