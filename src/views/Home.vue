@@ -17,11 +17,25 @@ export default {
     <div class="home-page">
         <!-- Navigation Menu -->
         <nav>
-        <ul>
-            <li><a @click="scrollToSection('section1')">Section 1</a></li>
-            <li><a @click="scrollToSection('section2')">Section 2</a></li>
-            <!-- Add more navigation links for your sections -->
-        </ul>
+            <ul class="flex justify-center mt-4">
+                <li>
+                <button
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 mr-2 rounded"
+                    @click="scrollToSection('section1')"
+                >
+                    Section 1
+                </button>
+                </li>
+                <li>
+                <button
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                    @click="scrollToSection('section2')"
+                >
+                    Section 2
+                </button>
+                </li>
+                <!-- Add more navigation links for your sections -->
+            </ul>
         </nav>
 
         <!-- Content Section 1 -->
