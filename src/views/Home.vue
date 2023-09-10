@@ -20,7 +20,7 @@ export default {
             <ul class="flex justify-center mt-4">
                 <li>
                 <button
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 mr-2 rounded"
+                    class="text-black font-bold py-2 px-4 mr-2 rounded"
                     @click="scrollToSection('section1')"
                 >
                     Section 1
@@ -28,13 +28,20 @@ export default {
                 </li>
                 <li>
                 <button
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                    class="text-black font-bold py-2 px-4 rounded"
                     @click="scrollToSection('section2')"
                 >
                     Section 2
                 </button>
                 </li>
-                <!-- Add more navigation links for your sections -->
+                <li>
+                <button
+                    class="text-black font-bold py-2 px-4 rounded"
+                    @click="scrollToSection('section3')"
+                >
+                    Section 3
+                </button>
+                </li>
             </ul>
         </nav>
 
@@ -44,11 +51,11 @@ export default {
             
             <img src="\src\assets\images\avatar_sample.jpg" alt="Your Presentation Image" class="my-5 mx-auto" />
             <div class="mb-4">
-                <p class="text-2xl text-gray-600">Software Engineer | Deep Learning Specialist | AI Enthusiast"</p>
+                <p class="text-2xl text-gray-600">Software Engineer | Deep Learning Specialist | AI Enthusiast</p>
             </div>
-            <div class="bg-blue-200 p-4 rounded-lg shadow-md">
-                <p class="text-4xl text-gray-800 font-semibold">I'm Your Name</p>
-                <p class="text-2xl text-gray-700 mt-4">Passionate about creating amazing web experiences.</p>
+            <div>
+                <p class="text-4xl text-gray-800 font-semibold">I'm Alejandro Carrasco</p>
+                <p class="text-2xl text-gray-700 mt-4">I'm a Software Engineering student at Universidad Politécnica de Madrid with big aspirations that wants enrichful experiences and never stop learning.</p>
             </div>
         </section>
 
