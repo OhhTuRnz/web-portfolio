@@ -64,11 +64,13 @@ export default {
   top: 36px;
 }
 
-/* Style the header and its content */
 .header {
-  background-color: #88b8e8; /* Header background color */
+  background-color: rgba(136, 184, 232, 0.8);
   color: #fff; /* Header text color */
   padding: 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 999;
 }
 
 .header-content {
@@ -78,9 +80,11 @@ export default {
   padding: 0 20px;
 }
 
-.carrusk-name {
-  font-family: 'YourFavoriteFont', sans-serif; /* Specify your preferred font */
-  font-size: 24px; /* Adjust the font size as needed */
-  margin: 0;
+.My-name {
+  font-size: 1.5em;
+  margin: 10px 0;
+  color: #ffffff;
+  text-align:end;
 }
+
 </style>

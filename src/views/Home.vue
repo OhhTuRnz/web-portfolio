@@ -48,17 +48,20 @@ export default {
         <!-- Content Section 1 -->
         <section ref="section1" id="section1">
         <!-- Content for Section 1 -->
-            
-            <img src="\src\assets\images\avatar_sample.jpg" alt="Your Presentation Image" class="my-5 mx-auto" />
-            <div class="mb-4">
-                <p class="text-2xl text-gray-600">Software Engineer | Deep Learning Specialist | AI Enthusiast</p>
-            </div>
+            <figure>
+                <img src="\src\assets\images\avatar_sample.jpg" alt="Your Presentation Image" class="my-5 mx-auto"/>
+                    <figcaption>
+                        <div class="mb-4">
+                            <p class="text-2xl text-gray-600">Software Engineer | Deep Learning Specialist | AI Enthusiast</p>
+                        </div>
+                    </figcaption>
+            </figure>
+            <br><br>
             <div>
-                <p class="text-4xl text-gray-800 font-semibold">I'm Alejandro Carrasco</p>
+                <p class="text-3xl text-gray-800 font-semibold">I'm Alejandro Carrasco</p>
                 <p class="text-2xl text-gray-700 mt-4">I'm a Software Engineering student at Universidad Politécnica de Madrid with big aspirations that wants enrichful experiences and never stop learning.</p>
             </div>
         </section>
-
         <!-- Content Section 2 -->
         <section ref="section2" id="section2">
         <!-- Content for Section 2 -->
