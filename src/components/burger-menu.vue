@@ -1,5 +1,5 @@
 <template>
-  <div class="burger-menu" @click="toggleMenu">
+  <div class="burger-menu" @click="toggleMenu" v-click-away="closeMenu">
     <!-- Hamburger Button -->
     <button
       class="burger-button"
@@ -15,15 +15,14 @@
     <div
       class="menu"
       :class="{ active: isOpen }"
-      v-click-away="closeMenu"
     >
       <!-- Menu Items with Router Links -->
       <ul>
         <li>
-          <router-link to="/" @click.native="closeMenu">Home</router-link>
+          <router-link to="/" @click.stop="closeMenu">Home</router-link>
         </li>
         <li>
-          <router-link to="/about" @click.native="closeMenu">About</router-link>
+          <router-link to="/about" @click.stop="closeMenu">About</router-link>
         </li>
       </ul>
     </div>

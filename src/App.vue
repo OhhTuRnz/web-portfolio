@@ -1,6 +1,4 @@
 <script>
-import { Slide } from 'vue3-burger-menu';
-import { Push } from 'vue3-burger-menu';
 import { goHome } from './components/scripts/home.js'; // Adjust the path as needed
 import { useRouter } from 'vue-router'; // Import useRouter
 import BurgerMenu from './components/burger-menu.vue'; // Import the BurgerMenu component
@@ -13,8 +11,6 @@ export default {
     },
   },
   components: {
-    Slide,
-    Push,
     BurgerMenu
   },
 };
