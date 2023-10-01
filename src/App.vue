@@ -17,70 +17,51 @@ export default {
 </script>
 
 <template>
-  <header class="header">
-    <!-- Include the Carrusk name and BurgerMenu component here -->
-    <div class="header-content">
-      <h1 class="My-name">Carrusk</h1>
-      <BurgerMenu />
+  <header class="bg-blue-500 p-5 sticky top-0 z-50">
+    <div class="flex justify-between items-center px-4 md:px-20">
+      <h1 class="visible lg:invisible text-white text-2xl">Carrusk</h1>
+      <BurgerMenu class="visible lg:invisible self-end" />
     </div>
+    
+    <!-- Simple navigation bar -->
+    
+    <nav class="hidden lg:block">
+      <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-0">
+        <a href="https://flowbite.com/" class="flex items-center">
+            <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="Flowbite Logo"/>
+            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Carrusk</span>
+        </a>
+        <button data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+            </svg>
+        </button>
+        <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+          <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <li>
+              <a href="#" class="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">Home</a>
+            </li>
+            <li>
+              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">About</a>
+            </li>
+            <li>
+              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Services</a>
+            </li>
+            <li>
+              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Pricing</a>
+            </li>
+            <li>
+              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
   </header>
-  <div class="app">
-    <div>
-      <!-- Router view to render the current route's component -->
-      <router-view></router-view>
-    </div>
+  
+  <!-- Router view to render the current route's component -->
+  <div class="font-sans text-gray-700 text-center">
+    <router-view></router-view>
   </div>
 </template>
-
-<style scoped>
-/* Global styles for the entire application */
-.app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-/* Style the "Home" button */
-.home-button {
-  padding: 8px;
-  color: #D6CFBE;
-  cursor: pointer;
-  font-size: 1.5em;
-  margin-bottom: 16px;
-  border-radius: 4px;
-}
-
-.bm-burger-button {
-  position: fixed;
-  width: 36px;
-  height: 30px;
-  left: 36px;
-  top: 36px;
-}
-
-.header {
-  background-color: rgba(136, 184, 232, 0.8);
-  color: #fff; /* Header text color */
-  padding: 20px 0;
-  position: sticky;
-  top: 0;
-  z-index: 999;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-}
-
-.My-name {
-  font-size: 1.5em;
-  margin: 10px 0;
-  color: #ffffff;
-  text-align:end;
-}
-
-</style>
