@@ -13,8 +13,8 @@
 
     <!-- Menu -->
     <div
-      class="menu absolute top-full left-0 mt-2 bg-white shadow-lg overflow-x-visible overflow-y-hidden transition-max-height duration-300 ease-in-out max-h-0 z-50"
-      :class="{ 'max-h-[400px]': isOpen }"
+      class="menu absolute left-0 mt-4 bg-white shadow-lg overflow-x-visible overflow-y-hidden transition-max-height duration-300 ease-in-out max-h-0 z-50"
+      :class="{ 'max-h-[800px]': isOpen }"
     > 
       <!-- Menu Items with Router Links -->
       <ul class="list-none p-2 m-0">
