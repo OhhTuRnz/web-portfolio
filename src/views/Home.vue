@@ -20,7 +20,7 @@ export default {
 
 <template>
     <div class="bg-cover bg-center" style="background-image: url('../../src/assets/images/white-squares-background.jpg');">
-        <div class="relative bg-white bg-center px-8 pt-20 pb-12 shadow-xl ring-1 ring-chromatic mx-auto max-w-4xl squared-lg sm:px-20">
+        <div class="relative bg-white bg-center px-8 pt-20 pb-40 shadow-xl ring-1 ring-chromatic mx-auto max-w-6xl squared-lg sm:px-20">
         <img src="WhiteSquaresBackground" alt="" class="absolute" width="1080" />
             <div class="home-page">
                 <!-- Navigation Menu -->
