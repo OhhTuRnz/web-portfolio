@@ -1,10 +1,17 @@
 <script>
-import WhiteSquaresBackground from '../../src/assets/images/white-squares-background.jpg';
+import WhiteSquaresBackground from '@/assets/images/white-squares-background.jpg';
+import avatarImage from '@/assets/images/avatar_sample.jpg';
 import { Carousel } from 'flowbite';
 
 export default {
     name: 'Home',
     components: {},
+    data() {
+      return {
+        background: WhiteSquaresBackground,
+        avatar: avatarImage
+      }
+    },
     methods: {
         scrollToSection(sectionId) {
             const sectionElement = this.$refs[sectionId];
@@ -19,9 +26,10 @@ export default {
 </script>
 
 <template>
-    <div class="bg-cover bg-center" style="background-image: url('../../src/assets/images/white-squares-background.jpg');">
+    <div class="bg-cover bg-center" 
+         :style="{ backgroundImage: `url(${background})` }">
         <div class="relative bg-white bg-center px-8 pt-20 pb-40 shadow-xl ring-1 ring-chromatic mx-auto max-w-6xl squared-lg sm:px-20">
-        <img src="WhiteSquaresBackground" alt="" class="absolute" width="1080" />
+            <img :src="WhiteSquaresBackground" alt="" class="absolute" width="1080" />
             <div class="home-page">
                 <!-- Navigation Menu -->
                 <nav>
@@ -48,7 +56,7 @@ export default {
                 <section ref="section1" id="section1">
                 <!-- Content for Section 1 -->
                 <figure>
-                    <img src="\src\assets\images\avatar_sample.jpg" alt="Your Presentation Image" class="my-5 mx-auto" />
+                    <img :src="avatar" alt="Your Presentation Image" class="my-5 mx-auto" />
                     <figcaption>
                     <div class="mb-4">
                         <p class="text-2xl text-gray-600">Software Engineer | Deep Learning Specialist | AI Enthusiast</p>

@@ -1,6 +1,7 @@
 // main.js
 import { createApp } from 'vue';
 import { Carousel } from 'vue-carousel';
+import 'flowbite';
 import './style.css';
 import App from './App.vue';
 import router from './router'; // Import the router configuration

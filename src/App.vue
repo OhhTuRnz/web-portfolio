@@ -1,9 +1,18 @@
 <script>
-import { goHome } from './components/scripts/home.js'; // Adjust the path as needed
+import { goHome } from '@/components/scripts/home.js'; // Adjust the path as needed
 import { useRouter } from 'vue-router'; // Import useRouter
-import BurgerMenu from './components/burger-menu.vue'; // Import the BurgerMenu component
+import BurgerMenu from '@/components/burger-menu.vue'; // Import the BurgerMenu component
+import { defineComponent } from 'vue';
+// Import the logo using alias
+import logoImage from '@logos/carrusk_logo_monkey.jpeg';
 
-export default {
+export default defineComponent({
+  name: 'App',
+  data() {
+    return {
+      logo: logoImage  // Use the imported image
+    }
+  },
   methods: {
     goHome() {
       const router = useRouter();
@@ -19,7 +28,7 @@ export default {
   components: {
     BurgerMenu
   },
-};
+});
 </script>
 
 <template>
@@ -32,10 +41,12 @@ export default {
     
     <nav class="">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-0">
-        <a href="https://flowbite.com/" class="flex items-center">
-            <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="Flowbite Logo"/>
-            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Carrusk</span>
-        </a>
+        <router-link to="/" class="flex items-center" @click="goHome">
+          <img :src="logo"
+               class="h-12 mr-3 rounded-full" 
+               alt="Carrusk Monkey Logo"/>
+          <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Carrusk</span>
+        </router-link>
         <BurgerMenu ref="BurgerMenu" data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false"/>
         <div ref="listaMenu" class="hidden w-full md:block md:w-auto" id="navbar-default">
           <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
