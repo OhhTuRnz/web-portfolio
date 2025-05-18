@@ -1,5 +1,4 @@
 <script>
-import WhiteSquaresBackground from '@/assets/images/white-squares-background.jpg';
 import avatarImage from '@/assets/images/carrusk_zen.png';
 import MITLogo from '@/assets/logos/MIT_logo.svg';
 import MITArcLabLogo from '@/assets/logos/mit-arclab-logo.jpg';
@@ -13,6 +12,8 @@ import LogoCard from '@/components/LogoCard.vue';
 import SkillLogoCard from '@/components/SkillLogoCard.vue';
 import TypewriterText from '@/components/TypewriterText.vue';
 import { projects as importedProjects } from '@/views/projectsData.js';
+import { ParticlesComponent as Particles } from "particles.vue3";
+import { loadSlim } from "tsparticles-slim";
 
 export default {
     name: 'Home',
@@ -21,11 +22,11 @@ export default {
         StackCard,
         LogoCard,
         SkillLogoCard,
-        TypewriterText
+        TypewriterText,
+        Particles
     },
     data() {
       return {
-        background: WhiteSquaresBackground,
         avatar: avatarImage,
         heroHeadingLines: [
           { text: "Hi There," },
@@ -111,10 +112,88 @@ export default {
         ],
         showBottomBar: false,
         heroObserver: null,
+        particlesSetupFunction: loadSlim,
+        particlesOptions: {
+            background: {
+                color: {
+                    value: '#e5e7eb'
+                }
+            },
+            fpsLimit: 60,
+            interactivity: {
+                events: {
+                    onClick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    onHover: {
+                        enable: true,
+                        mode: 'repulse'
+                    },
+                    resize: true
+                },
+                modes: {
+                    bubble: {
+                        distance: 400,
+                        duration: 2,
+                        opacity: 0.8,
+                        size: 40
+                    },
+                    push: {
+                        quantity: 4
+                    },
+                    repulse: {
+                        distance: 100,
+                        duration: 0.4
+                    }
+                }
+            },
+            particles: {
+                color: {
+                    value: '#374151'
+                },
+                links: {
+                    color: '#6b7280',
+                    distance: 150,
+                    enable: true,
+                    opacity: 0.4,
+                    width: 1
+                },
+                collisions: {
+                    enable: true
+                },
+                move: {
+                    direction: 'none',
+                    enable: true,
+                    outModes: {
+                        default: 'bounce'
+                    },
+                    random: false,
+                    speed: 2,
+                    straight: false
+                },
+                number: {
+                    density: {
+                        enable: true,
+                        area: 800
+                    },
+                    value: 50
+                },
+                opacity: {
+                    value: 0.5
+                },
+                shape: {
+                    type: 'circle'
+                },
+                size: {
+                    value: { min: 1, max: 3 }
+                }
+            },
+            detectRetina: true
+        }
       }
     },
     mounted() {
-      this.initParticleNetwork();
       this.observeHeroSection();
       this.calculateHeroMainTitleAnimationDuration();
     },
@@ -137,9 +216,6 @@ export default {
                 this.heroMainTitleAnimationDuration = lastCharDelay + fadeDuration;
             }
             this.phdTitleAnimationReady = true;
-        },
-        initParticleNetwork() {
-            // We'll add particle network animation here if needed
         },
         scrollToSection(sectionId) {
             const sectionElement = this.$refs[sectionId];
@@ -180,11 +256,15 @@ export default {
 </script>
 
 <template>
-    <div class="min-h-screen bg-white">
+    <div class="min-h-screen bg-white pb-24">
         <!-- Hero Section - Adjusted lg padding to move content higher on desktop -->
         <div ref="heroSectionRef" id="hero-section" class="relative min-h-screen flex items-center pt-[4vh] pb-[12vh] lg:pt-[4vh] lg:pb-[16vh]">
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
-                <div class="particles-network"></div>
+                <Particles
+                    id="tsparticles"
+                    :options="particlesOptions"
+                    :particles-init="particlesSetupFunction"
+                />
             </div>
 
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -253,24 +333,24 @@ export default {
         </div>
 
         <!-- Rest of the content: Full-width sections with overall page background -->
-        <div class="bg-cover bg-center" :style="{ backgroundImage: `url(${background})` }">
+        <div class="bg-white">
             
             <!-- Internal Navigation Menu - Centered and Constrained -->
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <nav class="py-12 mb-8 text-center">
                     <ul class="flex justify-center mt-4 space-x-2 md:space-x-4">
                         <li>
-                            <button class="text-black font-bold py-2 px-3 md:px-4 rounded hover:text-blue-600 transition-colors" @click="scrollToSection('section3')">
+                            <button class="text-gray-300 font-bold py-2 px-3 md:px-4 rounded hover:text-blue-400 transition-colors" @click="scrollToSection('section3')">
                                 Skills
                             </button>
                         </li>
                         <li>
-                            <button class="text-black font-bold py-2 px-3 md:px-4 rounded hover:text-blue-600 transition-colors" @click="scrollToSection('section4')">
+                            <button class="text-gray-300 font-bold py-2 px-3 md:px-4 rounded hover:text-blue-400 transition-colors" @click="scrollToSection('section4')">
                                 Projects
                             </button>
                         </li>
                         <li>
-                            <button class="text-black font-bold py-2 px-3 md:px-4 rounded hover:text-blue-600 transition-colors" @click="scrollToSection('section5')">
+                            <button class="text-gray-300 font-bold py-2 px-3 md:px-4 rounded hover:text-blue-400 transition-colors" @click="scrollToSection('section5')">
                                 Contact
                             </button>
                         </li>
@@ -295,9 +375,9 @@ export default {
             </section>
 
             <!-- Projects Section (section4) - Full width background, changed to bg-gray-50 -->
-            <section ref="section4" id="section4" class="py-16 bg-gray-50">
+            <section ref="section4" id="section4" class="py-16 bg-slate-800 text-gray-200">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 class="text-3xl font-bold text-center mb-12 text-gray-900">Featured Research & Projects</h2>
+                    <h2 class="text-3xl font-bold text-center mb-12 text-gray-100">Featured Research & Projects</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <ProjectCard 
                           v-for="project in projects" 
@@ -309,14 +389,14 @@ export default {
 
                     <!-- Publications Section -->
                     <div class="mt-16">
-                        <h3 class="text-2xl font-semibold mb-8 text-center text-gray-800">Recent Publications</h3>
+                        <h3 class="text-2xl font-semibold mb-8 text-center text-gray-100">Recent Publications</h3>
                         <div class="space-y-6">
-                            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                                <h4 class="text-lg font-semibold mb-2 text-gray-900">Title of Your Research Paper</h4>
-                                <p class="text-gray-600 mb-3">Brief description of the research paper and its contributions to the field.</p>
+                            <div class="bg-slate-700 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                                <h4 class="text-lg font-semibold mb-2 text-gray-100">Title of Your Research Paper</h4>
+                                <p class="text-gray-300 mb-3">Brief description of the research paper and its contributions to the field.</p>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-500">Published in Conference/Journal Name</span>
-                                    <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">Read Paper →</a>
+                                    <span class="text-sm text-gray-400">Published in Conference/Journal Name</span>
+                                    <a href="#" class="text-blue-400 hover:text-blue-300 font-medium">Read Paper →</a>
                                 </div>
                             </div>
                         </div>
@@ -325,42 +405,42 @@ export default {
             </section>
 
             <!-- Contact Section (section5) - Full width background -->
-            <section ref="section5" id="section5" class="py-16 bg-slate-100">
+            <section ref="section5" id="section5" class="py-16 bg-slate-900 text-white">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 class="text-3xl font-bold text-center mb-12 text-gray-900">Get In Touch</h2>
+                    <h2 class="text-3xl font-bold text-center mb-12 text-gray-100">Get In Touch</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                         <!-- Contact Info -->
                         <div class="space-y-6">
-                            <h3 class="text-2xl font-semibold text-gray-800">Let's Connect</h3>
-                            <p class="text-gray-600">I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.</p>
+                            <h3 class="text-2xl font-semibold text-gray-100">Let's Connect</h3>
+                            <p class="text-gray-300">I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.</p>
                             <div class="space-y-4">
                                 <div class="flex items-center space-x-3">
-                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                     </svg>
-                                    <a href="mailto:your.email@example.com" class="text-blue-600 hover:text-blue-800">your.email@example.com</a>
+                                    <a href="mailto:your.email@example.com" class="text-blue-400 hover:text-blue-300">your.email@example.com</a>
                                 </div>
                                 <div class="flex items-center space-x-3">
-                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
-                                    <span class="text-gray-600">Madrid, Spain</span>
+                                    <span class="text-gray-300">Madrid, Spain</span>
                                 </div>
                             </div>
                             <!-- Social Links -->
                             <div class="flex space-x-4 mt-6">
-                                <a href="https://github.com/yourusername" target="_blank" class="text-gray-600 hover:text-blue-600">
+                                <a href="https://github.com/yourusername" target="_blank" class="text-gray-400 hover:text-blue-400">
                                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                                         <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
                                     </svg>
                                 </a>
-                                <a href="https://linkedin.com/in/yourusername" target="_blank" class="text-gray-600 hover:text-blue-600">
+                                <a href="https://linkedin.com/in/yourusername" target="_blank" class="text-gray-400 hover:text-blue-400">
                                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                                     </svg>
                                 </a>
-                                <a href="https://twitter.com/yourusername" target="_blank" class="text-gray-600 hover:text-blue-600">
+                                <a href="https://twitter.com/yourusername" target="_blank" class="text-gray-400 hover:text-blue-400">
                                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
                                     </svg>
@@ -368,19 +448,19 @@ export default {
                             </div>
                         </div>
                         <!-- Contact Form -->
-                        <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="bg-slate-800 p-6 rounded-lg shadow-md">
                             <form class="space-y-6">
                                 <div>
-                                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                                    <input type="text" id="name" name="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <label for="name" class="block text-sm font-medium text-gray-300">Name</label>
+                                    <input type="text" id="name" name="name" class="mt-1 block w-full rounded-md border-gray-600 bg-slate-700 text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
                                 <div>
-                                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                                    <input type="email" id="email" name="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <label for="email" class="block text-sm font-medium text-gray-300">Email</label>
+                                    <input type="email" id="email" name="email" class="mt-1 block w-full rounded-md border-gray-600 bg-slate-700 text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
                                 <div>
-                                    <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
-                                    <textarea id="message" name="message" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                                    <label for="message" class="block text-sm font-medium text-gray-300">Message</label>
+                                    <textarea id="message" name="message" rows="4" class="mt-1 block w-full rounded-md border-gray-600 bg-slate-700 text-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
                                 </div>
                                 <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300">Send Message</button>
                             </form>
@@ -416,6 +496,7 @@ export default {
 
 <style scoped>
 /* Particle network animation styles */
+/*
 .particles-network {
     position: absolute;
     top: 0;
@@ -430,6 +511,7 @@ export default {
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     opacity: 0.5;
 }
+*/
 
 /* Add smooth scroll behavior */
 html {
