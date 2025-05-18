@@ -1,6 +1,6 @@
 <script>
 import WhiteSquaresBackground from '@/assets/images/white-squares-background.jpg';
-import avatarImage from '@/assets/images/avatar_sample.jpg';
+import avatarImage from '@/assets/images/carrusk_zen.png';
 import MITLogo from '@/assets/logos/MIT_logo.svg';
 import MITArcLabLogo from '@/assets/logos/mit-arclab-logo.jpg';
 import UPMLogoPNG from '@/assets/logos/upm-logo.png';
@@ -170,7 +170,7 @@ export default {
     },
     computed: {
         logoCardBaseClass() {
-            return '!p-1.5 sm:!p-2';
+            return '!p-0.5 sm:!p-1';
         },
         allStackItems() {
             return [...this.stackItems.ai, ...this.stackItems.software];
@@ -180,19 +180,17 @@ export default {
 </script>
 
 <template>
-    <div class="min-h-screen bg-white pb-16">
-        <!-- Hero Section - Added ref="heroSectionRef" -->
-        <div ref="heroSectionRef" id="hero-section" class="relative min-h-screen flex items-center py-16 lg:py-24">
-            <!-- Particle Network Background -->
+    <div class="min-h-screen bg-white">
+        <!-- Hero Section - Adjusted lg padding to move content higher on desktop -->
+        <div ref="heroSectionRef" id="hero-section" class="relative min-h-screen flex items-center pt-[4vh] pb-[12vh] lg:pt-[4vh] lg:pb-[16vh]">
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
                 <div class="particles-network"></div>
             </div>
 
-            <!-- Content -->
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-8 items-center">
-                    <!-- Left Content -->
-                    <div class="space-y-6">
+                    <!-- Left Content - Restore text-center for mobile -->
+                    <div class="space-y-6 text-center lg:text-center">
                         <TypewriterText 
                             :lines="heroHeadingLines"
                             tag="h1"
@@ -205,34 +203,38 @@ export default {
                                 :lines="phdTitleLines"
                                 tag="p"
                                 baseClass="text-2xl text-gray-700"
-                                :speed="80"
+                                :speed="60"
                                 :fadeDuration="300" 
                                 :initialDelay="heroMainTitleAnimationDuration" 
                             />
                         </template>
-                        <p class="text-lg text-gray-600 max-w-2xl">
+                        <p class="text-lg text-gray-600 max-w-2xl mx-auto lg:mx-auto">
                             Specializing in Large Language Models, Autonomous Agents, and Robotics
                         </p>
-
-                        <p class="text-xl text-gray-700 leading-relaxed mt-4">
+                        <p class="text-xl text-gray-700 leading-relaxed mt-4 max-w-2xl mx-auto lg:mx-auto">
                             I'm an AI researcher and software engineer specializing in Large Language Models, autonomous agents, and robotics. 
                         </p>
+
+                        <!-- Avatar for Mobile (hidden on lg and up) -->
+                        <div class="lg:hidden mx-auto mt-8 mb-4 w-60 h-60 rounded-full bg-yellow-400 overflow-hidden shadow-xl">
+                            <img :src="avatar" alt="Alejandro Carrasco" class="w-full h-full object-cover">
+                        </div>
                         
                         <!-- Social Links - Centered -->
-                        <div class="flex justify-center space-x-4 mt-8"> 
+                        <div class="flex justify-center space-x-4 mt-8">
                             <a v-for="link in socialLinks" 
-                               :key="link.name"
-                               :href="link.url"
-                               :title="link.name"
-                               target="_blank"
-                               class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center transition-transform hover:scale-110"
+                               :key="link.name" 
+                               :href="link.url" 
+                               :title="link.name" 
+                               target="_blank" 
+                               class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center transition-transform hover:scale-110" 
                                :class="link.color">
                                 <i :class="'fab fa-' + link.icon" class="text-2xl"></i>
                             </a>
                         </div>
 
                         <!-- CTA Button to Skills - Centered -->
-                        <div class="mt-10 text-center"> 
+                        <div class="mt-10 text-center">
                             <a @click="scrollToSection('section3')" class="inline-flex items-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors cursor-pointer">
                                 View My Skills
                                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
@@ -240,8 +242,8 @@ export default {
                         </div>
                     </div>
 
-                    <!-- Right Content - Avatar -->
-                    <div class="relative self-start mt-8 lg:mt-0">
+                    <!-- Right Content - Avatar (hidden on screens smaller than lg) -->
+                    <div class="hidden lg:block relative self-start mt-8 lg:mt-0">
                         <div class="w-72 h-72 mx-auto lg:w-96 lg:h-96 rounded-full bg-yellow-400 overflow-hidden shadow-xl">
                             <img :src="avatar" alt="Alejandro Carrasco" class="w-full h-full object-cover">
                         </div>
@@ -250,55 +252,52 @@ export default {
             </div>
         </div>
 
-        <!-- Rest of the content -->
-    <div class="bg-cover bg-center" 
-         :style="{ backgroundImage: `url(${background})` }">
-        <div class="relative bg-white bg-center px-8 pt-20 pb-40 shadow-xl ring-1 ring-chromatic mx-auto max-w-6xl squared-lg sm:px-20">
-            <img :src="WhiteSquaresBackground" alt="" class="absolute opacity-50" width="1080" />
-            <div class="home-page relative z-10">
-                <!-- Navigation Menu (Simplified) -->
-                <nav class="mb-16">
-                <ul class="flex justify-center mt-4 space-x-2 md:space-x-4">
-                    <li>
-                        <button class="text-black font-bold py-2 px-3 md:px-4 rounded hover:text-blue-600 transition-colors" @click="scrollToSection('section3')">
-                            Skills
-                        </button>
-                    </li>
-                    <li>
-                        <button class="text-black font-bold py-2 px-3 md:px-4 rounded hover:text-blue-600 transition-colors" @click="scrollToSection('section4')">
-                            Projects
-                        </button>
-                    </li>
-                    <li>
-                        <button class="text-black font-bold py-2 px-3 md:px-4 rounded hover:text-blue-600 transition-colors" @click="scrollToSection('section5')">
-                            Contact
-                        </button>
-                    </li>
-                </ul>
+        <!-- Rest of the content: Full-width sections with overall page background -->
+        <div class="bg-cover bg-center" :style="{ backgroundImage: `url(${background})` }">
+            
+            <!-- Internal Navigation Menu - Centered and Constrained -->
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="py-12 mb-8 text-center">
+                    <ul class="flex justify-center mt-4 space-x-2 md:space-x-4">
+                        <li>
+                            <button class="text-black font-bold py-2 px-3 md:px-4 rounded hover:text-blue-600 transition-colors" @click="scrollToSection('section3')">
+                                Skills
+                            </button>
+                        </li>
+                        <li>
+                            <button class="text-black font-bold py-2 px-3 md:px-4 rounded hover:text-blue-600 transition-colors" @click="scrollToSection('section4')">
+                                Projects
+                            </button>
+                        </li>
+                        <li>
+                            <button class="text-black font-bold py-2 px-3 md:px-4 rounded hover:text-blue-600 transition-colors" @click="scrollToSection('section5')">
+                                Contact
+                            </button>
+                        </li>
+                    </ul>
                 </nav>
+            </div>
 
-                <!-- Content Section 3 (Skills) -->
-                <section ref="section3" id="section3" class="py-16 bg-slate-900 text-white">
-                <div class="bg-slate-900">
-                    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                        <h2 class="text-3xl font-bold text-center mb-16 text-white">Skills & Expertise</h2>
-                        
-                        <!-- New Unified Skill Grid -->
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 lg:gap-8">
-                            <SkillLogoCard 
-                                v-for="item in allStackItems"
-                                :key="item.name"
-                                :item="item"
-                            />
-                        </div>
+            <!-- Content Section 3 (Skills) - Full width background -->
+            <section ref="section3" id="section3" class="py-16 bg-slate-900 text-white">
+                <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                    <h2 class="text-3xl font-bold text-center mb-16 text-white">Skills & Expertise</h2>
+                    
+                    <!-- New Unified Skill Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 lg:gap-8">
+                        <SkillLogoCard 
+                            v-for="item in allStackItems"
+                            :key="item.name"
+                            :item="item"
+                        />
                     </div>
                 </div>
-                </section>
+            </section>
 
-                <!-- Projects Section (section4) -->
-                <section ref="section4" id="section4" class="py-16 bg-white">
+            <!-- Projects Section (section4) - Full width background, changed to bg-gray-50 -->
+            <section ref="section4" id="section4" class="py-16 bg-gray-50">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 class="text-3xl font-bold text-center mb-12">Featured Research & Projects</h2>
+                    <h2 class="text-3xl font-bold text-center mb-12 text-gray-900">Featured Research & Projects</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <ProjectCard 
                           v-for="project in projects" 
@@ -310,10 +309,10 @@ export default {
 
                     <!-- Publications Section -->
                     <div class="mt-16">
-                        <h3 class="text-2xl font-semibold mb-8 text-center">Recent Publications</h3>
+                        <h3 class="text-2xl font-semibold mb-8 text-center text-gray-800">Recent Publications</h3>
                         <div class="space-y-6">
                             <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                                <h4 class="text-lg font-semibold mb-2">Title of Your Research Paper</h4>
+                                <h4 class="text-lg font-semibold mb-2 text-gray-900">Title of Your Research Paper</h4>
                                 <p class="text-gray-600 mb-3">Brief description of the research paper and its contributions to the field.</p>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm text-gray-500">Published in Conference/Journal Name</span>
@@ -323,16 +322,16 @@ export default {
                         </div>
                     </div>
                 </div>
-                </section>
+            </section>
 
-                <!-- Contact Section (section5) -->
-                <section ref="section5" id="section5" class="py-16 bg-slate-100">
+            <!-- Contact Section (section5) - Full width background -->
+            <section ref="section5" id="section5" class="py-16 bg-slate-100">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 class="text-3xl font-bold text-center mb-12">Get In Touch</h2>
+                    <h2 class="text-3xl font-bold text-center mb-12 text-gray-900">Get In Touch</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                         <!-- Contact Info -->
                         <div class="space-y-6">
-                            <h3 class="text-2xl font-semibold">Let's Connect</h3>
+                            <h3 class="text-2xl font-semibold text-gray-800">Let's Connect</h3>
                             <p class="text-gray-600">I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.</p>
                             <div class="space-y-4">
                                 <div class="flex items-center space-x-3">
@@ -388,9 +387,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                </section>
-                </div>
-            </div>
+            </section>
         </div>
 
         <!-- Sticky Bottom Bar for Institutions -->

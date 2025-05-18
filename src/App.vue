@@ -100,7 +100,7 @@ export default defineComponent({
   </header>
   
   <!-- Router view to render the current route's component -->
-  <div class="font-sans text-gray-700 text-center">
+  <div class="font-sans text-gray-700 antialiased">
     <router-view></router-view>
   </div>
 </template>
