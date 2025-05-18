@@ -13,10 +13,18 @@ export default defineComponent({
       logo: logoImage  // Use the imported image
     }
   },
+  setup() {
+    const router = useRouter();
+    return { router };
+  },
   methods: {
     goHome() {
-      const router = useRouter();
-      goHome(router); // Call the goHome function with the router instance
+      this.router.push('/').then(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
     },
     closeMenu(){
       setTimeout(() => {
@@ -41,7 +49,7 @@ export default defineComponent({
     
     <nav class="">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-0">
-        <router-link to="/" class="flex items-center" @click="goHome">
+        <router-link @click="goHome" class="flex items-center">
           <img :src="logo"
                class="h-12 mr-3 rounded-full" 
                alt="Carrusk Monkey Logo"/>
@@ -51,19 +59,19 @@ export default defineComponent({
         <div ref="listaMenu" class="hidden w-full md:block md:w-auto" id="navbar-default">
           <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
             <li>
-              <router-link to="/" @click="closeMenu" class="block py-2 pl-3 pr-4 hover:bg-gray-100 md:hover:bg-transparent text-gray-900 rounded md:bg-transparent md:text-black md:p-0 dark:text-white md:dark:text-blue-500 hover:text-blue-700 text-lg" aria-current="page">Home</router-link>
+              <a @click="goHome" class="block py-2 pl-3 pr-4 hover:bg-gray-100 md:hover:bg-transparent text-gray-900 rounded md:bg-transparent md:text-black md:p-0 dark:text-white md:dark:text-blue-500 hover:text-blue-700 text-lg cursor-pointer">Home</a>
             </li>
             <li>
               <router-link to="/About" @click="closeMenu" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg">About</router-link>
             </li>
             <li>
-              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg">Services</a>
+              <router-link to="#section3" @click="closeMenu" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg">Skills</router-link>
             </li>
             <li>
-              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg">Pricing</a>
+              <router-link to="#section4" @click="closeMenu" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg">Projects</router-link>
             </li>
             <li>
-              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg">Contact</a>
+              <router-link to="#section5" @click="closeMenu" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg">Contact</router-link>
             </li>
           </ul>
         </div>

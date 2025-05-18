@@ -3,7 +3,7 @@
     <button
       type="button"
       aria-label="Previous page"
-      :tabindex="canAdvanceBackward ? 0 : -1"
+      role="button"
       class="VueCarousel-navigation-button VueCarousel-navigation-prev"
       v-on:click.prevent="triggerPageAdvance('backward')"
       v-bind:class="{ 'VueCarousel-navigation--disabled': !canAdvanceBackward }"
@@ -12,9 +12,9 @@
     <button
       type="button"
       aria-label="Next page"
-      :tabindex="canAdvanceForward ? 0 : -1"
+      role="button"
       class="VueCarousel-navigation-button VueCarousel-navigation-next"
-      v-on:click.prevent="triggerPageAdvance('forward')"
+      v-on:click.prevent="triggerPageAdvance()"
       v-bind:class="{ 'VueCarousel-navigation--disabled': !canAdvanceForward }"
       v-bind:style="`padding: ${clickTargetSize}px; margin-left: -${clickTargetSize}px;`"
       v-html="nextLabel"></button>
@@ -92,10 +92,6 @@ export default {
   padding: 0;
   cursor: pointer;
   outline: none;
-}
-
-.VueCarousel-navigation-button:focus {
-  outline: 1px solid lightblue;
 }
 
 .VueCarousel-navigation-next {
