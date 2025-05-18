@@ -11,6 +11,19 @@ export default {
       //   name: String,
       //   link: String
       // }
+    },
+    lightCardOnDarkBg: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    cardClasses() {
+      if (this.lightCardOnDarkBg) {
+        return 'bg-gray-200 hover:bg-gray-300 rounded-md shadow-sm'; // Adjusted for dark context
+      } else {
+        return 'bg-white hover:shadow-xl rounded-xl shadow-md'; // Default style
+      }
     }
   }
 }
@@ -20,7 +33,8 @@ export default {
   <a 
     :href="item.link" 
     target="_blank"
-    class="bg-white rounded-xl shadow-md transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex items-center justify-center aspect-square overflow-hidden"
+    class="transform transition-all duration-300 hover:-translate-y-1 flex items-center justify-center overflow-hidden"
+    :class="cardClasses" 
   >
     <!-- Logo -->
     <div class="w-4/5 h-4/5 flex items-center justify-center">

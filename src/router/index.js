@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
-import About from '../views/About.vue'
+import About from '../views/About.vue';
+import ProjectDetail from '../views/ProjectDetail.vue';
 
 const routes = [
   {
@@ -9,15 +10,21 @@ const routes = [
     component: Home,
   },
   {
-    path: '/About',
+    path: '/about',
     name: 'About',
     component: About,
+  },
+  {
+    path: '/project/:slug',
+    name: 'ProjectDetail',
+    component: ProjectDetail,
+    props: true,
   }
   // You can remove the About route since it's a single-page application.
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
@@ -28,7 +35,7 @@ const router = createRouter({
     } else if (savedPosition) {
       return savedPosition;
     } else {
-      return { x: 0, y: 0 };
+      return { top: 0, behavior: 'smooth' };
     }
   },
 });

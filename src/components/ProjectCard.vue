@@ -1,4 +1,6 @@
 <script>
+import { generateSlug } from '@/views/projectsData.js'; // Import slug generator
+
 export default {
   name: 'ProjectCard',
   props: {
@@ -15,32 +17,44 @@ export default {
       //   link: String,
       //   date: String
       // }
+    },
+    isLinkToDetail: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      isHovered: false,
-      videoLoaded: false
+      showVideo: false
+    }
+  },
+  computed: {
+    projectDetailLink() {
+      if (!this.project || !this.project.title) return '/';
+      return { name: 'ProjectDetail', params: { slug: this.generateSlug(this.project.title) } };
     }
   },
   methods: {
-    handleMouseEnter() {
+    generateSlug(title) { // Keep local slug generation for direct use in template binding
+      return generateSlug(title);
+    },
+    playVideo() {
       if (this.project.video) {
-        this.isHovered = true;
-        // Preload video
-        const video = this.$refs.video;
-        if (video) {
-          video.load();
-          video.play().catch(err => console.log('Video autoplay prevented:', err));
-        }
+        this.showVideo = true;
+        this.$refs.videoPlayer.play().catch(error => {
+          console.warn("Video play interrupted or failed:", error);
+        });
       }
     },
-    handleMouseLeave() {
-      this.isHovered = false;
-      const video = this.$refs.video;
-      if (video) {
-        video.pause();
-        video.currentTime = 0;
+    pauseVideo() {
+      if (this.project.video) {
+        this.showVideo = false;
+        this.$refs.videoPlayer.pause();
+      }
+    },
+    handleCardClick() {
+      if (this.isLinkToDetail) {
+        this.$router.push(this.projectDetailLink);
       }
     }
   }
@@ -48,64 +62,46 @@ export default {
 </script>
 
 <template>
-  <div 
-    class="bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-  >
-    <!-- Media Container -->
-    <div class="relative aspect-video overflow-hidden">
-      <!-- Static Image -->
-      <img 
-        :src="project.image" 
-        :alt="project.title"
-        class="w-full h-full object-cover transition-opacity duration-300"
-        :class="{ 'opacity-0': isHovered && project.video }"
-      >
-      
-      <!-- Video (if available) -->
-      <video
-        v-if="project.video"
-        ref="video"
-        :src="project.video"
-        class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
-        :class="{ 'opacity-100': isHovered, 'opacity-0': !isHovered }"
-        muted
-        loop
-        playsinline
-      ></video>
+  <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col">
+    <div @click="handleCardClick" :class="{'cursor-pointer': isLinkToDetail}" class="relative aspect-video overflow-hidden">
+      <!-- Image/Video Content -->
+      <img v-if="!showVideo && project.image" :src="project.image" :alt="project.title" 
+           class="w-full h-full object-cover transition-opacity duration-300 ease-in-out" 
+           :class="{'opacity-100': !showVideo, 'opacity-0': showVideo}">
+      <video v-if="project.video" ref="videoPlayer" :src="project.video" 
+             class="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-300 ease-in-out" 
+             :class="{'opacity-100': showVideo, 'opacity-0': !showVideo}" 
+             muted loop playsinline 
+             @mouseover="playVideo" @mouseleave="pauseVideo">
+      </video>
+      <div v-if="project.video && !showVideo" class="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center transition-opacity duration-300 hover:opacity-0">
+        <svg class="w-16 h-16 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+      </div>
     </div>
 
-    <!-- Content -->
-    <div class="p-6">
-      <h3 class="text-xl font-semibold mb-2">{{ project.title }}</h3>
-      <p class="text-gray-600 mb-4">{{ project.description }}</p>
+    <div class="p-6 flex flex-col flex-grow">
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ project.title }}</h3>
+      <p class="text-gray-700 text-sm leading-relaxed mb-4 flex-grow">{{ project.description.substring(0, 100) + (project.description.length > 100 ? '...' : '') }}</p>
       
-      <!-- Technologies -->
-      <div class="flex flex-wrap gap-2 mb-4">
-        <span 
-          v-for="tech in project.technologies" 
-          :key="tech.name"
-          class="px-3 py-1 rounded-full text-sm"
-          :class="tech.class || 'bg-blue-100 text-blue-800'"
-        >
-          {{ tech.name }}
-        </span>
+      <div class="mb-4">
+        <div class="flex flex-wrap gap-2">
+          <span v-for="tech in project.technologies" :key="tech.name" 
+                :class="[tech.class, 'px-2 py-1 text-xs font-medium rounded-full']">
+            {{ tech.name }}
+          </span>
+        </div>
       </div>
 
-      <!-- Footer -->
-      <div class="flex justify-between items-center">
-        <a 
-          :href="project.link" 
-          class="text-blue-600 hover:text-blue-800 font-medium inline-flex items-center"
-          target="_blank"
-        >
-          View Project 
-          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
+      <div class="mt-auto flex justify-between items-center pt-4 border-t border-gray-200">
+        <span class="text-xs text-gray-500">{{ project.date }}</span>
+        <a v-if="!isLinkToDetail && project.link" :href="project.link" target="_blank" 
+           class="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
+          View Project →
         </a>
-        <span class="text-gray-500 text-sm">{{ project.date }}</span>
+        <router-link v-if="isLinkToDetail" :to="projectDetailLink"
+           class="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
+          Learn More →
+        </router-link>
       </div>
     </div>
   </div>
