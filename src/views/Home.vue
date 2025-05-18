@@ -14,6 +14,7 @@ import TypewriterText from '@/components/TypewriterText.vue';
 import { projects as importedProjects } from '@/views/projectsData.js';
 import { ParticlesComponent as Particles } from "particles.vue3";
 import { loadSlim } from "tsparticles-slim";
+import { initFlowbite } from 'flowbite';
 
 export default {
     name: 'Home',
@@ -200,6 +201,7 @@ export default {
     mounted() {
       this.observeHeroSection();
       this.calculateHeroMainTitleAnimationDuration();
+      initFlowbite();
     },
     beforeUnmount() {
       if (this.heroObserver) {
@@ -231,7 +233,7 @@ export default {
                 window.scrollTo({
                     top: offsetPosition,
                     behavior: 'smooth'
-                });
+            });
             }
         },
         observeHeroSection() {
@@ -267,7 +269,7 @@ export default {
 <template>
     <div class="min-h-screen bg-slate-900">
         <!-- Hero Section - Adjusted lg padding to move content higher on desktop -->
-        <div ref="heroSectionRef" id="hero-section" class="relative min-h-screen flex items-start pt-16 pb-[6vh] sm:pb-[8vh] md:pb-[10vh] lg:pt-[4vh] lg:pb-[16vh]">
+        <div ref="heroSectionRef" id="hero-section" class="relative min-h-screen flex items-start pt-16 pb-[6vh] sm:pb-[8vh] md:pb-[10vh] lg:pt-[20vh] lg:pb-[16vh]">
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
                 <Particles
                     id="tsparticles"

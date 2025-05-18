@@ -50,11 +50,25 @@ export default defineComponent({
       this.navigateToSection('hero-section');
     },
     closeMenu(){
-      if (this.$refs.BurgerMenu && this.$refs.BurgerMenu.$el.offsetParent !== null) { // Check if burger menu is visible
-        setTimeout(() => {
-            this.$refs.BurgerMenu.closeMenu();
-            this.$refs.BurgerMenu.$el.click(); // Trigger click to ensure state is updated if Flowbite handles it
-        }, 150);
+      const burgerButton = this.$refs.BurgerMenu?.$el; // The actual <button> element from burger-menu.vue
+      const burgerComponent = this.$refs.BurgerMenu;    // The burger-menu.vue component instance
+      const menuElement = this.$refs.listaMenu;         // The collapsible menu div (#navbar-default)
+
+      // Check if the burger menu component and its element are rendered and visible (i.e., on mobile)
+      if (burgerButton && burgerComponent && menuElement && burgerButton.offsetParent !== null) {
+        // Check if the Flowbite-controlled menu (#navbar-default) is currently open.
+        // Flowbite toggles the 'hidden' class on the menuElement.
+        const isFlowbiteMenuOpen = !menuElement.classList.contains('hidden');
+
+        if (isFlowbiteMenuOpen) {
+          // If the Flowbite menu is open, a click on the burger button will make Flowbite close it.
+          // This click will also trigger toggleMenu() within burger-menu.vue.
+          // If burger-menu.vue's isOpen was true, toggleMenu() will set it to false, changing the icon.
+          burgerButton.click();
+        }
+        // Ensure the burger icon component itself is definitely in the 'closed' visual state.
+        // This is a safeguard, especially if the menu was somehow closed without the icon updating.
+        burgerComponent.closeMenu();
       }
     }
   },
