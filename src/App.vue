@@ -36,7 +36,12 @@ export default defineComponent({
         } else {
           const element = document.getElementById(elementId);
           if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
+            const headerHeight = 80; // Height of your fixed header
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            window.scrollTo({
+              top: elementPosition - headerHeight,
+              behavior: 'smooth'
+            });
           }
         }
       }, 100);
@@ -60,8 +65,8 @@ export default defineComponent({
 </script>
 
 <template>
-  <header class="bg-white p-7 sticky top-0 z-50 ring-1 ring-chromatic shadow-lg">
-    <div class="flex justify-between items-center px-4 md:px-20">
+  <header class="bg-white p-3 sm:p-4 sticky top-0 z-50 ring-1 ring-chromatic shadow-lg">
+    <div class="flex justify-between items-center px-2 sm:px-4 md:px-10 lg:px-20">
       <h1 class="visible lg:invisible text-white text-2xl">Carrusk</h1>
     </div>
     
@@ -77,7 +82,7 @@ export default defineComponent({
         </a>
         <BurgerMenu ref="BurgerMenu" data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false"/>
         <div ref="listaMenu" class="hidden w-full md:block md:w-auto" id="navbar-default">
-          <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+          <ul class="font-medium flex flex-col p-2 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
             <li>
               <a @click="goHome" class="block py-2 pl-3 pr-4 hover:bg-gray-100 md:hover:bg-transparent text-gray-900 rounded md:bg-transparent md:text-black md:p-0 dark:text-white md:dark:text-blue-500 hover:text-blue-700 text-lg cursor-pointer" aria-current="page">Home</a>
             </li>
@@ -85,10 +90,10 @@ export default defineComponent({
               <a @click="navigateToSection('hero-section')" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg cursor-pointer">About</a>
             </li>
             <li>
-              <a @click="navigateToSection('section3')" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg cursor-pointer">Skills</a>
+              <a @click="navigateToSection('section4')" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg cursor-pointer">Skills</a>
             </li>
             <li>
-              <a @click="navigateToSection('section4')" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg cursor-pointer">Projects</a>
+              <a @click="navigateToSection('section3')" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg cursor-pointer">Projects</a>
             </li>
             <li>
               <a @click="navigateToSection('section5')" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg cursor-pointer">Contact</a>
@@ -104,3 +109,18 @@ export default defineComponent({
     <router-view></router-view>
   </div>
 </template>
+
+<style>
+/* Global override for testing scroll issues */
+html, body {
+  overflow-y: auto !important; /* Force scrollbars if content overflows */
+  height: auto !important; /* Allow height to grow with content */
+  background-color: #0f172a !important; /* Tailwind slate-900 - Set a dark page background */
+}
+
+#app {
+  overflow-y: auto !important; /* Also try on the #app container */
+  height: auto !important;
+  background-color: #0f172a !important; /* Ensure #app also has dark background */
+}
+</style>

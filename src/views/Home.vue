@@ -114,6 +114,10 @@ export default {
         heroObserver: null,
         particlesSetupFunction: loadSlim,
         particlesOptions: {
+            fullScreen: {
+                enable: false,
+                zIndex: -1
+            },
             background: {
                 color: {
                     value: '#e5e7eb'
@@ -220,9 +224,14 @@ export default {
         scrollToSection(sectionId) {
             const sectionElement = this.$refs[sectionId];
             if (sectionElement) {
-            sectionElement.scrollIntoView({
-                behavior: 'smooth',
-            });
+                const headerOffset = 80; // Approximate height of the header
+                const elementPosition = sectionElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
             }
         },
         observeHeroSection() {
@@ -256,9 +265,9 @@ export default {
 </script>
 
 <template>
-    <div class="min-h-screen bg-white pb-24">
+    <div class="min-h-screen bg-slate-900">
         <!-- Hero Section - Adjusted lg padding to move content higher on desktop -->
-        <div ref="heroSectionRef" id="hero-section" class="relative min-h-screen flex items-center pt-[4vh] pb-[12vh] lg:pt-[4vh] lg:pb-[16vh]">
+        <div ref="heroSectionRef" id="hero-section" class="relative min-h-screen flex items-start pt-16 pb-[6vh] sm:pb-[8vh] md:pb-[10vh] lg:pt-[4vh] lg:pb-[16vh]">
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
                 <Particles
                     id="tsparticles"
@@ -270,7 +279,7 @@ export default {
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-8 items-center">
                     <!-- Left Content - Restore text-center for mobile -->
-                    <div class="space-y-6 text-center lg:text-center">
+                    <div class="space-y-4 sm:space-y-6 text-center lg:text-center">
                         <TypewriterText 
                             :lines="heroHeadingLines"
                             tag="h1"
@@ -282,26 +291,26 @@ export default {
                             <TypewriterText
                                 :lines="phdTitleLines"
                                 tag="p"
-                                baseClass="text-2xl text-gray-700"
+                                baseClass="text-xl sm:text-2xl text-gray-700 font-neue-haas"
                                 :speed="60"
                                 :fadeDuration="300" 
                                 :initialDelay="heroMainTitleAnimationDuration" 
                             />
                         </template>
-                        <p class="text-lg text-gray-600 max-w-2xl mx-auto lg:mx-auto">
-                            Specializing in Large Language Models, Autonomous Agents, and Robotics
+                        <p class="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto lg:mx-auto">
+                            Specialized in Large Language Models, Autonomous Agents, and Robotics
                         </p>
-                        <p class="text-xl text-gray-700 leading-relaxed mt-4 max-w-2xl mx-auto lg:mx-auto">
+                        <p class="text-lg sm:text-xl text-gray-700 leading-relaxed mt-4 max-w-2xl mx-auto lg:mx-auto hidden sm:block">
                             I'm an AI researcher and software engineer specializing in Large Language Models, autonomous agents, and robotics. 
                         </p>
 
                         <!-- Avatar for Mobile (hidden on lg and up) -->
-                        <div class="lg:hidden mx-auto mt-8 mb-4 w-60 h-60 rounded-full bg-yellow-400 overflow-hidden shadow-xl">
+                        <div class="lg:hidden mx-auto mt-4 sm:mt-8 mb-2 sm:mb-4 w-48 h-48 sm:w-60 sm:h-60 rounded-full bg-yellow-400 overflow-hidden shadow-xl">
                             <img :src="avatar" alt="Alejandro Carrasco" class="w-full h-full object-cover">
                         </div>
                         
                         <!-- Social Links - Centered -->
-                        <div class="flex justify-center space-x-4 mt-8">
+                        <div class="flex justify-center space-x-4 mt-4 sm:mt-8">
                             <a v-for="link in socialLinks" 
                                :key="link.name" 
                                :href="link.url" 
@@ -313,10 +322,10 @@ export default {
                             </a>
                         </div>
 
-                        <!-- CTA Button to Skills - Centered -->
-                        <div class="mt-10 text-center">
+                        <!-- CTA Button to Projects - Centered -->
+                        <div class="mt-6 sm:mt-10 text-center">
                             <a @click="scrollToSection('section3')" class="inline-flex items-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors cursor-pointer">
-                                View My Skills
+                                View My Projects
                                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
                             </a>
                         </div>
@@ -333,49 +342,10 @@ export default {
         </div>
 
         <!-- Rest of the content: Full-width sections with overall page background -->
-        <div class="bg-white">
+        <div class="bg-slate-900">
             
-            <!-- Internal Navigation Menu - Centered and Constrained -->
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <nav class="py-12 mb-8 text-center">
-                    <ul class="flex justify-center mt-4 space-x-2 md:space-x-4">
-                        <li>
-                            <button class="text-gray-300 font-bold py-2 px-3 md:px-4 rounded hover:text-blue-400 transition-colors" @click="scrollToSection('section3')">
-                                Skills
-                            </button>
-                        </li>
-                        <li>
-                            <button class="text-gray-300 font-bold py-2 px-3 md:px-4 rounded hover:text-blue-400 transition-colors" @click="scrollToSection('section4')">
-                                Projects
-                            </button>
-                        </li>
-                        <li>
-                            <button class="text-gray-300 font-bold py-2 px-3 md:px-4 rounded hover:text-blue-400 transition-colors" @click="scrollToSection('section5')">
-                                Contact
-                            </button>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-
-            <!-- Content Section 3 (Skills) - Full width background -->
-            <section ref="section3" id="section3" class="py-16 bg-slate-900 text-white">
-                <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                    <h2 class="text-3xl font-bold text-center mb-16 text-white">Skills & Expertise</h2>
-                    
-                    <!-- New Unified Skill Grid -->
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 lg:gap-8">
-                        <SkillLogoCard 
-                            v-for="item in allStackItems"
-                            :key="item.name"
-                            :item="item"
-                        />
-                    </div>
-                </div>
-            </section>
-
-            <!-- Projects Section (section4) - Full width background, changed to bg-gray-50 -->
-            <section ref="section4" id="section4" class="py-16 bg-slate-800 text-gray-200">
+            <!-- Projects Section (section3) - Full width background, changed to bg-gray-50 -->
+            <section ref="section3" id="section3" class="py-16 bg-slate-800 text-gray-200">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 class="text-3xl font-bold text-center mb-12 text-gray-100">Featured Research & Projects</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -400,6 +370,22 @@ export default {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                </section>
+
+            <!-- Content Section 4 (Skills) - Full width background -->
+            <section ref="section4" id="section4" class="py-16 bg-slate-900 text-white">
+                    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                    <h2 class="text-3xl font-bold text-center mb-16 text-white">Skills & Expertise</h2>
+                    
+                    <!-- New Unified Skill Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 lg:gap-8">
+                        <SkillLogoCard 
+                            v-for="item in allStackItems"
+                            :key="item.name"
+                            :item="item"
+                        />
                     </div>
                 </div>
             </section>
@@ -466,8 +452,8 @@ export default {
                             </form>
                         </div>
                     </div>
-                </div>
-            </section>
+                    </div>
+                </section>
         </div>
 
         <!-- Sticky Bottom Bar for Institutions -->
@@ -488,13 +474,28 @@ export default {
                                 '!w-16 !h-16 sm:!w-20 sm:!h-20 md:!w-20 md:!h-20'
                             ]" />
                     </div>
-                </div>
             </div>
+        </div>
         </transition>
     </div>
 </template>
 
 <style scoped>
+/* Custom font style for PhD title */
+.font-neue-haas {
+  font-family: 'Neue Haas Grotesk', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* Target the particle canvas if fullScreen:false doesn't remove position:fixed */
+:deep(#tsparticles > canvas) {
+  position: absolute !important; /* Override fixed position */
+  height: 100% !important; /* Ensure it fills its parent (the hero section's inner div) */
+  width: 100% !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 0 !important; /* Keep behind hero text (z-10) but above hero bg */
+}
+
 /* Particle network animation styles */
 /*
 .particles-network {
@@ -521,8 +522,8 @@ html {
 /* Existing styles */
 .home-page {
     font-family: 'Inter', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Fade animations */
