@@ -1,21 +1,28 @@
 <script>
-import { goHome } from '@/components/scripts/home.js'; // Adjust the path as needed
-import { useRouter } from 'vue-router'; // Import useRouter
-import BurgerMenu from '@/components/burger-menu.vue'; // Import the BurgerMenu component
-import { defineComponent } from 'vue';
-// Import the logo using alias
+import { useRouter } from 'vue-router';
+import BurgerMenu from '@/components/burger-menu.vue';
+import NavbarLinks from '@/components/NavbarLinks.vue';
+import { defineComponent, watch, ref } from 'vue';
 import logoImage from '@logos/carrusk_logo_monkey.jpeg';
 
 export default defineComponent({
   name: 'App',
+  components: {
+    BurgerMenu,
+    NavbarLinks
+  },
   data() {
     return {
-      logo: logoImage  // Use the imported image
+      logo: logoImage,
+      isMobileNavbarOpen: false
     }
   },
   setup() {
     const router = useRouter();
-    return { router };
+    const BurgerMenuComponent = ref(null);
+    const MobileNavbarElement = ref(null);
+
+    return { router, BurgerMenuComponent, MobileNavbarElement };
   },
   methods: {
     navigateToSection(sectionId) {
@@ -26,17 +33,16 @@ export default defineComponent({
       } else {
         this.scrollToElement(sectionId);
       }
-      this.closeMenu(); // Close burger menu if open
+      this.closeMobileNavbar();
     },
     scrollToElement(elementId) {
-      // Slight delay to ensure element is available after route change
       setTimeout(() => {
-        if (elementId === 'hero-section' || elementId === 'home-top') { // Special case for top of home
+        if (elementId === 'hero-section' || elementId === 'home-top') {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
           const element = document.getElementById(elementId);
           if (element) {
-            const headerHeight = 80; // Height of your fixed header
+            const headerHeight = 80;
             const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
             window.scrollTo({
               top: elementPosition - headerHeight,
@@ -49,32 +55,42 @@ export default defineComponent({
     goHome() {
       this.navigateToSection('hero-section');
     },
-    closeMenu(){
-      const burgerButton = this.$refs.BurgerMenu?.$el; // The actual <button> element from burger-menu.vue
-      const burgerComponent = this.$refs.BurgerMenu;    // The burger-menu.vue component instance
-      const menuElement = this.$refs.listaMenu;         // The collapsible menu div (#navbar-default)
-
-      // Check if the burger menu component and its element are rendered and visible (i.e., on mobile)
-      if (burgerButton && burgerComponent && menuElement && burgerButton.offsetParent !== null) {
-        // Check if the Flowbite-controlled menu (#navbar-default) is currently open.
-        // Flowbite toggles the 'hidden' class on the menuElement.
-        const isFlowbiteMenuOpen = !menuElement.classList.contains('hidden');
-
-        if (isFlowbiteMenuOpen) {
-          // If the Flowbite menu is open, a click on the burger button will make Flowbite close it.
-          // This click will also trigger toggleMenu() within burger-menu.vue.
-          // If burger-menu.vue's isOpen was true, toggleMenu() will set it to false, changing the icon.
-          burgerButton.click();
+    toggleMobileNavbar() {
+      this.isMobileNavbarOpen = !this.isMobileNavbarOpen;
+      if (this.BurgerMenuComponent) {
+        this.BurgerMenuComponent.toggleMenu();
+      }
+      if (this.isMobileNavbarOpen) {
+        document.addEventListener('click', this.handleClickOutside, true);
+      } else {
+        document.removeEventListener('click', this.handleClickOutside, true);
+      }
+    },
+    closeMobileNavbar() {
+      if (this.isMobileNavbarOpen) {
+        this.isMobileNavbarOpen = false;
+        if (this.BurgerMenuComponent) {
+          this.BurgerMenuComponent.closeMenu();
         }
-        // Ensure the burger icon component itself is definitely in the 'closed' visual state.
-        // This is a safeguard, especially if the menu was somehow closed without the icon updating.
-        burgerComponent.closeMenu();
+        document.removeEventListener('click', this.handleClickOutside, true);
+      }
+    },
+    handleNavLinkClick(sectionId) {
+      this.navigateToSection(sectionId);
+    },
+    handleClickOutside(event) {
+      const burgerButtonEl = this.BurgerMenuComponent?.$el;
+      const mobileNavbarEl = this.MobileNavbarElement;
+
+      if (burgerButtonEl && !burgerButtonEl.contains(event.target) && 
+          mobileNavbarEl && !mobileNavbarEl.contains(event.target)) {
+        this.closeMobileNavbar();
       }
     }
   },
-  components: {
-    BurgerMenu
-  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside, true);
+  }
 });
 </script>
 
@@ -84,41 +100,37 @@ export default defineComponent({
       <h1 class="visible lg:invisible text-white text-2xl">Carrusk</h1>
     </div>
     
-    <!-- Simple navigation bar -->
-    
-    <nav class="">
+    <nav class="relative">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-0">
-        <a @click="goHome" class="flex items-center cursor-pointer">
+        <a @click="goHome" class="flex items-center cursor-pointer space-x-3 rtl:space-x-reverse">
           <img :src="logo"
-               class="h-12 mr-3 rounded-full" 
+               class="h-12 rounded-full" 
                alt="Carrusk Monkey Logo"/>
           <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Carrusk</span>
         </a>
-        <BurgerMenu ref="BurgerMenu" data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false"/>
-        <div ref="listaMenu" class="hidden w-full md:block md:w-auto" id="navbar-default">
-          <ul class="font-medium flex flex-col p-2 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-            <li>
-              <a @click="goHome" class="block py-2 pl-3 pr-4 hover:bg-gray-100 md:hover:bg-transparent text-gray-900 rounded md:bg-transparent md:text-black md:p-0 dark:text-white md:dark:text-blue-500 hover:text-blue-700 text-lg cursor-pointer" aria-current="page">Home</a>
-            </li>
-            <li>
-              <a @click="navigateToSection('hero-section')" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg cursor-pointer">About</a>
-            </li>
-            <li>
-              <a @click="navigateToSection('section4')" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg cursor-pointer">Skills</a>
-            </li>
-            <li>
-              <a @click="navigateToSection('section3')" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg cursor-pointer">Projects</a>
-            </li>
-            <li>
-              <a @click="navigateToSection('section5')" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg cursor-pointer">Contact</a>
-            </li>
-          </ul>
+        
+        <BurgerMenu 
+          ref="BurgerMenuComponent" 
+          @click="toggleMobileNavbar" 
+          type="button" 
+          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:focus:ring-gray-600"
+          aria-expanded="false" />
+        
+        <div class="hidden md:block md:w-auto" id="navbar-default-desktop">
+          <NavbarLinks @navigate="handleNavLinkClick" :isMobile="false" />
         </div>
       </div>
+
+      <Transition name="slide-fade">
+        <div v-show="isMobileNavbarOpen"
+             ref="MobileNavbarElement"
+             class="md:hidden fixed top-[104px] left-0 w-screen bg-white dark:bg-gray-800 shadow-md z-40">
+          <NavbarLinks @navigate="handleNavLinkClick" :isMobile="true" />
+        </div>
+      </Transition>
     </nav>
   </header>
   
-  <!-- Router view to render the current route's component -->
   <div class="font-sans text-gray-700 antialiased">
     <router-view></router-view>
   </div>
@@ -127,14 +139,36 @@ export default defineComponent({
 <style>
 /* Global override for testing scroll issues */
 html, body {
-  overflow-y: auto !important; /* Force scrollbars if content overflows */
-  height: auto !important; /* Allow height to grow with content */
-  background-color: #0f172a !important; /* Tailwind slate-900 - Set a dark page background */
+  overflow-y: auto !important;
+  height: auto !important;
+  background-color: #0f172a !important;
 }
 
 #app {
-  overflow-y: auto !important; /* Also try on the #app container */
+  overflow-y: auto !important;
   height: auto !important;
-  background-color: #0f172a !important; /* Ensure #app also has dark background */
+  background-color: #0f172a !important;
+}
+
+/* Slide-fade transition for the mobile menu */
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+  overflow: hidden;
+}
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+  overflow: hidden;
+}
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+  max-height: 0px;
+}
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+  transform: translateY(0);
+  opacity: 1;
+  max-height: 500px;
 }
 </style>
