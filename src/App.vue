@@ -1,67 +1,174 @@
 <script>
-import { goHome } from './components/scripts/home.js'; // Adjust the path as needed
-import { useRouter } from 'vue-router'; // Import useRouter
-import BurgerMenu from './components/burger-menu.vue'; // Import the BurgerMenu component
+import { useRouter } from 'vue-router';
+import BurgerMenu from '@/components/burger-menu.vue';
+import NavbarLinks from '@/components/NavbarLinks.vue';
+import { defineComponent, watch, ref } from 'vue';
+import logoImage from '@logos/carrusk_logo_monkey.jpeg';
 
-export default {
-  methods: {
-    goHome() {
-      const router = useRouter();
-      goHome(router); // Call the goHome function with the router instance
-    },
-    closeMenu(){
-      setTimeout(() => {
-        this.$refs.BurgerMenu.closeMenu();
-        this.$refs.BurgerMenu.$el.click();
-      }, 150);
+export default defineComponent({
+  name: 'App',
+  components: {
+    BurgerMenu,
+    NavbarLinks
+  },
+  data() {
+    return {
+      logo: logoImage,
+      isMobileNavbarOpen: false
     }
   },
-  components: {
-    BurgerMenu
+  setup() {
+    const router = useRouter();
+    const BurgerMenuComponent = ref(null);
+    const MobileNavbarElement = ref(null);
+
+    return { router, BurgerMenuComponent, MobileNavbarElement };
   },
-};
+  methods: {
+    navigateToSection(sectionId) {
+      if (this.$route.name !== 'Home') {
+        this.router.push({ name: 'Home' }).then(() => {
+          this.scrollToElement(sectionId);
+        });
+      } else {
+        this.scrollToElement(sectionId);
+      }
+      this.closeMobileNavbar();
+    },
+    scrollToElement(elementId) {
+      setTimeout(() => {
+        if (elementId === 'hero-section' || elementId === 'home-top') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          const element = document.getElementById(elementId);
+          if (element) {
+            const headerHeight = 80;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            window.scrollTo({
+              top: elementPosition - headerHeight,
+              behavior: 'smooth'
+            });
+          }
+        }
+      }, 100);
+    },
+    goHome() {
+      this.navigateToSection('hero-section');
+    },
+    toggleMobileNavbar() {
+      this.isMobileNavbarOpen = !this.isMobileNavbarOpen;
+      if (this.BurgerMenuComponent) {
+        this.BurgerMenuComponent.toggleMenu();
+      }
+      if (this.isMobileNavbarOpen) {
+        document.addEventListener('click', this.handleClickOutside, true);
+      } else {
+        document.removeEventListener('click', this.handleClickOutside, true);
+      }
+    },
+    closeMobileNavbar() {
+      if (this.isMobileNavbarOpen) {
+        this.isMobileNavbarOpen = false;
+        if (this.BurgerMenuComponent) {
+          this.BurgerMenuComponent.closeMenu();
+        }
+        document.removeEventListener('click', this.handleClickOutside, true);
+      }
+    },
+    handleNavLinkClick(sectionId) {
+      this.navigateToSection(sectionId);
+    },
+    handleClickOutside(event) {
+      const burgerButtonEl = this.BurgerMenuComponent?.$el;
+      const mobileNavbarEl = this.MobileNavbarElement;
+
+      if (burgerButtonEl && !burgerButtonEl.contains(event.target) && 
+          mobileNavbarEl && !mobileNavbarEl.contains(event.target)) {
+        this.closeMobileNavbar();
+      }
+    }
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside, true);
+  }
+});
 </script>
 
 <template>
-  <header class="bg-white p-7 sticky top-0 z-50 ring-1 ring-chromatic shadow-lg">
-    <div class="flex justify-between items-center px-4 md:px-20">
+  <header class="bg-white p-3 sm:p-4 sticky top-0 z-50 ring-1 ring-chromatic shadow-lg">
+    <div class="flex justify-between items-center px-2 sm:px-4 md:px-10 lg:px-20">
       <h1 class="visible lg:invisible text-white text-2xl">Carrusk</h1>
     </div>
     
-    <!-- Simple navigation bar -->
-    
-    <nav class="">
+    <nav class="relative">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-0">
-        <a href="https://flowbite.com/" class="flex items-center">
-            <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="Flowbite Logo"/>
-            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Carrusk</span>
+        <a @click="goHome" class="flex items-center cursor-pointer space-x-3 rtl:space-x-reverse">
+          <img :src="logo"
+               class="h-12 rounded-full" 
+               alt="Carrusk Monkey Logo"/>
+          <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Carrusk</span>
         </a>
-        <BurgerMenu ref="BurgerMenu" data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false"/>
-        <div ref="listaMenu" class="hidden w-full md:block md:w-auto" id="navbar-default">
-          <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-            <li>
-              <router-link to="/" @click="closeMenu" class="block py-2 pl-3 pr-4 hover:bg-gray-100 md:hover:bg-transparent text-gray-900 rounded md:bg-transparent md:text-black md:p-0 dark:text-white md:dark:text-blue-500 hover:text-blue-700 text-lg" aria-current="page">Home</router-link>
-            </li>
-            <li>
-              <router-link to="/About" @click="closeMenu" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg">About</router-link>
-            </li>
-            <li>
-              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg">Services</a>
-            </li>
-            <li>
-              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg">Pricing</a>
-            </li>
-            <li>
-              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent hover:text-blue-700 text-lg">Contact</a>
-            </li>
-          </ul>
+        
+        <BurgerMenu 
+          ref="BurgerMenuComponent" 
+          @click="toggleMobileNavbar" 
+          type="button" 
+          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:focus:ring-gray-600"
+          aria-expanded="false" />
+        
+        <div class="hidden md:block md:w-auto" id="navbar-default-desktop">
+          <NavbarLinks @navigate="handleNavLinkClick" :isMobile="false" />
         </div>
       </div>
+
+      <Transition name="slide-fade">
+        <div v-show="isMobileNavbarOpen"
+             ref="MobileNavbarElement"
+             class="md:hidden fixed top-[104px] left-0 w-screen bg-white dark:bg-gray-800 shadow-md z-40">
+          <NavbarLinks @navigate="handleNavLinkClick" :isMobile="true" />
+        </div>
+      </Transition>
     </nav>
   </header>
   
-  <!-- Router view to render the current route's component -->
-  <div class="font-sans text-gray-700 text-center">
+  <div class="font-sans text-gray-700 antialiased">
     <router-view></router-view>
   </div>
 </template>
+
+<style>
+/* Global override for testing scroll issues */
+html, body {
+  overflow-y: auto !important;
+  height: auto !important;
+  background-color: #0f172a !important;
+}
+
+#app {
+  overflow-y: auto !important;
+  height: auto !important;
+  background-color: #0f172a !important;
+}
+
+/* Slide-fade transition for the mobile menu */
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+  overflow: hidden;
+}
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+  overflow: hidden;
+}
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+  max-height: 0px;
+}
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+  transform: translateY(0);
+  opacity: 1;
+  max-height: 500px;
+}
+</style>
