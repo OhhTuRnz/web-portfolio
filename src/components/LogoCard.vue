@@ -15,6 +15,10 @@ export default {
     lightCardOnDarkBg: {
       type: Boolean,
       default: false
+    },
+    imageContainerClass: {
+      type: String,
+      default: 'w-4/5 h-4/5'
     }
   },
   computed: {
@@ -37,7 +41,7 @@ export default {
     :class="cardClasses" 
   >
     <!-- Logo -->
-    <div class="w-4/5 h-4/5 flex items-center justify-center">
+    <div :class="imageContainerClass" class="flex items-center justify-center">
       <img 
         :src="item.logo" 
         :alt="item.name" 

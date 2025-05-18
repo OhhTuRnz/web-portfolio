@@ -4,11 +4,14 @@ import avatarImage from '@/assets/images/avatar_sample.jpg';
 import MITLogo from '@/assets/logos/MIT_logo.svg';
 import MITArcLabLogo from '@/assets/logos/mit-arclab-logo.jpg';
 import UPMLogoPNG from '@/assets/logos/upm-logo.png';
+import ETSISILogoPNG from '@/assets/logos/etsisi-logo.png';
 import { Carousel } from 'flowbite';
 import { onMounted, onBeforeUnmount } from 'vue';
 import ProjectCard from '@/components/ProjectCard.vue';
 import StackCard from '@/components/StackCard.vue';
 import LogoCard from '@/components/LogoCard.vue';
+import SkillLogoCard from '@/components/SkillLogoCard.vue';
+import TypewriterText from '@/components/TypewriterText.vue';
 import { projects as importedProjects } from '@/views/projectsData.js';
 
 export default {
@@ -16,112 +19,67 @@ export default {
     components: {
         ProjectCard,
         StackCard,
-        LogoCard
+        LogoCard,
+        SkillLogoCard,
+        TypewriterText
     },
     data() {
       return {
         background: WhiteSquaresBackground,
         avatar: avatarImage,
+        heroHeadingLines: [
+          { text: "Hi There," },
+          { text: "I'm Alejandro ", isNewLine: true, divClass: "mt-2" }, 
+          { text: "Carrasco", spanClass: "text-blue-600" }
+        ],
+        phdTitleLines: [
+            { text: "PhD Candidate at " },
+            { text: "MIT", spanClass: "text-red-600 font-semibold" }
+        ],
+        heroMainTitleAnimationDuration: 0,
+        phdTitleAnimationReady: false,
         socialLinks: [
           { name: 'LinkedIn', icon: 'linkedin', url: 'https://linkedin.com/in/yourusername', color: 'text-[#0077B5]' },
           { name: 'GitHub', icon: 'github', url: 'https://github.com/yourusername', color: 'text-gray-900' },
           { name: 'Twitter', icon: 'twitter', url: 'https://twitter.com/yourusername', color: 'text-[#1DA1F2]' },
           { name: 'Telegram', icon: 'telegram', url: 'https://t.me/yourusername', color: 'text-[#0088cc]' }
         ],
-        skills: {
-          ai_research: [
-            { name: 'Large Language Models', level: 95, icon: '🧠' },
-            { name: 'Autonomous Agents', level: 92, icon: '🤖' },
-            { name: 'Reinforcement Learning', level: 90, icon: '🎯' },
-            { name: 'Neural Networks', level: 88, icon: '🔮' }
-          ],
-          robotics: [
-            { name: 'Robot Control Systems', level: 90, icon: '🦾' },
-            { name: 'Computer Vision', level: 88, icon: '👁️' },
-            { name: 'Sensor Integration', level: 85, icon: '📡' },
-            { name: 'Motion Planning', level: 87, icon: '🎮' }
-          ],
-          programming: [
-            { name: 'Python', level: 95, icon: '🐍' },
-            { name: 'PyTorch/TensorFlow', level: 92, icon: '⚡' },
-            { name: 'ROS', level: 88, icon: '🔄' },
-            { name: 'C++', level: 85, icon: '⚙️' }
-          ],
-          tools: [
-            { name: 'Git/GitHub', level: 90, icon: '📚' },
-            { name: 'Docker', level: 88, icon: '🐳' },
-            { name: 'Linux/Unix', level: 92, icon: '💻' },
-            { name: 'Cloud Computing', level: 85, icon: '☁️' }
-          ]
-        },
         projects: importedProjects,
         stackItems: {
           ai: [
             {
               name: 'Large Language Models',
               logo: '/logos/llm-logo.svg',
-              proficiency: 95,
-              description: 'Development and fine-tuning of LLMs',
-              category: 'AI',
-              link: 'https://your-llm-project.com'
             },
             {
               name: 'PyTorch',
               logo: '/logos/pytorch-logo.svg',
-              proficiency: 90,
-              description: 'Deep learning framework',
-              category: 'AI',
-              link: 'https://pytorch.org'
             },
             {
               name: 'TensorFlow',
               logo: '/logos/tensorflow-logo.svg',
-              proficiency: 88,
-              description: 'Machine learning platform',
-              category: 'AI',
-              link: 'https://tensorflow.org'
             },
             {
               name: 'Hugging Face',
               logo: '/logos/huggingface-logo.svg',
-              proficiency: 92,
-              description: 'State-of-the-art NLP',
-              category: 'AI',
-              link: 'https://huggingface.co'
             }
           ],
           software: [
             {
               name: 'Python',
               logo: '/logos/python-logo.svg',
-              proficiency: 95,
-              description: 'Primary programming language',
-              category: 'Software',
-              link: 'https://python.org'
             },
             {
               name: 'C++',
               logo: '/logos/cpp-logo.svg',
-              proficiency: 85,
-              description: 'Systems programming',
-              category: 'Software',
-              link: 'https://isocpp.org'
             },
             {
               name: 'ROS',
               logo: '/logos/ros-logo.svg',
-              proficiency: 88,
-              description: 'Robot Operating System',
-              category: 'Software',
-              link: 'https://ros.org'
             },
             {
               name: 'Docker',
               logo: '/logos/docker-logo.svg',
-              proficiency: 87,
-              description: 'Containerization platform',
-              category: 'Software',
-              link: 'https://docker.com'
             }
           ],
         },
@@ -142,7 +100,13 @@ export default {
             name: 'UPM',
             logo: UPMLogoPNG,
             link: 'https://www.upm.es',
-            shape: 'elongated'
+            shape: 'square'
+          },
+          {
+            name: 'ETSIINF',
+            logo: ETSISILogoPNG,
+            link: 'https://www.etsisi.upm.es/',
+            shape: 'square'
           }
         ],
         showBottomBar: false,
@@ -152,6 +116,7 @@ export default {
     mounted() {
       this.initParticleNetwork();
       this.observeHeroSection();
+      this.calculateHeroMainTitleAnimationDuration();
     },
     beforeUnmount() {
       if (this.heroObserver) {
@@ -159,6 +124,20 @@ export default {
       }
     },
     methods: {
+        calculateHeroMainTitleAnimationDuration() {
+            const lines = this.heroHeadingLines;
+            const speed = 60;
+            const fadeDuration = 350;
+            let totalChars = 0;
+            lines.forEach(line => totalChars += line.text.length);
+            if (totalChars === 0) {
+                this.heroMainTitleAnimationDuration = 0;
+            } else {
+                const lastCharDelay = (totalChars - 1) * speed;
+                this.heroMainTitleAnimationDuration = lastCharDelay + fadeDuration;
+            }
+            this.phdTitleAnimationReady = true;
+        },
         initParticleNetwork() {
             // We'll add particle network animation here if needed
         },
@@ -192,6 +171,9 @@ export default {
     computed: {
         logoCardBaseClass() {
             return '!p-1.5 sm:!p-2';
+        },
+        allStackItems() {
+            return [...this.stackItems.ai, ...this.stackItems.software];
         }
     }
 };
@@ -211,45 +193,33 @@ export default {
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-8 items-center">
                     <!-- Left Content -->
                     <div class="space-y-6">
-                        <h1 class="text-5xl lg:text-6xl font-bold text-navy-900">
-                            Hi There,
-                            <div class="mt-2">I'm Alejandro <span class="text-blue-600">Carrasco</span></div>
-                        </h1>
-                        <p class="text-2xl text-gray-700">
-                            PhD Candidate at <span class="text-red-600 font-semibold">MIT</span>
-                        </p>
+                        <TypewriterText 
+                            :lines="heroHeadingLines"
+                            tag="h1"
+                            baseClass="text-5xl lg:text-6xl font-bold text-navy-900"
+                            :speed="60"
+                            :fadeDuration="350"
+                        />
+                        <template v-if="phdTitleAnimationReady">
+                            <TypewriterText
+                                :lines="phdTitleLines"
+                                tag="p"
+                                baseClass="text-2xl text-gray-700"
+                                :speed="80"
+                                :fadeDuration="300" 
+                                :initialDelay="heroMainTitleAnimationDuration" 
+                            />
+                        </template>
                         <p class="text-lg text-gray-600 max-w-2xl">
                             Specializing in Large Language Models, Autonomous Agents, and Robotics
                         </p>
 
                         <p class="text-xl text-gray-700 leading-relaxed mt-4">
                             I'm an AI researcher and software engineer specializing in Large Language Models, autonomous agents, and robotics. 
-                            My research focuses on advancing the capabilities of AI systems through the integration of LLMs with robotic applications 
-                            and autonomous agent architectures.
                         </p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                                <h3 class="text-lg font-semibold mb-3">Research Interests</h3>
-                                <ul class="space-y-2 text-gray-700">
-                                    <li class="flex items-center"><span class="text-blue-600 mr-2">▹</span>Large Language Models</li>
-                                    <li class="flex items-center"><span class="text-blue-600 mr-2">▹</span>Autonomous Agents</li>
-                                    <li class="flex items-center"><span class="text-blue-600 mr-2">▹</span>Robotics & Control Systems</li>
-                                    <li class="flex items-center"><span class="text-blue-600 mr-2">▹</span>Multi-Agent Systems</li>
-                                </ul>
-                            </div>
-                            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                                <h3 class="text-lg font-semibold mb-3">Academic Background</h3>
-                                <ul class="space-y-2 text-gray-700">
-                                    <li class="flex items-center"><span class="text-blue-600 mr-2">▹</span>Incoming PhD Candidate at MIT</li>
-                                    <li class="flex items-center"><span class="text-blue-600 mr-2">▹</span>Software Engineering, UPM</li>
-                                    <li class="flex items-center"><span class="text-blue-600 mr-2">▹</span>Published Researcher</li>
-                                    <li class="flex items-center"><span class="text-blue-600 mr-2">▹</span>Open Source Contributor</li>
-                                </ul>
-                            </div>
-                        </div>
                         
-                        <!-- Social Links -->
-                        <div class="flex space-x-4 mt-8">
+                        <!-- Social Links - Centered -->
+                        <div class="flex justify-center space-x-4 mt-8"> 
                             <a v-for="link in socialLinks" 
                                :key="link.name"
                                :href="link.url"
@@ -261,8 +231,8 @@ export default {
                             </a>
                         </div>
 
-                        <!-- CTA Button to Skills -->
-                        <div class="mt-10 text-center lg:text-left">
+                        <!-- CTA Button to Skills - Centered -->
+                        <div class="mt-10 text-center"> 
                             <a @click="scrollToSection('section3')" class="inline-flex items-center px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors cursor-pointer">
                                 View My Skills
                                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
@@ -308,46 +278,25 @@ export default {
                 </nav>
 
                 <!-- Content Section 3 (Skills) -->
-                <section ref="section3" id="section3" class="py-16">
-                <div class="bg-white">
+                <section ref="section3" id="section3" class="py-16 bg-slate-900 text-white">
+                <div class="bg-slate-900">
                     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                        <h2 class="text-3xl font-bold text-center mb-16">Skills & Expertise</h2>
+                        <h2 class="text-3xl font-bold text-center mb-16 text-white">Skills & Expertise</h2>
                         
-                        <!-- AI & Machine Learning -->
-                        <div class="mb-16">
-                            <h3 class="text-2xl font-semibold mb-8 flex items-center">
-                                <span class="text-3xl mr-3">🧠</span>
-                                AI & Machine Learning
-                            </h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                <StackCard 
-                                    v-for="item in stackItems.ai"
-                                    :key="item.name"
-                                    :item="item"
-                                />
-                            </div>
-                        </div>
-
-                        <!-- Software Development -->
-                        <div class="mb-16">
-                            <h3 class="text-2xl font-semibold mb-8 flex items-center">
-                                <span class="text-3xl mr-3">💻</span>
-                                Software Development
-                            </h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                <StackCard 
-                                    v-for="item in stackItems.software"
-                                    :key="item.name"
-                                    :item="item"
-                                />
-                            </div>
+                        <!-- New Unified Skill Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 lg:gap-8">
+                            <SkillLogoCard 
+                                v-for="item in allStackItems"
+                                :key="item.name"
+                                :item="item"
+                            />
                         </div>
                     </div>
                 </div>
                 </section>
 
                 <!-- Projects Section (section4) -->
-                <section ref="section4" id="section4" class="py-16 bg-gray-50">
+                <section ref="section4" id="section4" class="py-16 bg-white">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 class="text-3xl font-bold text-center mb-12">Featured Research & Projects</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -377,7 +326,7 @@ export default {
                 </section>
 
                 <!-- Contact Section (section5) -->
-                <section ref="section5" id="section5" class="py-16">
+                <section ref="section5" id="section5" class="py-16 bg-slate-100">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 class="text-3xl font-bold text-center mb-12">Get In Touch</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -448,7 +397,7 @@ export default {
         <transition name="slide-fade">
             <div v-show="showBottomBar" 
                  class="fixed bottom-0 left-0 w-full bg-gray-800 bg-opacity-90 text-white p-2 sm:p-3 shadow-top-lg z-40 backdrop-blur-sm">
-                <div class="container mx-auto flex flex-col sm:flex-row items-center justify-center sm:justify-between max-w-sm sm:max-w-md md:max-w-lg px-2 sm:px-4">
+                <div class="container mx-auto flex flex-col sm:flex-row items-center justify-center sm:justify-between max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl px-2 sm:px-4">
                     <h3 class="text-xs sm:text-sm font-semibold mb-2 sm:mb-0 sm:mr-3 whitespace-nowrap">Affiliated Institutions:</h3>
                     <div class="flex items-center justify-center space-x-2 sm:space-x-3">
                         <LogoCard 
@@ -456,9 +405,10 @@ export default {
                             :key="institution.name"
                             :item="institution"
                             :light-card-on-dark-bg="true" 
+                            imageContainerClass="w-full h-full"
                             :class="[
                                 logoCardBaseClass,
-                                institution.shape === 'elongated' ? '!w-32 !h-16 sm:!w-40 sm:!h-20 md:!w-44 md:!h-20' : '!w-16 !h-16 sm:!w-20 sm:!h-20 md:!w-20 md:!h-20'
+                                '!w-16 !h-16 sm:!w-20 sm:!h-20 md:!w-20 md:!h-20'
                             ]" />
                     </div>
                 </div>
@@ -594,14 +544,5 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* The w-X and h-X classes applied directly will dictate size */
-}
-
-/* Override for LogoCard internal image container when in the sticky bar */
-.fixed .LogoCard .w-4\/5 {
-    width: 90% !important; /* Maximize fill for better clarity in small/elongated cards */
-}
-.fixed .LogoCard .h-4\/5 {
-    height: 90% !important;
 }
 </style>
