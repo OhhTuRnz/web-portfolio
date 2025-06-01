@@ -2,13 +2,13 @@
   <div class="relative">
     <!-- Hamburger Button (visible on mobile) -->
     <button
-      class="burger-button p-5 rounded-md cursor-pointer block md:hidden"
+      class="burger-button p-2 rounded-md cursor-pointer block md:hidden"
       :class="{ 'active': isOpen }"
       @click="toggleMenu"
       >
-      <span class="block w-10 h-1 my-2 bg-gray-800 transition-transform duration-300 transform origin-center" :class="{ 'rotate-45 translate-y-3': isOpen }"></span>
-      <span class="block w-10 h-1 my-2 bg-gray-800 transition-transform duration-300 transform origin-center" :class="{ 'opacity-0': isOpen }"></span>
-      <span class="block w-10 h-1 my-2 bg-gray-800 transition-transform duration-300 transform origin-center" :class="{ '-rotate-45 -translate-y-3': isOpen }"></span>
+      <span class="block w-6 h-0.5 my-1 bg-gray-800 transition-transform duration-300 transform origin-center" :class="{ 'rotate-45 translate-y-2': isOpen }"></span>
+      <span class="block w-6 h-0.5 my-1 bg-gray-800 transition-transform duration-300 transform origin-center" :class="{ 'opacity-0': isOpen }"></span>
+      <span class="block w-6 h-0.5 my-1 bg-gray-800 transition-transform duration-300 transform origin-center" :class="{ '-rotate-45 -translate-y-2': isOpen }"></span>
     </button>
   </div>
 </template>

@@ -14,7 +14,8 @@ export default defineComponent({
   data() {
     return {
       logo: logoImage,
-      isMobileNavbarOpen: false
+      isMobileNavbarOpen: false,
+      clickOutsideAttached: false
     }
   },
   setup() {
@@ -42,7 +43,7 @@ export default defineComponent({
         } else {
           const element = document.getElementById(elementId);
           if (element) {
-            const headerHeight = 80;
+            const headerHeight = 56;
             const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
             window.scrollTo({
               top: elementPosition - headerHeight,
@@ -60,10 +61,14 @@ export default defineComponent({
       if (this.BurgerMenuComponent) {
         this.BurgerMenuComponent.toggleMenu();
       }
-      if (this.isMobileNavbarOpen) {
+      
+      // Attach listener only when menu is open
+      if (this.isMobileNavbarOpen && !this.clickOutsideAttached) {
         document.addEventListener('click', this.handleClickOutside, true);
-      } else {
+        this.clickOutsideAttached = true;
+      } else if (!this.isMobileNavbarOpen && this.clickOutsideAttached) {
         document.removeEventListener('click', this.handleClickOutside, true);
+        this.clickOutsideAttached = false;
       }
     },
     closeMobileNavbar() {
@@ -72,13 +77,18 @@ export default defineComponent({
         if (this.BurgerMenuComponent) {
           this.BurgerMenuComponent.closeMenu();
         }
-        document.removeEventListener('click', this.handleClickOutside, true);
+        // Remove listener when menu closes
+        if (this.clickOutsideAttached) {
+          document.removeEventListener('click', this.handleClickOutside, true);
+          this.clickOutsideAttached = false;
+        }
       }
     },
     handleNavLinkClick(sectionId) {
       this.navigateToSection(sectionId);
     },
     handleClickOutside(event) {
+      // No need for early return - listener only attached when menu is open
       const burgerButtonEl = this.BurgerMenuComponent?.$el;
       const mobileNavbarEl = this.MobileNavbarElement;
 
@@ -89,31 +99,44 @@ export default defineComponent({
     }
   },
   beforeUnmount() {
-    document.removeEventListener('click', this.handleClickOutside, true);
+    // Clean up the persistent click listener
+    if (this.clickOutsideAttached) {
+      document.removeEventListener('click', this.handleClickOutside, true);
+    }
+  },
+  computed: {
+    headerClasses() {
+      return 'bg-white sticky top-0 z-50 ring-1 ring-chromatic shadow-lg transition-all duration-300 p-1 sm:p-1.5 md:p-2 lg:p-2.5 xl:p-3 min-h-[40px] sm:min-h-[44px] md:min-h-[48px] lg:min-h-[52px] xl:min-h-[56px]';
+    },
+    logoClasses() {
+      return 'rounded-full transition-all duration-300 h-6 sm:h-7 md:h-8 lg:h-8 xl:h-9 w-6 sm:w-7 md:w-8 lg:w-8 xl:w-9';
+    },
+    logoTextClasses() {
+      return 'self-center font-semibold whitespace-nowrap dark:text-white transition-all duration-300 text-sm sm:text-base md:text-base lg:text-lg xl:text-lg';
+    },
+    mobileNavClasses() {
+      return 'md:hidden fixed left-0 w-screen bg-white dark:bg-gray-800 shadow-md z-40 transition-all duration-300 top-[40px] sm:top-[44px] md:top-[48px] lg:top-[52px] xl:top-[56px]';
+    }
   }
 });
 </script>
 
 <template>
-  <header class="bg-white p-3 sm:p-4 sticky top-0 z-50 ring-1 ring-chromatic shadow-lg">
-    <div class="flex justify-between items-center px-2 sm:px-4 md:px-10 lg:px-20">
-      <h1 class="visible lg:invisible text-white text-2xl">Carrusk</h1>
-    </div>
-    
+  <header :class="headerClasses">
     <nav class="relative">
-      <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-0">
-        <a @click="goHome" class="flex items-center cursor-pointer space-x-3 rtl:space-x-reverse">
+      <div class="max-w-screen-xl flex items-center justify-between mx-auto px-1 sm:px-2 md:px-4 lg:px-8 xl:px-16 h-full">
+        <a @click="goHome" class="flex items-center cursor-pointer space-x-1 sm:space-x-2 rtl:space-x-reverse">
           <img :src="logo"
-               class="h-12 rounded-full" 
+               :class="logoClasses" 
                alt="Carrusk Monkey Logo"/>
-          <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Carrusk</span>
+          <span :class="logoTextClasses">Carrusk</span>
         </a>
         
         <BurgerMenu 
           ref="BurgerMenuComponent" 
           @click="toggleMobileNavbar" 
           type="button" 
-          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:focus:ring-gray-600"
+          class="md:hidden"
           aria-expanded="false" />
         
         <div class="hidden md:block md:w-auto" id="navbar-default-desktop">
@@ -124,7 +147,7 @@ export default defineComponent({
       <Transition name="slide-fade">
         <div v-show="isMobileNavbarOpen"
              ref="MobileNavbarElement"
-             class="md:hidden fixed top-[104px] left-0 w-screen bg-white dark:bg-gray-800 shadow-md z-40">
+             :class="mobileNavClasses">
           <NavbarLinks @navigate="handleNavLinkClick" :isMobile="true" />
         </div>
       </Transition>
@@ -148,6 +171,41 @@ html, body {
   overflow-y: auto !important;
   height: auto !important;
   background-color: #0f172a !important;
+}
+
+/* High-resolution laptop header adjustments */
+@media screen and (min-width: 1920px) and (max-width: 3840px) {
+  /* For high-res laptops like 1920x1080, 3840x2160 */
+  header {
+    padding: 0.375rem !important; /* Smaller padding for high-res laptops */
+    min-height: 3.5rem !important; /* 56px */
+  }
+  
+  header img {
+    height: 2rem !important; /* 32px logo */
+    width: 2rem !important;
+  }
+  
+  header span {
+    font-size: 1.125rem !important; /* 18px text */
+  }
+}
+
+@media screen and (min-width: 1920px) and (max-width: 3840px) and (-webkit-min-device-pixel-ratio: 2) {
+  /* Specifically for high-DPI Windows laptops */
+  header {
+    padding: 0.25rem !important; /* Even smaller padding */
+    min-height: 3rem !important; /* 48px */
+  }
+  
+  header img {
+    height: 1.75rem !important; /* 28px logo */
+    width: 1.75rem !important;
+  }
+  
+  header span {
+    font-size: 1rem !important; /* 16px text */
+  }
 }
 
 /* Slide-fade transition for the mobile menu */
