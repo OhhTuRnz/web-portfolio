@@ -25,13 +25,22 @@ export default {
   },
   data() {
     return {
-      showVideo: false
+      showVideo: false,
+      videoLoaded: false
     }
   },
   computed: {
     projectDetailLink() {
       if (!this.project || !this.project.title) return '/';
       return { name: 'ProjectDetail', params: { slug: this.generateSlug(this.project.title) } };
+    },
+    // Optimize description truncation - compute once instead of in template
+    truncatedDescription() {
+      const desc = this.project.description || '';
+      const maxLength = 100;
+      return desc.length > maxLength 
+        ? desc.substring(0, maxLength) + '...' 
+        : desc;
     }
   },
   methods: {
@@ -39,7 +48,7 @@ export default {
       return generateSlug(title);
     },
     playVideo() {
-      if (this.project.video) {
+      if (this.project.video && this.videoLoaded) {
         this.showVideo = true;
         this.$refs.videoPlayer.play().catch(error => {
           console.warn("Video play interrupted or failed:", error);
@@ -56,6 +65,9 @@ export default {
       if (this.isLinkToDetail) {
         this.$router.push(this.projectDetailLink);
       }
+    },
+    onVideoCanPlay() {
+      this.videoLoaded = true;
     }
   }
 }
@@ -71,8 +83,8 @@ export default {
       <video v-if="project.video" ref="videoPlayer" :src="project.video" 
              class="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-300 ease-in-out" 
              :class="{'opacity-100': showVideo, 'opacity-0': !showVideo}" 
-             muted loop playsinline 
-             @mouseover="playVideo" @mouseleave="pauseVideo">
+             muted loop playsinline preload="metadata"
+             @mouseover="playVideo" @mouseleave="pauseVideo" @canplay="onVideoCanPlay">
       </video>
       <div v-if="project.video && !showVideo" class="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center transition-opacity duration-300 hover:opacity-0">
         <svg class="w-16 h-16 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
@@ -81,7 +93,7 @@ export default {
 
     <div class="p-6 flex flex-col flex-grow">
       <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ project.title }}</h3>
-      <p class="text-gray-700 text-sm leading-relaxed mb-4 flex-grow">{{ project.description.substring(0, 100) + (project.description.length > 100 ? '...' : '') }}</p>
+      <p class="text-gray-700 text-sm leading-relaxed mb-4 flex-grow">{{ truncatedDescription }}</p>
       
       <div class="mb-4">
         <div class="flex flex-wrap gap-2">
@@ -118,5 +130,24 @@ video {
 
 video.opacity-100 {
   opacity: 1;
+}
+
+/* Optimized shadows for low-end devices */
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .project-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+    transition: transform 0.2s ease-out !important;
+  }
+  
+  .project-card:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+/* Disable hover video on touch devices to improve performance */
+@media (hover: none) {
+  video {
+    display: none;
+  }
 }
 </style> 
