@@ -1,0 +1,185 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getProjectById } from '../../data/publications.js';
+
+export async function getStaticPaths() {
+  const projects = [
+    { params: { slug: 'llm-space-agents' } },
+    { params: { slug: 'neural-control' } },
+    { params: { slug: 'multi-agent-communication' } },
+    { params: { slug: 'attention-planning' } },
+    { params: { slug: 'haptic-teleoperation' } }
+  ];
+  
+  return projects;
+}
+
+const { slug } = Astro.params;
+const project = getProjectById(slug);
+
+if (!project) {
+  return Astro.redirect('/404');
+}
+---
+
+<Layout title={`${project.title} | Alejandro Carrasco`}>
+  <div class="min-h-screen bg-slate-900">
+    <!-- Header -->
+    <header class="bg-slate-800/50 border-b border-slate-700/50">
+      <div class="arclab-container py-6">
+        <nav class="flex items-center space-x-4 text-sm arclab-text mb-4">
+          <a href="/" class="hover:text-white transition-colors">Home</a>
+          <span>→</span>
+          <a href="/#publications" class="hover:text-white transition-colors">Projects</a>
+          <span>→</span>
+          <span class="text-white">{project.title}</span>
+        </nav>
+        
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="arclab-heading-2 mb-2">{project.title}</h1>
+            <p class="arclab-text text-lg">{project.shortDescription}</p>
+          </div>
+          
+          <div class="flex space-x-3">
+            {project.links.github && (
+              <a href={project.links.github} target="_blank" class="arclab-button">
+                <i class="fab fa-github"></i>
+                Code
+              </a>
+            )}
+            {project.links.demo && (
+              <a href={project.links.demo} target="_blank" class="arclab-button-secondary">
+                <i class="fas fa-external-link-alt"></i>
+                Demo
+              </a>
+            )}
+            {project.links.paper && (
+              <a href={project.links.paper} target="_blank" class="arclab-button-secondary">
+                <i class="fas fa-file-pdf"></i>
+                Paper
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Main content -->
+    <main class="arclab-container py-12">
+      <div class="max-w-4xl mx-auto space-y-12">
+        <!-- Project overview -->
+        <section class="arclab-card">
+          <h2 class="arclab-heading-3 mb-4">Project Overview</h2>
+          <p class="arclab-text leading-relaxed">{project.fullDescription}</p>
+        </section>
+        
+        <!-- Project details grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Project info -->
+          <div class="arclab-card">
+            <h3 class="arclab-heading-3 mb-4">Project Details</h3>
+            <div class="space-y-3">
+              <div>
+                <span class="text-sm font-medium arclab-text-accent">Status:</span>
+                <span class="ml-2 arclab-text capitalize">{project.status}</span>
+              </div>
+              <div>
+                <span class="text-sm font-medium arclab-text-accent">Start Date:</span>
+                <span class="ml-2 arclab-text">{project.startDate}</span>
+              </div>
+              {project.endDate && (
+                <div>
+                  <span class="text-sm font-medium arclab-text-accent">End Date:</span>
+                  <span class="ml-2 arclab-text">{project.endDate}</span>
+                </div>
+              )}
+              {project.funding && (
+                <div>
+                  <span class="text-sm font-medium arclab-text-accent">Funding:</span>
+                  <span class="ml-2 arclab-text">{project.funding}</span>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <!-- Team -->
+          <div class="arclab-card">
+            <h3 class="arclab-heading-3 mb-4">Team</h3>
+            <ul class="space-y-2">
+              {project.team.map(member => (
+                <li class="arclab-text">{member}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Technologies -->
+        <section class="arclab-card">
+          <h3 class="arclab-heading-3 mb-4">Technologies & Tools</h3>
+          <div class="flex flex-wrap gap-3">
+            {project.technologies.map(tech => (
+              <span class="venue-tag">{tech}</span>
+            ))}
+          </div>
+        </section>
+        
+        <!-- Media -->
+        {(project.media.images?.length > 0 || project.media.videos?.length > 0) && (
+          <section class="arclab-card">
+            <h3 class="arclab-heading-3 mb-6">Project Media</h3>
+            
+            {project.media.videos?.length > 0 && (
+              <div class="mb-8">
+                <h4 class="text-lg font-medium text-white mb-4">Demo Videos</h4>
+                <div class="grid grid-cols-1 gap-6">
+                  {project.media.videos.map(video => (
+                    <video 
+                      controls 
+                      class="w-full rounded-lg"
+                      poster={project.media.images?.[0]}
+                    >
+                      <source src={video} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {project.media.images?.length > 0 && (
+              <div>
+                <h4 class="text-lg font-medium text-white mb-4">Images</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {project.media.images.map(image => (
+                    <img 
+                      src={image} 
+                      alt="Project image"
+                      class="w-full rounded-lg hover:scale-105 transition-transform duration-300"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+        
+        <!-- Related publications -->
+        {project.publications?.length > 0 && (
+          <section class="arclab-card">
+            <h3 class="arclab-heading-3 mb-4">Related Publications</h3>
+            <ul class="space-y-2">
+              {project.publications.map(pubId => (
+                <li class="arclab-text">
+                  <a href={`/#publications`} class="arclab-text-accent hover:underline">
+                    View publication details →
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </div>
+    </main>
+  </div>
+</Layout>

@@ -1,0 +1,115 @@
+---
+import { awards, getAwardsByYear } from '../data/awards.js';
+
+const awardsByYear = getAwardsByYear();
+const years = Object.keys(awardsByYear).sort((a, b) => b - a);
+
+const categoryColors = {
+  'research': 'from-yellow-500 to-orange-500',
+  'fellowship': 'from-blue-500 to-purple-500',
+  'funding': 'from-green-500 to-teal-500',
+  'academic': 'from-indigo-500 to-purple-500'
+};
+---
+
+<section id="achievements" class="arclab-section bg-slate-800/30">
+  <div class="arclab-container">
+    <div class="text-center mb-16 arclab-fade-in">
+      <h2 class="arclab-heading-2">Awards & Recognition</h2>
+      <p class="arclab-text text-lg max-w-3xl mx-auto">
+        Honors and achievements recognizing contributions to AI and robotics research
+      </p>
+    </div>
+    
+    <!-- Timeline -->
+    <div class="relative max-w-4xl mx-auto">
+      <!-- Timeline line -->
+      <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-blue-500 via-purple-500 to-cyan-500 rounded-full"></div>
+      
+      <div class="space-y-12">
+        {years.map((year, yearIndex) => (
+          <div class="year-group">
+            <h3 class="text-center text-2xl font-bold text-white mb-8 relative">
+              <span class="bg-slate-900 px-4">{year}</span>
+            </h3>
+            
+            {awardsByYear[year].map((award, index) => (
+              <div class={`award-item flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'} arclab-slide-up`} style={`animation-delay: ${(yearIndex * awardsByYear[year].length + index) * 0.2}s;`}>
+                <!-- Content -->
+                <div class={`w-5/12 ${index % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
+                  <a 
+                    href={award.link} 
+                    target="_blank"
+                    class="block arclab-card hover:scale-105 transition-all duration-300 group"
+                  >
+                    <div class={`flex items-center space-x-3 mb-3 ${index % 2 === 0 ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                      <div class={`w-12 h-12 bg-gradient-to-br ${categoryColors[award.category]} rounded-full flex items-center justify-center text-white text-xl shadow-lg`}>
+                        {award.icon}
+                      </div>
+                      <div>
+                        <h4 class="text-lg font-medium text-white group-hover:arclab-text-accent transition-colors">
+                          {award.title}
+                        </h4>
+                        <p class="text-sm arclab-text">{award.organization}</p>
+                      </div>
+                    </div>
+                    <p class="arclab-text text-sm leading-relaxed">{award.description}</p>
+                    
+                    <!-- External link indicator -->
+                    <div class="mt-3 flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span class="text-xs arclab-text-accent">View Details →</span>
+                    </div>
+                  </a>
+                </div>
+                
+                <!-- Timeline dot -->
+                <div class="w-2/12 flex justify-center">
+                  <div class="w-6 h-6 bg-white rounded-full border-4 border-slate-800 shadow-lg z-10 relative">
+                    <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap">
+                      {award.year}
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Spacer -->
+                <div class="w-5/12"></div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .award-item {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .award-item {
+      flex-direction: column !important;
+    }
+    
+    .award-item > div:first-child {
+      width: 100% !important;
+      text-align: center !important;
+      padding: 0 !important;
+      margin-bottom: 1rem;
+    }
+    
+    .award-item > div:last-child {
+      display: none;
+    }
+  }
+</style>

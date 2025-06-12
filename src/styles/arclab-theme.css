@@ -1,0 +1,194 @@
+/* MIT ARC Lab Visual Identity */
+:root {
+  /* ARC Lab Brand Colors */
+  --arclab-primary: #0f1419;
+  --arclab-secondary: #1a2332;
+  --arclab-accent: #2563eb;
+  --arclab-blue: #3b82f6;
+  --arclab-cyan: #06b6d4;
+  --arclab-gray-50: #f8fafc;
+  --arclab-gray-100: #f1f5f9;
+  --arclab-gray-200: #e2e8f0;
+  --arclab-gray-300: #cbd5e1;
+  --arclab-gray-400: #94a3b8;
+  --arclab-gray-500: #64748b;
+  --arclab-gray-600: #475569;
+  --arclab-gray-700: #334155;
+  --arclab-gray-800: #1e293b;
+  --arclab-gray-900: #0f172a;
+  
+  /* Typography */
+  --arclab-font-primary: 'Inter', system-ui, sans-serif;
+  --arclab-font-mono: 'JetBrains Mono', monospace;
+  
+  /* Spacing */
+  --arclab-spacing-xs: 0.25rem;
+  --arclab-spacing-sm: 0.5rem;
+  --arclab-spacing-md: 1rem;
+  --arclab-spacing-lg: 1.5rem;
+  --arclab-spacing-xl: 2rem;
+  --arclab-spacing-2xl: 3rem;
+  
+  /* Shadows */
+  --arclab-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --arclab-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --arclab-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --arclab-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* Base styles following ARC Lab identity */
+.arclab-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--arclab-spacing-lg);
+}
+
+.arclab-section {
+  padding: var(--arclab-spacing-2xl) 0;
+}
+
+.arclab-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: var(--arclab-spacing-lg);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.arclab-card:hover {
+  border-color: var(--arclab-accent);
+  transform: translateY(-2px);
+  box-shadow: var(--arclab-shadow-xl);
+}
+
+.arclab-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--arclab-spacing-sm);
+  padding: var(--arclab-spacing-sm) var(--arclab-spacing-lg);
+  background: var(--arclab-accent);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.arclab-button:hover {
+  background: var(--arclab-blue);
+  transform: translateY(-1px);
+}
+
+.arclab-button-secondary {
+  background: transparent;
+  border: 1px solid var(--arclab-gray-600);
+  color: var(--arclab-gray-300);
+}
+
+.arclab-button-secondary:hover {
+  background: var(--arclab-gray-800);
+  border-color: var(--arclab-gray-500);
+  color: white;
+}
+
+/* Typography */
+.arclab-heading-1 {
+  font-size: 3rem;
+  font-weight: 300;
+  line-height: 1.2;
+  color: white;
+  margin-bottom: var(--arclab-spacing-lg);
+}
+
+.arclab-heading-2 {
+  font-size: 2.25rem;
+  font-weight: 400;
+  line-height: 1.3;
+  color: white;
+  margin-bottom: var(--arclab-spacing-md);
+}
+
+.arclab-heading-3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: white;
+  margin-bottom: var(--arclab-spacing-sm);
+}
+
+.arclab-text {
+  color: var(--arclab-gray-300);
+  line-height: 1.6;
+}
+
+.arclab-text-accent {
+  color: var(--arclab-accent);
+}
+
+/* Professional academic styling */
+.publication-entry {
+  border-left: 3px solid var(--arclab-accent);
+  padding-left: var(--arclab-spacing-md);
+  margin-bottom: var(--arclab-spacing-lg);
+}
+
+.citation-count {
+  background: var(--arclab-accent);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.venue-tag {
+  background: var(--arclab-gray-800);
+  color: var(--arclab-gray-300);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  border: 1px solid var(--arclab-gray-700);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .arclab-container {
+    padding: 0 var(--arclab-spacing-md);
+  }
+  
+  .arclab-heading-1 {
+    font-size: 2rem;
+  }
+  
+  .arclab-heading-2 {
+    font-size: 1.75rem;
+  }
+}
+
+/* Animation utilities */
+.arclab-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.arclab-slide-up {
+  animation: slideUp 0.8s ease-out forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
