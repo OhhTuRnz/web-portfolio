@@ -62,36 +62,84 @@
   box-shadow: var(--arclab-shadow-xl);
 }
 
+/* Improved button styling */
 .arclab-button {
   display: inline-flex;
   align-items: center;
   gap: var(--arclab-spacing-sm);
-  padding: var(--arclab-spacing-sm) var(--arclab-spacing-lg);
+  padding: 10px 20px;
   background: var(--arclab-accent);
   color: white;
   text-decoration: none;
   border-radius: 8px;
   font-weight: 500;
+  font-size: 0.875rem;
   transition: all 0.2s ease;
   border: none;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .arclab-button:hover {
   background: var(--arclab-blue);
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .arclab-button-secondary {
-  background: transparent;
-  border: 1px solid var(--arclab-gray-600);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--arclab-spacing-sm);
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: var(--arclab-gray-300);
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .arclab-button-secondary:hover {
-  background: var(--arclab-gray-800);
-  border-color: var(--arclab-gray-500);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
   color: white;
+  transform: translateY(-1px);
+}
+
+.arclab-button-small {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+}
+
+/* Filter button specific styling */
+.filter-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--arclab-gray-300);
+}
+
+.filter-button.active {
+  background: var(--arclab-accent);
+  color: white;
+  border-color: var(--arclab-accent);
+}
+
+.filter-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.filter-button.active:hover {
+  background: var(--arclab-blue);
 }
 
 /* Typography */
@@ -165,6 +213,11 @@
   
   .arclab-heading-2 {
     font-size: 1.75rem;
+  }
+  
+  .arclab-button, .arclab-button-secondary {
+    padding: 8px 16px;
+    font-size: 0.8rem;
   }
 }
 

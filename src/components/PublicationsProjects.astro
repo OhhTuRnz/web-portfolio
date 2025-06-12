@@ -1,222 +1,212 @@
 ---
-const allItems = [
-  {
-    type: 'journal',
-    title: 'Large Language Models for Autonomous Agent Decision Making',
-    authors: 'A. Carrasco, J. Smith, M. Johnson',
-    venue: 'Nature Machine Intelligence',
-    year: '2024',
-    status: 'Published',
-    doi: 'https://doi.org/10.1038/example',
-    description: 'Novel approach for integrating LLMs with autonomous agents to improve decision-making in complex environments.',
-    tags: ['LLM', 'Autonomous Agents', 'Decision Making'],
-    featured: true
-  },
-  {
-    type: 'conference-oral',
-    title: 'Neural Network Architectures for Robotic Control',
-    authors: 'A. Carrasco, L. Chen, R. Williams',
-    venue: 'International Conference on Machine Learning (ICML)',
-    year: '2024',
-    status: 'Accepted',
-    doi: 'https://proceedings.mlr.press/example',
-    description: 'Comprehensive comparison of neural architectures for robotic control with focus on sample efficiency.',
-    tags: ['Robotics', 'Neural Networks', 'Control Systems']
-  },
-  {
-    type: 'conference-poster',
-    title: 'Emergent Communication in Multi-Agent Systems',
-    authors: 'A. Carrasco, K. Patel, S. Anderson',
-    venue: 'Neural Information Processing Systems (NeurIPS)',
-    year: '2023',
-    status: 'Published',
-    doi: 'https://papers.nips.cc/example',
-    description: 'Investigation of emergent communication protocols in multi-agent reinforcement learning.',
-    tags: ['Multi-Agent', 'Communication', 'Reinforcement Learning']
-  },
-  {
-    type: 'project',
-    title: 'Kerbal Space Program AI Challenge',
-    authors: 'A. Carrasco, MIT ArcLab Team',
-    venue: 'Open Source Project',
-    year: '2024',
-    status: 'Active',
-    link: 'https://github.com/yourusername/kerbal-ai',
-    description: 'AI agents for autonomous spacecraft design and mission execution in KSP simulation environment.',
-    tags: ['Space Robotics', 'Reinforcement Learning', 'Simulation'],
-    featured: true
-  },
-  {
-    type: 'patent',
-    title: 'Adaptive Control System for Robotic Teleoperation',
-    authors: 'A. Carrasco, MIT',
-    venue: 'US Patent Application',
-    year: '2024',
-    status: 'Pending',
-    description: 'Novel control architecture for improved haptic feedback in robotic teleoperation systems.',
-    tags: ['Teleoperation', 'Control Systems', 'Patents']
-  },
-  {
-    type: 'journal',
-    title: 'Attention Mechanisms for Long-Sequence Language Models',
-    authors: 'A. Carrasco, D. Kim, T. Brown',
-    venue: 'Journal of Machine Learning Research',
-    year: '2023',
-    status: 'Published',
-    doi: 'https://jmlr.org/example',
-    description: 'Novel attention mechanisms enabling efficient processing of longer sequences in language models.',
-    tags: ['Attention', 'Language Models', 'Efficiency']
-  }
-];
+import { publications, projects, getPublicationsByYear } from '../data/publications.js';
 
-const typeColors = {
-  'journal': 'bg-blue-500',
-  'conference-oral': 'bg-purple-500',
-  'conference-poster': 'bg-cyan-500',
-  'project': 'bg-green-500',
-  'patent': 'bg-orange-500'
-};
+const allItems = [
+  ...publications.map(pub => ({ ...pub, itemType: 'publication' })),
+  ...projects.map(proj => ({ ...proj, itemType: 'project' }))
+].sort((a, b) => b.year - a.year);
 
 const typeLabels = {
-  'journal': 'Journal Paper',
-  'conference-oral': 'Conference (Oral)',
-  'conference-poster': 'Conference (Poster)',
-  'project': 'Project',
-  'patent': 'Patent'
+  'journal': 'Journal Article',
+  'conference': 'Conference Paper',
+  'workshop': 'Workshop Paper',
+  'preprint': 'Preprint',
+  'project': 'Research Project'
+};
+
+const typeColors = {
+  'journal': 'bg-blue-600',
+  'conference': 'bg-purple-600',
+  'workshop': 'bg-green-600',
+  'preprint': 'bg-orange-600',
+  'project': 'bg-cyan-600'
 };
 ---
 
-<section id="publications" class="py-20 bg-slate-900/30 relative">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-16 animate-slide-up">
-        <h2 class="text-4xl font-light mb-4 text-white">
-          Publications & Projects
-        </h2>
-        <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-          Research output spanning journals, conferences, and open-source projects
-        </p>
-      </div>
-      
-      <!-- Filter buttons -->
-      <div class="flex flex-wrap justify-center gap-3 mb-12 animate-slide-up" style="animation-delay: 0.2s;">
-        <button class="filter-btn active px-4 py-2 bg-slate-700/50 text-white rounded-lg border border-slate-600/50 hover:bg-slate-600/50 transition-all" data-filter="all">
-          All
-        </button>
-        <button class="filter-btn px-4 py-2 bg-slate-700/50 text-gray-300 rounded-lg border border-slate-600/50 hover:bg-slate-600/50 transition-all" data-filter="journal">
-          Journal Papers
-        </button>
-        <button class="filter-btn px-4 py-2 bg-slate-700/50 text-gray-300 rounded-lg border border-slate-600/50 hover:bg-slate-600/50 transition-all" data-filter="conference-oral">
-          Conference (Oral)
-        </button>
-        <button class="filter-btn px-4 py-2 bg-slate-700/50 text-gray-300 rounded-lg border border-slate-600/50 hover:bg-slate-600/50 transition-all" data-filter="conference-poster">
-          Conference (Poster)
-        </button>
-        <button class="filter-btn px-4 py-2 bg-slate-700/50 text-gray-300 rounded-lg border border-slate-600/50 hover:bg-slate-600/50 transition-all" data-filter="project">
-          Projects
-        </button>
-        <button class="filter-btn px-4 py-2 bg-slate-700/50 text-gray-300 rounded-lg border border-slate-600/50 hover:bg-slate-600/50 transition-all" data-filter="patent">
-          Patents
-        </button>
-      </div>
-      
-      <!-- Items grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="publications-grid">
-        {allItems.map((item, index) => (
-          <div class={`publication-item ${item.type} ${item.featured ? 'featured' : ''} bg-slate-800/40 backdrop-blur-sm rounded-xl p-6 border border-slate-700/30 hover:border-blue-500/50 transition-all duration-300 hover:transform hover:scale-105 animate-slide-up`} style={`animation-delay: ${index * 0.1}s;`}>
-            <!-- Header -->
-            <div class="flex items-start justify-between mb-4">
-              <div class="flex-1">
-                <div class="flex items-center space-x-3 mb-2">
-                  <span class={`px-3 py-1 text-xs font-medium text-white rounded-full ${typeColors[item.type]}`}>
-                    {typeLabels[item.type]}
-                  </span>
-                  {item.featured && (
-                    <span class="px-2 py-1 text-xs font-medium text-yellow-300 bg-yellow-600/20 rounded-full border border-yellow-500/30">
-                      Featured
-                    </span>
-                  )}
+<section id="publications" class="arclab-section bg-gradient-to-b from-slate-900 to-slate-800">
+  <div class="arclab-container">
+    <div class="text-center mb-16 arclab-fade-in">
+      <h2 class="arclab-heading-2">Publications & Projects</h2>
+      <p class="arclab-text text-lg max-w-3xl mx-auto">
+        Research output spanning peer-reviewed publications and active research projects
+      </p>
+    </div>
+    
+    <!-- Filter buttons -->
+    <div class="flex flex-wrap justify-center gap-3 mb-12 arclab-fade-in" style="animation-delay: 0.2s;">
+      <button class="filter-button active" data-filter="all">All</button>
+      <button class="filter-button" data-filter="publication">Publications</button>
+      <button class="filter-button" data-filter="project">Projects</button>
+      <button class="filter-button" data-filter="journal">Journal Articles</button>
+      <button class="filter-button" data-filter="conference">Conference Papers</button>
+    </div>
+    
+    <!-- Items grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8" id="items-grid">
+      {allItems.map((item, index) => (
+        <div class={`item ${item.itemType} ${item.type || 'project'} arclab-card hover:scale-105 transition-all duration-300 arclab-slide-up`} style={`animation-delay: ${index * 0.1}s;`}>
+          <!-- Media section for projects -->
+          {item.itemType === 'project' && item.media && (
+            <div class="relative mb-6 overflow-hidden rounded-lg">
+              {item.media.type === 'video' ? (
+                <div class="relative aspect-video">
+                  <video 
+                    class="w-full h-full object-cover"
+                    poster={item.media.poster}
+                    muted
+                    loop
+                    playsinline
+                    onmouseenter="this.play()"
+                    onmouseleave="this.pause()"
+                  >
+                    <source src={item.media.url} type="video/mp4" />
+                  </video>
+                  <div class="absolute inset-0 flex items-center justify-center opacity-70 hover:opacity-0 transition-opacity">
+                    <div class="w-16 h-16 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                  </div>
                 </div>
-                <h3 class="text-lg font-medium text-white mb-2 leading-tight hover:text-blue-400 transition-colors">
-                  {item.doi || item.link ? (
-                    <a href={item.doi || item.link} target="_blank" class="hover:underline">
-                      {item.title}
-                    </a>
-                  ) : (
-                    item.title
-                  )}
-                </h3>
-                <p class="text-gray-400 text-sm mb-1">{item.authors}</p>
-                <p class="text-blue-400 text-sm font-medium">
-                  {item.venue} • {item.year} • {item.status}
-                </p>
-              </div>
-              {(item.doi || item.link) && (
-                <a 
-                  href={item.doi || item.link} 
-                  target="_blank"
-                  class="ml-4 px-3 py-2 bg-blue-600/20 text-blue-400 text-sm font-medium rounded-lg hover:bg-blue-600/30 transition-colors border border-blue-500/30"
-                >
-                  <i class={`${item.type === 'project' ? 'fab fa-github' : 'fas fa-external-link-alt'} mr-1`}></i>
-                  {item.type === 'project' ? 'Code' : 'View'}
-                </a>
+              ) : item.media.type === 'poster' ? (
+                <div class="relative aspect-video">
+                  <img 
+                    src={item.media.url} 
+                    alt={`${item.title} poster`}
+                    class="w-full h-full object-cover"
+                  />
+                  <div class="absolute top-4 right-4 bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                    📊 Poster
+                  </div>
+                </div>
+              ) : (
+                <div class="relative aspect-video">
+                  <img 
+                    src={item.media.url} 
+                    alt={item.title}
+                    class="w-full h-full object-cover"
+                  />
+                </div>
               )}
             </div>
-            
-            <!-- Description -->
-            <p class="text-gray-300 mb-4 leading-relaxed text-sm">{item.description}</p>
-            
-            <!-- Tags -->
-            <div class="flex flex-wrap gap-2">
-              {item.tags.map(tag => (
-                <span class="px-2 py-1 text-xs font-medium text-gray-300 bg-slate-700/50 rounded-full border border-slate-600/30">
-                  {tag}
+          )}
+          
+          <!-- Header -->
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <div class="flex items-center space-x-3 mb-2">
+                <span class={`px-3 py-1 text-xs font-medium text-white rounded-full ${typeColors[item.type || 'project']}`}>
+                  {typeLabels[item.type || 'project']}
                 </span>
-              ))}
+                {item.status && (
+                  <span class={`px-2 py-1 text-xs font-medium rounded-full ${
+                    item.status === 'active' ? 'text-green-300 bg-green-600/20 border border-green-500/30' : 
+                    'text-gray-300 bg-gray-600/20 border border-gray-500/30'
+                  }`}>
+                    {item.status}
+                  </span>
+                )}
+                {item.citations && (
+                  <span class="citation-count">{item.citations} citations</span>
+                )}
+              </div>
+              
+              <h3 class="text-lg font-medium text-white mb-2 leading-tight hover:text-blue-400 transition-colors">
+                {(item.doi || item.links?.paper) ? (
+                  <a href={item.doi || item.links?.paper} target="_blank" class="hover:underline">
+                    {item.title}
+                  </a>
+                ) : (
+                  item.title
+                )}
+              </h3>
+              
+              <p class="arclab-text text-sm mb-2">
+                {item.authors ? item.authors.join(', ') : item.team?.join(', ')}
+              </p>
+              
+              <p class="arclab-text-accent text-sm font-medium mb-3">
+                {item.venue || 'Research Project'} • {item.year || new Date(item.startDate).getFullYear()}
+              </p>
             </div>
           </div>
-        ))}
-      </div>
-      
-      <!-- Google Scholar Link -->
-      <div class="text-center mt-12 animate-slide-up" style="animation-delay: 0.6s;">
-        <a 
-          href="https://scholar.google.com/citations?user=yourid" 
-          target="_blank"
-          class="inline-flex items-center px-6 py-3 bg-slate-700/50 text-white font-medium rounded-lg hover:bg-slate-600/50 transition-colors border border-slate-600/50"
-        >
-          <i class="fas fa-graduation-cap mr-2"></i>
-          View Complete Publication List on Google Scholar
-        </a>
-      </div>
+          
+          <!-- Description -->
+          <p class="arclab-text text-sm leading-relaxed mb-4">
+            {item.abstract || item.shortDescription}
+          </p>
+          
+          <!-- Keywords/Technologies -->
+          <div class="flex flex-wrap gap-2 mb-4">
+            {(item.keywords || item.technologies)?.slice(0, 4).map(tag => (
+              <span class="venue-tag text-xs">{tag}</span>
+            ))}
+          </div>
+          
+          <!-- Action buttons -->
+          <div class="flex flex-wrap gap-2">
+            {(item.doi || item.links?.paper) && (
+              <a href={item.doi || item.links?.paper} target="_blank" class="arclab-button arclab-button-small">
+                <i class="fas fa-external-link-alt"></i>
+                {item.itemType === 'project' ? 'Paper' : 'DOI'}
+              </a>
+            )}
+            {(item.links?.github) && (
+              <a href={item.links.github} target="_blank" class="arclab-button-secondary arclab-button-small">
+                <i class="fab fa-github"></i>
+                Code
+              </a>
+            )}
+            {(item.links?.demo) && (
+              <a href={item.links.demo} target="_blank" class="arclab-button-secondary arclab-button-small">
+                <i class="fas fa-play"></i>
+                Demo
+              </a>
+            )}
+            {item.pdfUrl && (
+              <a href={item.pdfUrl} target="_blank" class="arclab-button-secondary arclab-button-small">
+                <i class="fas fa-file-pdf"></i>
+                PDF
+              </a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Google Scholar Link -->
+    <div class="text-center mt-12 arclab-fade-in" style="animation-delay: 0.6s;">
+      <a 
+        href="https://scholar.google.com/citations?user=6KamS70AAAAJ&hl=en" 
+        target="_blank"
+        class="arclab-button-secondary"
+      >
+        <i class="fas fa-graduation-cap"></i>
+        View Complete Publication List on Google Scholar
+      </a>
     </div>
   </div>
 </section>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const items = document.querySelectorAll('.publication-item');
+    const filterButtons = document.querySelectorAll('.filter-button');
+    const items = document.querySelectorAll('.item');
     
     filterButtons.forEach(button => {
       button.addEventListener('click', () => {
         const filter = button.getAttribute('data-filter');
         
         // Update active button
-        filterButtons.forEach(btn => {
-          btn.classList.remove('active');
-          btn.classList.add('text-gray-300');
-          btn.classList.remove('text-white');
-        });
+        filterButtons.forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
-        button.classList.add('text-white');
-        button.classList.remove('text-gray-300');
         
         // Filter items
         items.forEach(item => {
           if (filter === 'all' || item.classList.contains(filter)) {
             item.style.display = 'block';
-            item.style.animation = 'fadeInUp 0.5s ease-out forwards';
+            item.style.animation = 'fadeIn 0.5s ease-out forwards';
           } else {
             item.style.display = 'none';
           }
@@ -227,21 +217,12 @@ const typeLabels = {
 </script>
 
 <style>
-  .publication-item {
-    animation: fadeInUp 0.6s ease-out forwards;
-    opacity: 0;
-    transform: translateY(30px);
+  .aspect-video {
+    aspect-ratio: 16 / 9;
   }
   
-  .filter-btn.active {
-    background: linear-gradient(to right, #3b82f6, #06b6d4);
-    border-color: #3b82f6;
-  }
-  
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 </style>

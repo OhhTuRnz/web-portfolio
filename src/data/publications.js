@@ -5,9 +5,9 @@ export const scholarProfile = {
   name: "Alejandro Carrasco",
   affiliation: "MIT ARC Lab",
   profileUrl: "https://scholar.google.com/citations?user=6KamS70AAAAJ&hl=en",
-  totalCitations: 245,
-  hIndex: 8,
-  i10Index: 6
+  totalCitations: 342,
+  hIndex: 12,
+  i10Index: 8
 };
 
 export const publications = [
@@ -22,9 +22,7 @@ export const publications = [
     doi: "https://doi.org/10.1038/example-2024",
     pdfUrl: "/papers/carrasco-2024-llm-agents.pdf",
     abstract: "We present a novel approach for integrating large language models with autonomous agents to improve decision-making capabilities in complex space environments. Our method demonstrates significant improvements in mission success rates and adaptability to unexpected scenarios.",
-    keywords: ["LLM", "Autonomous Agents", "Space Robotics", "Decision Making"],
-    featured: true,
-    projectPage: "/projects/llm-space-agents"
+    keywords: ["LLM", "Autonomous Agents", "Space Robotics", "Decision Making"]
   },
   {
     id: "pub-2023-002",
@@ -37,9 +35,7 @@ export const publications = [
     doi: "https://doi.org/10.1109/TRO.2023.example",
     pdfUrl: "/papers/carrasco-2023-neural-architectures.pdf",
     abstract: "This paper provides a comprehensive comparison of different neural network architectures for robotic control tasks, with focus on sample efficiency and real-world performance in teleoperation scenarios.",
-    keywords: ["Robotics", "Neural Networks", "Control Systems", "Teleoperation"],
-    featured: true,
-    projectPage: "/projects/neural-control"
+    keywords: ["Robotics", "Neural Networks", "Control Systems", "Teleoperation"]
   },
   {
     id: "pub-2023-003",
@@ -52,9 +48,7 @@ export const publications = [
     doi: "https://papers.nips.cc/example-2023",
     pdfUrl: "/papers/carrasco-2023-emergent-communication.pdf",
     abstract: "We investigate how communication protocols emerge naturally in multi-agent systems operating in space environments and propose methods to guide this emergence for better coordination in satellite swarms.",
-    keywords: ["Multi-Agent", "Communication", "Reinforcement Learning", "Space Systems"],
-    featured: false,
-    projectPage: "/projects/multi-agent-communication"
+    keywords: ["Multi-Agent", "Communication", "Reinforcement Learning", "Space Systems"]
   },
   {
     id: "pub-2022-004",
@@ -67,9 +61,7 @@ export const publications = [
     doi: "https://aclanthology.org/example-2022",
     pdfUrl: "/papers/carrasco-2022-attention-mechanisms.pdf",
     abstract: "We introduce novel attention mechanisms that enable language models to process longer sequences more efficiently while maintaining performance in robotic planning and control tasks.",
-    keywords: ["Attention", "Language Models", "Robotic Planning", "Efficiency"],
-    featured: false,
-    projectPage: "/projects/attention-planning"
+    keywords: ["Attention", "Language Models", "Robotic Planning", "Efficiency"]
   },
   {
     id: "pub-2022-005",
@@ -82,9 +74,7 @@ export const publications = [
     doi: "https://doi.org/10.1109/ICRA.2022.example",
     pdfUrl: "/papers/carrasco-2022-haptic-feedback.pdf",
     abstract: "This work presents the design and validation of advanced haptic feedback systems for space teleoperation, demonstrating improved operator performance and reduced task completion times.",
-    keywords: ["Haptic Feedback", "Teleoperation", "Space Robotics", "Human-Robot Interaction"],
-    featured: false,
-    projectPage: "/projects/haptic-teleoperation"
+    keywords: ["Haptic Feedback", "Teleoperation", "Space Robotics", "Human-Robot Interaction"]
   }
 ];
 
@@ -101,9 +91,9 @@ export const projects = [
     funding: "NASA NIAC Phase II Grant",
     publications: ["pub-2024-001"],
     media: {
-      images: ["/projects/llm-agents/demo-1.jpg", "/projects/llm-agents/demo-2.jpg"],
-      videos: ["/projects/llm-agents/demo-video.mp4"],
-      poster: "/projects/llm-agents/poster-icml-2024.pdf"
+      type: "video",
+      url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+      poster: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
       github: "https://github.com/mit-arclab/llm-space-agents",
@@ -124,12 +114,53 @@ export const projects = [
     funding: "NSF Robotics Grant",
     publications: ["pub-2023-002"],
     media: {
-      images: ["/projects/neural-control/setup-1.jpg", "/projects/neural-control/results.jpg"],
-      videos: ["/projects/neural-control/comparison-demo.mp4"]
+      type: "image",
+      url: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
       github: "https://github.com/mit-arclab/neural-control-comparison",
       paper: "https://doi.org/10.1109/TRO.2023.example"
+    }
+  },
+  {
+    id: "kerbal-ai-challenge",
+    title: "Kerbal Space Program AI Challenge",
+    shortDescription: "AI agents for autonomous spacecraft design and mission execution",
+    fullDescription: "Development of AI agents capable of autonomous spacecraft design, launch, and mission execution in Kerbal Space Program. This project demonstrates transfer learning from simulation to real-world space mission planning.",
+    status: "active",
+    startDate: "2023-03",
+    technologies: ["Python", "Reinforcement Learning", "Unity ML-Agents", "KSP API"],
+    team: ["Alejandro Carrasco", "MIT ArcLab Team"],
+    funding: "Internal Research Grant",
+    publications: [],
+    media: {
+      type: "poster",
+      url: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800"
+    },
+    links: {
+      github: "https://github.com/mit-arclab/kerbal-ai-challenge",
+      demo: "https://demo.arclab.mit.edu/kerbal-ai"
+    }
+  },
+  {
+    id: "humanoid-teleoperation",
+    title: "Humanoid Robot Teleoperation System",
+    shortDescription: "Advanced neural networks for humanoid robot control and motion planning",
+    fullDescription: "Implementation of advanced neural network architectures for improved humanoid robot control and motion planning. Focus on real-time teleoperation, haptic feedback, and human-robot interaction for complex manipulation tasks.",
+    status: "active",
+    startDate: "2023-01",
+    technologies: ["ROS2", "PyTorch", "C++", "Haptic Devices", "Computer Vision"],
+    team: ["Alejandro Carrasco", "Dr. Sarah Kim", "Alex Rodriguez"],
+    funding: "DARPA Robotics Grant",
+    publications: ["pub-2022-005"],
+    media: {
+      type: "video",
+      url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4",
+      poster: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800"
+    },
+    links: {
+      github: "https://github.com/mit-arclab/humanoid-teleoperation",
+      paper: "https://doi.org/10.1109/ICRA.2022.example"
     }
   }
 ];
@@ -149,10 +180,6 @@ export function getPublicationsByType() {
     acc[pub.type].push(pub);
     return acc;
   }, {});
-}
-
-export function getFeaturedPublications() {
-  return publications.filter(pub => pub.featured);
 }
 
 export function getPublicationById(id) {
