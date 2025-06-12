@@ -1,6 +1,16 @@
 export const awards = [
   {
     id: "award-2025-001",
+    title: "PhD Admission - Top 3% Pool",
+    organization: "MIT Department of Aeronautics and Astronautics",
+    year: 2025,
+    description: "Admitted to the highly selective PhD program in AeroAstro at MIT, ranking in the top 3% of applicants worldwide.",
+    link: "https://aeroastro.mit.edu/",
+    category: "academic",
+    icon: "🎓"
+  },
+  {
+    id: "award-2025-002",
     title: "Kerbal Space Program Differential Games Challenge (KSPDG) 2nd Position",
     organization: "KSPDG Competition",
     year: 2025,
@@ -10,17 +20,7 @@ export const awards = [
     icon: "🚀"
   },
   {
-    id: "award-2024-003",
-    title: "PhD Admission - Top 3% Pool",
-    organization: "MIT Department of Aeronautics and Astronautics",
-    year: 2024,
-    description: "Admitted to the highly selective PhD program in AeroAstro at MIT, ranking in the top 3% of applicants worldwide.",
-    link: "https://aeroastro.mit.edu/",
-    category: "academic",
-    icon: "🎓"
-  },
-  {
-    id: "award-2024-004",
+    id: "award-2024-001",
     title: "Best Bachelor Thesis for National Defense Award",
     organization: "Centro Superior de Estudios de la Defensa Nacional (CESEDEN)",
     year: 2024,
@@ -30,7 +30,7 @@ export const awards = [
     icon: "🏅"
   },
   {
-    id: "award-2024-005",
+    id: "award-2024-002",
     title: "Kerbal Space Program Differential Games Challenge (KSPDG) 2nd Position",
     organization: "KSPDG Competition",
     year: 2024,
@@ -40,7 +40,7 @@ export const awards = [
     icon: "🤖"
   },
   {
-    id: "award-2024-001",
+    id: "award-2024-003",
     title: "Best Student Paper Award",
     organization: "IEEE Aerospace Conference",
     year: 2024,
@@ -50,7 +50,7 @@ export const awards = [
     icon: "🏆"
   },
   {
-    id: "award-2024-002",
+    id: "award-2024-004",
     title: "MIT ARC Lab Research Excellence Award",
     organization: "MIT Autonomous Systems Laboratory",
     year: 2024,

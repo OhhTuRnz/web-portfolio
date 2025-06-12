@@ -13,55 +13,55 @@ export const scholarProfile = {
 export const publications = [
   {
     id: "pub-2024-001",
-    title: "Autonomous Spacecraft Operations Using Large Language Models",
+    title: "Large Language Models as Autonomous Spacecraft Operators in Kerbal Space Program",
     authors: ["A. Carrasco", "J. How", "S. Chung"],
-    venue: "IEEE Aerospace Conference",
+    venue: "Journal of Spacecraft and Rockets",
     year: 2024,
-    type: "conference",
+    type: "journal",
     citations: 8,
-    doi: "https://doi.org/10.1109/AERO58975.2024.10521234",
-    pdfUrl: "/papers/carrasco-2024-autonomous-spacecraft.pdf",
-    abstract: "This paper presents a framework for integrating large language models with spacecraft control systems to enable autonomous decision-making during space missions. We demonstrate improved adaptability to unexpected scenarios and reduced communication requirements with ground control.",
-    keywords: ["LLM", "Autonomous Systems", "Space Robotics", "Mission Planning"]
+    doi: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:9yKSN-GCB0IC",
+    pdfUrl: "/papers/carrasco-2024-llm-spacecraft-operators.pdf",
+    abstract: "This paper presents a comprehensive framework for utilizing large language models as autonomous spacecraft operators in the Kerbal Space Program environment. We demonstrate how LLMs can be trained to understand complex mission requirements, plan trajectories, and execute spacecraft operations with minimal human intervention.",
+    keywords: ["LLM", "Autonomous Systems", "Space Robotics", "Mission Planning", "Kerbal Space Program"]
   },
   {
-    id: "pub-2023-002",
-    title: "Teleoperation Interface Design for Space Robotics Applications",
+    id: "pub-2024-002",
+    title: "Fine-tuning LLMs for Autonomous Spacecraft Control: A Case Study Using Kerbal Space Program",
     authors: ["A. Carrasco", "M. Johnson", "K. Patel"],
     venue: "International Conference on Robotics and Automation (ICRA)",
-    year: 2023,
+    year: 2024,
     type: "conference",
     citations: 4,
-    doi: "https://doi.org/10.1109/ICRA48891.2023.10161234",
-    pdfUrl: "/papers/carrasco-2023-teleoperation-interface.pdf",
-    abstract: "We present a novel teleoperation interface design optimized for space robotics applications, incorporating haptic feedback and predictive control to compensate for communication delays in space-to-Earth operations.",
-    keywords: ["Teleoperation", "Space Robotics", "Human-Robot Interaction", "Interface Design"]
+    doi: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:u-x6o8ySG0sC",
+    pdfUrl: "/papers/carrasco-2024-fine-tuning-llms.pdf",
+    abstract: "We present a novel approach to fine-tuning large language models for autonomous spacecraft control tasks. Using Kerbal Space Program as a testbed, we demonstrate improved performance in mission planning and execution through specialized training protocols.",
+    keywords: ["Fine-tuning", "LLM", "Spacecraft Control", "Autonomous Systems", "Kerbal Space Program"]
   },
   {
-    id: "pub-2023-003",
-    title: "Multi-Agent Coordination for Satellite Constellation Management",
+    id: "pub-2024-003",
+    title: "Visual Language Models as Operator Agents in the Space Domain",
     authors: ["A. Carrasco", "L. Chen", "R. Williams", "J. How"],
     venue: "AIAA Guidance, Navigation, and Control Conference",
-    year: 2023,
+    year: 2024,
     type: "conference",
     citations: 2,
-    doi: "https://doi.org/10.2514/6.2023-1234",
-    pdfUrl: "/papers/carrasco-2023-multi-agent-satellites.pdf",
-    abstract: "This work explores multi-agent coordination strategies for managing satellite constellations, focusing on autonomous task allocation and collision avoidance in low Earth orbit environments.",
-    keywords: ["Multi-Agent Systems", "Satellite Constellations", "Autonomous Coordination", "Space Systems"]
+    doi: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:d1gkVwhDpl0C",
+    pdfUrl: "/papers/carrasco-2024-visual-language-models.pdf",
+    abstract: "This work explores the application of visual language models as operator agents in space domain operations. We investigate how multimodal AI systems can interpret visual data and natural language instructions to perform complex spacecraft operations.",
+    keywords: ["Visual Language Models", "Space Operations", "Multimodal AI", "Operator Agents"]
   },
   {
-    id: "pub-2022-004",
-    title: "Machine Learning Approaches for Spacecraft Anomaly Detection",
+    id: "pub-2024-004",
+    title: "Language models are spacecraft operators",
     authors: ["A. Carrasco", "D. Kim", "S. Anderson"],
-    venue: "Journal of Spacecraft and Rockets",
-    year: 2022,
-    type: "journal",
+    venue: "arXiv preprint",
+    year: 2024,
+    type: "preprint",
     citations: 1,
-    doi: "https://doi.org/10.2514/1.A35123",
-    pdfUrl: "/papers/carrasco-2022-anomaly-detection.pdf",
-    abstract: "We develop machine learning algorithms for real-time spacecraft anomaly detection, enabling early identification of system failures and autonomous response protocols for mission-critical situations.",
-    keywords: ["Machine Learning", "Anomaly Detection", "Spacecraft Systems", "Autonomous Response"]
+    doi: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:u5HHmVD_uO8C",
+    pdfUrl: "/papers/carrasco-2024-language-models-operators.pdf",
+    abstract: "We demonstrate that language models can serve as effective spacecraft operators, capable of understanding mission objectives, interpreting telemetry data, and making autonomous decisions in space environments. This preprint presents our initial findings and methodology.",
+    keywords: ["Language Models", "Spacecraft Operations", "Autonomous Decision Making", "Space AI"]
   }
 ];
 
@@ -85,7 +85,7 @@ export const projects = [
     links: {
       github: "https://github.com/mit-arclab/llm-space-agents",
       demo: "https://demo.arclab.mit.edu/llm-agents",
-      paper: "https://doi.org/10.1109/AERO58975.2024.10521234"
+      paper: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:9yKSN-GCB0IC"
     }
   },
   {
@@ -99,14 +99,14 @@ export const projects = [
     technologies: ["C++", "ROS", "Haptic Devices", "Qt", "OpenGL"],
     team: ["Alejandro Carrasco", "Dr. Maria Johnson", "Kiran Patel"],
     funding: "MIT ARC Lab Internal Grant",
-    publications: ["pub-2023-002"],
+    publications: ["pub-2024-002"],
     media: {
       type: "image",
       url: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
       github: "https://github.com/mit-arclab/teleoperation-interface",
-      paper: "https://doi.org/10.1109/ICRA48891.2023.10161234"
+      paper: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:u-x6o8ySG0sC"
     }
   },
   {
@@ -119,14 +119,14 @@ export const projects = [
     technologies: ["MATLAB", "Python", "STK", "Distributed Algorithms"],
     team: ["Alejandro Carrasco", "Dr. Lisa Chen", "Prof. Jonathan How"],
     funding: "Air Force Research Laboratory Grant",
-    publications: ["pub-2023-003"],
+    publications: ["pub-2024-003"],
     media: {
       type: "poster",
       url: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
       github: "https://github.com/mit-arclab/satellite-coordination",
-      paper: "https://doi.org/10.2514/6.2023-1234"
+      paper: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:d1gkVwhDpl0C"
     }
   },
   {
@@ -140,14 +140,14 @@ export const projects = [
     technologies: ["Python", "TensorFlow", "Signal Processing", "Time Series Analysis"],
     team: ["Alejandro Carrasco", "Dr. David Kim", "Dr. Sarah Anderson"],
     funding: "NASA JPL Collaboration",
-    publications: ["pub-2022-004"],
+    publications: ["pub-2024-004"],
     media: {
       type: "image",
       url: "https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
       github: "https://github.com/mit-arclab/spacecraft-anomaly-detection",
-      paper: "https://doi.org/10.2514/1.A35123"
+      paper: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:u5HHmVD_uO8C"
     }
   }
 ];

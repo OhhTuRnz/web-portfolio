@@ -1,71 +1,65 @@
 ---
 import { getAllProjects, getFeaturedProjects } from '../data/projects.js';
 import ProjectCard from './ProjectCard.astro';
-import StarParticleBackground from './StarParticleBackground.astro';
 
 const allProjects = getAllProjects();
 const featuredProjects = getFeaturedProjects();
 ---
 
-<section id="projects" class="relative min-h-screen py-20 bg-slate-900 overflow-hidden">
-  <StarParticleBackground />
-  
-  <!-- Content overlay -->
-  <div class="relative z-10">
-    <div class="arclab-container">
-      <!-- Header -->
-      <div class="text-center mb-16 arclab-fade-in">
-        <h2 class="arclab-heading-2 mb-4">Projects</h2>
-        <p class="arclab-text text-lg max-w-3xl mx-auto">
-          Research and personal projects exploring artificial intelligence and robotics
-        </p>
-      </div>
-      
-      <!-- Filter Navigation -->
-      <div class="flex flex-wrap justify-center gap-4 mb-12 arclab-fade-in" style="animation-delay: 0.2s;">
-        <button 
-          class="filter-btn active" 
-          data-filter="all"
-          aria-label="Show all projects"
-        >
-          All Projects
-        </button>
-        <button 
-          class="filter-btn" 
-          data-filter="featured"
-          aria-label="Show featured projects"
-        >
-          ⭐ Featured
-        </button>
-        <button 
-          class="filter-btn" 
-          data-filter="research"
-          aria-label="Show research projects"
-        >
-          🔬 Research
-        </button>
-        <button 
-          class="filter-btn" 
-          data-filter="personal"
-          aria-label="Show personal projects"
-        >
-          🚀 Personal
-        </button>
-        <button 
-          class="filter-btn" 
-          data-filter="active"
-          aria-label="Show active projects"
-        >
-          🟢 Active
-        </button>
-      </div>
-      
-      <!-- Projects Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8" id="projects-grid">
-        {allProjects.map((project, index) => (
-          <ProjectCard project={project} index={index} />
-        ))}
-      </div>
+<section id="projects" class="arclab-section bg-slate-900">
+  <div class="arclab-container">
+    <!-- Header -->
+    <div class="text-center mb-16 arclab-fade-in">
+      <h2 class="arclab-heading-2 mb-4">Projects</h2>
+      <p class="arclab-text text-lg max-w-3xl mx-auto">
+        Research and personal projects exploring artificial intelligence and robotics
+      </p>
+    </div>
+    
+    <!-- Filter Navigation -->
+    <div class="flex flex-wrap justify-center gap-4 mb-12 arclab-fade-in" style="animation-delay: 0.2s;">
+      <button 
+        class="filter-btn active" 
+        data-filter="all"
+        aria-label="Show all projects"
+      >
+        All Projects
+      </button>
+      <button 
+        class="filter-btn" 
+        data-filter="featured"
+        aria-label="Show featured projects"
+      >
+        ⭐ Featured
+      </button>
+      <button 
+        class="filter-btn" 
+        data-filter="research"
+        aria-label="Show research projects"
+      >
+        🔬 Research
+      </button>
+      <button 
+        class="filter-btn" 
+        data-filter="personal"
+        aria-label="Show personal projects"
+      >
+        🚀 Personal
+      </button>
+      <button 
+        class="filter-btn" 
+        data-filter="active"
+        aria-label="Show active projects"
+      >
+        🟢 Active
+      </button>
+    </div>
+    
+    <!-- Projects Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8 max-w-6xl mx-auto" id="projects-grid">
+      {allProjects.map((project, index) => (
+        <ProjectCard project={project} index={index} />
+      ))}
     </div>
   </div>
 </section>
