@@ -1,192 +1,204 @@
 ---
 export interface Props {
-  title: string;
-  description: string;
-  image?: string;
-  video?: string;
-  poster?: string;
-  technologies: string[];
-  github?: string;
-  demo?: string;
-  paper?: string;
-  featured?: boolean;
-  type?: 'research' | 'project' | 'poster';
+  project: {
+    id: string;
+    title: string;
+    description: string;
+    shortDescription: string;
+    technologies: string[];
+    category: string;
+    status: string;
+    media?: {
+      type: string;
+      url: string;
+      poster?: string;
+      thumbnail?: string;
+    };
+    links: {
+      github?: string;
+      demo?: string;
+      paper?: string;
+    };
+    featured?: boolean;
+  };
+  index?: number;
 }
 
-const { 
-  title, 
-  description, 
-  image, 
-  video, 
-  poster,
-  technologies, 
-  github, 
-  demo, 
-  paper,
-  featured = false,
-  type = 'project'
-} = Astro.props;
+const { project, index = 0 } = Astro.props;
 
 const techColors = {
-  'LLMs': 'bg-blue-100 text-blue-800',
-  'Autonomous Agents': 'bg-purple-100 text-purple-800',
-  'Python': 'bg-green-100 text-green-800',
-  'Reinforcement Learning': 'bg-red-100 text-red-800',
-  'Robotics': 'bg-orange-100 text-orange-800',
-  'Neural Networks': 'bg-yellow-100 text-yellow-800',
-  'ROS': 'bg-indigo-100 text-indigo-800',
-  'PyTorch': 'bg-pink-100 text-pink-800',
-  'Multi-Agent': 'bg-teal-100 text-teal-800',
-  'RL': 'bg-cyan-100 text-cyan-800',
-  'Communication': 'bg-lime-100 text-lime-800',
-  'Open Source': 'bg-emerald-100 text-emerald-800',
-  'LLM': 'bg-violet-100 text-violet-800',
-  'C++': 'bg-rose-100 text-rose-800',
-  'Teleoperation': 'bg-blue-200 text-blue-900',
-  'Space Robotics': 'bg-purple-200 text-purple-900',
-  'Humanoids': 'bg-cyan-200 text-cyan-900',
-  'Kerbal': 'bg-green-200 text-green-900'
+  'Python': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+  'PyTorch': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+  'ROS2': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+  'ROS': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+  'C++': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+  'JavaScript': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+  'React': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
+  'MATLAB': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
+  'OpenGL': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+  'TensorFlow': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+  'Reinforcement Learning': 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',
+  'Space Systems': 'bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300',
+  'default': 'bg-gray-100 text-gray-800 dark:bg-gray-700/30 dark:text-gray-300'
 };
 
-// Determine media content
-const hasVideo = video && video.trim() !== '';
-const hasPoster = poster && poster.trim() !== '';
-const hasImage = image && image.trim() !== '';
+const categoryColors = {
+  'research': 'bg-blue-600',
+  'personal': 'bg-purple-600'
+};
+
+const statusColors = {
+  'active': 'text-green-400 bg-green-900/20 border-green-500/30',
+  'completed': 'text-gray-400 bg-gray-900/20 border-gray-500/30'
+};
 ---
 
-<div class={`project-card bg-gradient-to-br from-slate-800 to-slate-700 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group border border-slate-600 hover:border-blue-500/50 ${featured ? 'lg:col-span-1' : ''}`}>
-  <!-- Media Container -->
-  <div class="relative overflow-hidden aspect-video bg-slate-900">
-    {hasVideo ? (
-      <!-- Video Content -->
-      <div class="relative w-full h-full">
-        <video 
-          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          poster={poster || image}
-          muted
-          loop
-          playsinline
-          onmouseenter="this.play()"
-          onmouseleave="this.pause()"
-        >
-          <source src={video} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-        
-        <!-- Video overlay -->
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
-        <!-- Play indicator -->
-        <div class="absolute inset-0 flex items-center justify-center opacity-70 group-hover:opacity-0 transition-opacity duration-300">
-          <div class="w-16 h-16 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm">
-            <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
-            </svg>
+<article 
+  class="project-card group relative bg-slate-800/40 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-700/30 hover:border-blue-500/50 transition-all duration-500 hover:transform hover:scale-105 hover:shadow-2xl"
+  style={`animation-delay: ${index * 0.1}s;`}
+  role="article"
+  aria-labelledby={`project-title-${project.id}`}
+  tabindex="0"
+>
+  <!-- Media Section -->
+  <div class="relative overflow-hidden aspect-video bg-slate-900/50">
+    {project.media ? (
+      project.media.type === 'video' ? (
+        <div class="relative w-full h-full">
+          <video 
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            poster={project.media.poster || project.media.thumbnail}
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            aria-label={`Video demonstration of ${project.title}`}
+          >
+            <source src={project.media.url} type="video/mp4" />
+            <p>Your browser does not support the video tag.</p>
+          </video>
+          
+          <!-- Video overlay -->
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
+          <!-- Play indicator -->
+          <div class="absolute inset-0 flex items-center justify-center opacity-70 group-hover:opacity-0 transition-opacity duration-300">
+            <div class="w-16 h-16 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm">
+              <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
           </div>
         </div>
-      </div>
-    ) : hasPoster ? (
-      <!-- Poster Content -->
-      <div class="relative w-full h-full group">
-        <img 
-          src={poster} 
-          alt={`${title} poster`}
-          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
-        <!-- Poster indicator -->
-        <div class="absolute top-4 right-4 bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-          📊 Poster
+      ) : (
+        <div class="relative w-full h-full">
+          <img 
+            src={project.media.url} 
+            alt={`${project.title} preview`}
+            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            loading="lazy"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </div>
-      </div>
-    ) : hasImage ? (
-      <!-- Image Content -->
-      <div class="relative w-full h-full">
-        <img 
-          src={image} 
-          alt={title}
-          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      </div>
+      )
     ) : (
       <!-- Fallback gradient -->
-      <div class="w-full h-full bg-gradient-to-br from-blue-600 via-purple-600 to-cyan-600 flex items-center justify-center">
-        <div class="text-white text-6xl opacity-50">
-          {type === 'research' ? '🔬' : type === 'poster' ? '📊' : '🚀'}
+      <div class="w-full h-full bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-cyan-600/20 flex items-center justify-center">
+        <div class="text-white/30 text-6xl">
+          {project.category === 'research' ? '🔬' : '🚀'}
         </div>
       </div>
     )}
     
-    <!-- Type badge -->
-    <div class="absolute top-4 left-4">
-      <span class={`px-3 py-1 rounded-full text-xs font-semibold ${
-        type === 'research' ? 'bg-blue-600 text-white' :
-        type === 'poster' ? 'bg-purple-600 text-white' :
-        'bg-cyan-600 text-white'
-      }`}>
-        {type === 'research' ? '🔬 Research' : type === 'poster' ? '📊 Poster' : '🚀 Project'}
+    <!-- Category and Status badges -->
+    <div class="absolute top-4 left-4 flex items-center space-x-2">
+      <span class={`px-3 py-1 rounded-full text-xs font-semibold text-white ${categoryColors[project.category]}`}>
+        {project.category === 'research' ? '🔬 Research' : '🚀 Personal'}
+      </span>
+      {project.featured && (
+        <span class="px-2 py-1 text-xs font-medium text-yellow-300 bg-yellow-600/20 rounded-full border border-yellow-500/30">
+          ⭐ Featured
+        </span>
+      )}
+    </div>
+    
+    <div class="absolute top-4 right-4">
+      <span class={`px-2 py-1 text-xs font-medium rounded-full border ${statusColors[project.status]}`}>
+        {project.status}
       </span>
     </div>
   </div>
 
   <!-- Content -->
   <div class="p-6 flex flex-col flex-grow">
-    <h3 class="text-xl font-semibold text-white mb-3 group-hover:text-blue-400 transition-colors leading-tight">
-      {title}
+    <h3 id={`project-title-${project.id}`} class="text-xl font-semibold text-white mb-3 group-hover:text-blue-400 transition-colors leading-tight">
+      {project.title}
     </h3>
     
     <p class="text-gray-300 mb-4 leading-relaxed flex-grow text-sm">
-      {description}
+      {project.shortDescription}
     </p>
     
     <!-- Technologies -->
-    <div class="flex flex-wrap gap-2 mb-6">
-      {technologies.map(tech => (
-        <span class={`px-3 py-1 text-xs font-medium rounded-full transition-all hover:scale-105 ${techColors[tech] || 'bg-gray-100 text-gray-800'}`}>
+    <div class="flex flex-wrap gap-2 mb-6" role="list" aria-label="Technologies used">
+      {project.technologies.slice(0, 4).map(tech => (
+        <span 
+          class={`px-3 py-1 text-xs font-medium rounded-full transition-all hover:scale-105 ${techColors[tech] || techColors.default}`}
+          role="listitem"
+        >
           {tech}
         </span>
       ))}
+      {project.technologies.length > 4 && (
+        <span class="px-3 py-1 text-xs font-medium rounded-full bg-gray-700/50 text-gray-300">
+          +{project.technologies.length - 4} more
+        </span>
+      )}
     </div>
     
     <!-- Action buttons -->
-    <div class="flex flex-wrap gap-3 mt-auto">
-      {github && (
+    <div class="flex flex-wrap gap-3 mt-auto" role="group" aria-label="Project links">
+      {project.links.github && (
         <a 
-          href={github} 
+          href={project.links.github} 
           target="_blank"
-          class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors hover:bg-slate-700 px-3 py-2 rounded-lg"
+          rel="noopener noreferrer"
+          class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors hover:bg-slate-700/50 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+          aria-label={`View ${project.title} source code on GitHub`}
         >
-          <i class="fab fa-github"></i>
+          <i class="fab fa-github" aria-hidden="true"></i>
           <span class="text-sm">Code</span>
         </a>
       )}
       
-      {demo && (
+      {project.links.demo && (
         <a 
-          href={demo}
+          href={project.links.demo}
           target="_blank"
-          class="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors hover:bg-blue-900/20 px-3 py-2 rounded-lg"
+          rel="noopener noreferrer"
+          class="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors hover:bg-blue-900/20 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+          aria-label={`View ${project.title} live demo`}
         >
-          <i class="fas fa-external-link-alt"></i>
+          <i class="fas fa-external-link-alt" aria-hidden="true"></i>
           <span class="text-sm">Demo</span>
         </a>
       )}
       
-      {paper && (
+      {project.links.paper && (
         <a 
-          href={paper}
+          href={project.links.paper}
           target="_blank"
-          class="flex items-center space-x-2 text-purple-400 hover:text-purple-300 transition-colors hover:bg-purple-900/20 px-3 py-2 rounded-lg"
+          rel="noopener noreferrer"
+          class="flex items-center space-x-2 text-purple-400 hover:text-purple-300 transition-colors hover:bg-purple-900/20 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+          aria-label={`Read ${project.title} research paper`}
         >
-          <i class="fas fa-file-pdf"></i>
+          <i class="fas fa-file-pdf" aria-hidden="true"></i>
           <span class="text-sm">Paper</span>
         </a>
       )}
     </div>
   </div>
-</div>
+</article>
 
 <style>
   .project-card {
@@ -194,11 +206,6 @@ const hasImage = image && image.trim() !== '';
     opacity: 0;
     transform: translateY(30px);
   }
-  
-  .project-card:nth-child(1) { animation-delay: 0.1s; }
-  .project-card:nth-child(2) { animation-delay: 0.2s; }
-  .project-card:nth-child(3) { animation-delay: 0.3s; }
-  .project-card:nth-child(4) { animation-delay: 0.4s; }
   
   @keyframes fadeInUp {
     to {
@@ -210,4 +217,61 @@ const hasImage = image && image.trim() !== '';
   .aspect-video {
     aspect-ratio: 16 / 9;
   }
+  
+  /* Enhanced hover effects */
+  .project-card:hover {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Focus styles for accessibility */
+  .project-card:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+  
+  /* Video interaction */
+  .project-card:hover video {
+    animation: playHint 0.3s ease-in-out;
+  }
+  
+  @keyframes playHint {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
 </style>
+
+<script>
+  // Enhanced video interaction
+  document.addEventListener('DOMContentLoaded', () => {
+    const projectCards = document.querySelectorAll('.project-card');
+    
+    projectCards.forEach(card => {
+      const video = card.querySelector('video');
+      
+      if (video) {
+        // Play video on hover
+        card.addEventListener('mouseenter', () => {
+          video.play().catch(() => {
+            // Silently handle autoplay restrictions
+          });
+        });
+        
+        // Pause video when not hovering
+        card.addEventListener('mouseleave', () => {
+          video.pause();
+          video.currentTime = 0;
+        });
+        
+        // Handle focus for accessibility
+        card.addEventListener('focus', () => {
+          video.play().catch(() => {});
+        });
+        
+        card.addEventListener('blur', () => {
+          video.pause();
+          video.currentTime = 0;
+        });
+      }
+    });
+  });
+</script>

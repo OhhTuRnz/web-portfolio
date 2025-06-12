@@ -1,0 +1,339 @@
+---
+import { researchProjects, personalProjects, getFeaturedProjects } from '../data/projects.js';
+import ProjectCard from './ProjectCard.astro';
+import StarParticleBackground from './StarParticleBackground.astro';
+
+const featuredProjects = getFeaturedProjects();
+---
+
+<section id="projects" class="relative min-h-screen py-20 bg-slate-900 overflow-hidden">
+  <StarParticleBackground />
+  
+  <!-- Content overlay -->
+  <div class="relative z-10">
+    <div class="arclab-container">
+      <!-- Header -->
+      <div class="text-center mb-16 arclab-fade-in">
+        <h2 class="arclab-heading-2 mb-4">Project Showcase</h2>
+        <p class="arclab-text text-lg max-w-3xl mx-auto">
+          Exploring the intersection of artificial intelligence and robotics through research and personal projects
+        </p>
+      </div>
+      
+      <!-- Filter Navigation -->
+      <div class="flex flex-wrap justify-center gap-4 mb-12 arclab-fade-in" style="animation-delay: 0.2s;">
+        <button 
+          class="filter-btn active" 
+          data-filter="all"
+          aria-label="Show all projects"
+        >
+          All Projects
+        </button>
+        <button 
+          class="filter-btn" 
+          data-filter="featured"
+          aria-label="Show featured projects"
+        >
+          ⭐ Featured
+        </button>
+        <button 
+          class="filter-btn" 
+          data-filter="research"
+          aria-label="Show research projects"
+        >
+          🔬 Research
+        </button>
+        <button 
+          class="filter-btn" 
+          data-filter="personal"
+          aria-label="Show personal projects"
+        >
+          🚀 Personal
+        </button>
+        <button 
+          class="filter-btn" 
+          data-filter="active"
+          aria-label="Show active projects"
+        >
+          🟢 Active
+        </button>
+      </div>
+      
+      <!-- Featured Projects Section -->
+      <div id="featured-section" class="mb-16">
+        <h3 class="text-2xl font-medium text-white mb-8 text-center arclab-slide-up" style="animation-delay: 0.4s;">
+          Featured Projects
+        </h3>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {featuredProjects.map((project, index) => (
+            <ProjectCard project={project} index={index} />
+          ))}
+        </div>
+      </div>
+      
+      <!-- Research Projects Section -->
+      <div id="research-section" class="mb-16">
+        <h3 class="text-2xl font-medium text-white mb-8 text-center arclab-slide-up" style="animation-delay: 0.6s;">
+          Research Projects
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {researchProjects.filter(p => !p.featured).map((project, index) => (
+            <ProjectCard project={project} index={index + featuredProjects.length} />
+          ))}
+        </div>
+      </div>
+      
+      <!-- Personal Projects Section -->
+      <div id="personal-section">
+        <h3 class="text-2xl font-medium text-white mb-8 text-center arclab-slide-up" style="animation-delay: 0.8s;">
+          Personal Projects
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {personalProjects.filter(p => !p.featured).map((project, index) => (
+            <ProjectCard project={project} index={index + researchProjects.length} />
+          ))}
+        </div>
+      </div>
+      
+      <!-- Load More Button (for future expansion) -->
+      <div class="text-center mt-12 arclab-fade-in" style="animation-delay: 1s;">
+        <button 
+          id="load-more-btn" 
+          class="arclab-button-secondary hidden"
+          aria-label="Load more projects"
+        >
+          <i class="fas fa-plus" aria-hidden="true"></i>
+          Load More Projects
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const projectCards = document.querySelectorAll('.project-card');
+    const sections = document.querySelectorAll('#featured-section, #research-section, #personal-section');
+    
+    // Filter functionality
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const filter = button.getAttribute('data-filter');
+        
+        // Update active button
+        filterButtons.forEach(btn => {
+          btn.classList.remove('active');
+          btn.setAttribute('aria-pressed', 'false');
+        });
+        button.classList.add('active');
+        button.setAttribute('aria-pressed', 'true');
+        
+        // Filter projects with smooth animation
+        filterProjects(filter);
+      });
+    });
+    
+    function filterProjects(filter) {
+      // Hide all sections first
+      sections.forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      if (filter === 'all') {
+        // Show all sections
+        sections.forEach(section => {
+          section.style.display = 'block';
+        });
+        animateCards(projectCards);
+      } else if (filter === 'featured') {
+        // Show only featured section
+        document.getElementById('featured-section').style.display = 'block';
+        const featuredCards = document.querySelectorAll('#featured-section .project-card');
+        animateCards(featuredCards);
+      } else if (filter === 'research') {
+        // Show research section
+        document.getElementById('research-section').style.display = 'block';
+        document.getElementById('featured-section').style.display = 'block'; // Featured research projects
+        const researchCards = document.querySelectorAll('#research-section .project-card, #featured-section .project-card[data-category="research"]');
+        animateCards(researchCards);
+      } else if (filter === 'personal') {
+        // Show personal section
+        document.getElementById('personal-section').style.display = 'block';
+        document.getElementById('featured-section').style.display = 'block'; // Featured personal projects
+        const personalCards = document.querySelectorAll('#personal-section .project-card, #featured-section .project-card[data-category="personal"]');
+        animateCards(personalCards);
+      } else if (filter === 'active') {
+        // Show all sections but filter by active status
+        sections.forEach(section => {
+          section.style.display = 'block';
+        });
+        const activeCards = document.querySelectorAll('.project-card[data-status="active"]');
+        
+        // Hide non-active cards
+        projectCards.forEach(card => {
+          if (card.getAttribute('data-status') !== 'active') {
+            card.style.display = 'none';
+          } else {
+            card.style.display = 'block';
+          }
+        });
+        
+        animateCards(activeCards);
+      }
+    }
+    
+    function animateCards(cards) {
+      cards.forEach((card, index) => {
+        if (card.style.display !== 'none') {
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(30px)';
+          
+          setTimeout(() => {
+            card.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, index * 100);
+        }
+      });
+    }
+    
+    // Add data attributes to cards for filtering
+    projectCards.forEach(card => {
+      const title = card.querySelector('h3').textContent.toLowerCase();
+      
+      // Add category data attribute based on section
+      if (card.closest('#research-section') || (card.closest('#featured-section') && title.includes('space') || title.includes('satellite') || title.includes('teleoperation'))) {
+        card.setAttribute('data-category', 'research');
+      } else {
+        card.setAttribute('data-category', 'personal');
+      }
+      
+      // Add status data attribute
+      const statusBadge = card.querySelector('[class*="text-green-400"], [class*="text-gray-400"]');
+      if (statusBadge && statusBadge.textContent.includes('active')) {
+        card.setAttribute('data-status', 'active');
+      } else {
+        card.setAttribute('data-status', 'completed');
+      }
+    });
+    
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+        }
+      });
+    }, observerOptions);
+    
+    // Observe all project cards
+    projectCards.forEach(card => {
+      observer.observe(card);
+    });
+    
+    // Performance optimization: Lazy load videos
+    const videos = document.querySelectorAll('video');
+    videos.forEach(video => {
+      video.addEventListener('loadstart', () => {
+        video.setAttribute('data-loaded', 'true');
+      });
+    });
+  });
+</script>
+
+<style>
+  /* Enhanced filter button styling */
+  .filter-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--arclab-gray-300);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .filter-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  .filter-btn:hover::before {
+    left: 100%;
+  }
+  
+  .filter-btn.active {
+    background: var(--arclab-accent);
+    color: white;
+    border-color: var(--arclab-accent);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+  
+  .filter-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateY(-2px);
+  }
+  
+  .filter-btn.active:hover {
+    background: var(--arclab-blue);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+  }
+  
+  /* Scroll animation classes */
+  .animate-in {
+    animation: slideInUp 0.6s ease-out forwards;
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Responsive grid improvements */
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    
+    .filter-btn {
+      padding: 8px 16px;
+      font-size: 0.8rem;
+    }
+  }
+  
+  /* Loading state for videos */
+  video:not([data-loaded]) {
+    background: linear-gradient(45deg, #1e293b, #334155);
+    background-size: 400% 400%;
+    animation: shimmer 2s ease-in-out infinite;
+  }
+  
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+</style>
