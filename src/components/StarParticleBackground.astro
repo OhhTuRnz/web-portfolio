@@ -38,15 +38,15 @@
     }
     
     createStars() {
-      const starCount = Math.floor((this.canvas.width * this.canvas.height) / 15000);
+      const starCount = Math.floor((this.canvas.width * this.canvas.height) / 12000);
       this.stars = [];
       
       for (let i = 0; i < starCount; i++) {
         this.stars.push({
           x: Math.random() * this.canvas.width,
           y: Math.random() * this.canvas.height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
           size: Math.random() * 2 + 0.5,
           opacity: Math.random() * 0.8 + 0.2,
           twinkleSpeed: 0.01 + Math.random() * 0.02,
@@ -87,7 +87,7 @@
         const twinkle = Math.sin(time * star.twinkleSpeed + i) * 0.3 + 0.7;
         const currentOpacity = star.opacity * twinkle;
         
-        // Draw star with gradient
+        // Draw individual star with gradient
         const gradient = this.ctx.createRadialGradient(
           star.x, star.y, 0,
           star.x, star.y, star.size * 3

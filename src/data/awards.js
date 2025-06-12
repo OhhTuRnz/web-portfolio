@@ -10,17 +10,17 @@ export const awards = [
     icon: "🏆"
   },
   {
-    id: "award-2023-001",
+    id: "award-2024-002",
     title: "MIT ARC Lab Research Excellence Award",
     organization: "MIT Autonomous Systems Laboratory",
-    year: 2023,
+    year: 2024,
     description: "Award for exceptional research contributions in space robotics and autonomous systems during Master's studies.",
     link: "https://aeroastro.mit.edu/arclab/",
     category: "research",
     icon: "🎓"
   },
   {
-    id: "award-2023-002",
+    id: "award-2023-001",
     title: "Outstanding Poster Presentation",
     organization: "International Conference on Robotics and Automation (ICRA)",
     year: 2023,

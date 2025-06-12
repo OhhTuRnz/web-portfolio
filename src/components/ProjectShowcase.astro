@@ -1,8 +1,9 @@
 ---
-import { researchProjects, personalProjects, getFeaturedProjects } from '../data/projects.js';
+import { getAllProjects, getFeaturedProjects } from '../data/projects.js';
 import ProjectCard from './ProjectCard.astro';
 import StarParticleBackground from './StarParticleBackground.astro';
 
+const allProjects = getAllProjects();
 const featuredProjects = getFeaturedProjects();
 ---
 
@@ -14,9 +15,9 @@ const featuredProjects = getFeaturedProjects();
     <div class="arclab-container">
       <!-- Header -->
       <div class="text-center mb-16 arclab-fade-in">
-        <h2 class="arclab-heading-2 mb-4">Project Showcase</h2>
+        <h2 class="arclab-heading-2 mb-4">Projects</h2>
         <p class="arclab-text text-lg max-w-3xl mx-auto">
-          Exploring the intersection of artificial intelligence and robotics through research and personal projects
+          Research and personal projects exploring artificial intelligence and robotics
         </p>
       </div>
       
@@ -59,52 +60,11 @@ const featuredProjects = getFeaturedProjects();
         </button>
       </div>
       
-      <!-- Featured Projects Section -->
-      <div id="featured-section" class="mb-16">
-        <h3 class="text-2xl font-medium text-white mb-8 text-center arclab-slide-up" style="animation-delay: 0.4s;">
-          Featured Projects
-        </h3>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {featuredProjects.map((project, index) => (
-            <ProjectCard project={project} index={index} />
-          ))}
-        </div>
-      </div>
-      
-      <!-- Research Projects Section -->
-      <div id="research-section" class="mb-16">
-        <h3 class="text-2xl font-medium text-white mb-8 text-center arclab-slide-up" style="animation-delay: 0.6s;">
-          Research Projects
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {researchProjects.filter(p => !p.featured).map((project, index) => (
-            <ProjectCard project={project} index={index + featuredProjects.length} />
-          ))}
-        </div>
-      </div>
-      
-      <!-- Personal Projects Section -->
-      <div id="personal-section">
-        <h3 class="text-2xl font-medium text-white mb-8 text-center arclab-slide-up" style="animation-delay: 0.8s;">
-          Personal Projects
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {personalProjects.filter(p => !p.featured).map((project, index) => (
-            <ProjectCard project={project} index={index + researchProjects.length} />
-          ))}
-        </div>
-      </div>
-      
-      <!-- Load More Button (for future expansion) -->
-      <div class="text-center mt-12 arclab-fade-in" style="animation-delay: 1s;">
-        <button 
-          id="load-more-btn" 
-          class="arclab-button-secondary hidden"
-          aria-label="Load more projects"
-        >
-          <i class="fas fa-plus" aria-hidden="true"></i>
-          Load More Projects
-        </button>
+      <!-- Projects Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8" id="projects-grid">
+        {allProjects.map((project, index) => (
+          <ProjectCard project={project} index={index} />
+        ))}
       </div>
     </div>
   </div>
@@ -114,7 +74,6 @@ const featuredProjects = getFeaturedProjects();
   document.addEventListener('DOMContentLoaded', function() {
     const filterButtons = document.querySelectorAll('.filter-btn');
     const projectCards = document.querySelectorAll('.project-card');
-    const sections = document.querySelectorAll('#featured-section, #research-section, #personal-section');
     
     // Filter functionality
     filterButtons.forEach(button => {
@@ -135,87 +94,56 @@ const featuredProjects = getFeaturedProjects();
     });
     
     function filterProjects(filter) {
-      // Hide all sections first
-      sections.forEach(section => {
-        section.style.display = 'none';
-      });
-      
-      if (filter === 'all') {
-        // Show all sections
-        sections.forEach(section => {
-          section.style.display = 'block';
-        });
-        animateCards(projectCards);
-      } else if (filter === 'featured') {
-        // Show only featured section
-        document.getElementById('featured-section').style.display = 'block';
-        const featuredCards = document.querySelectorAll('#featured-section .project-card');
-        animateCards(featuredCards);
-      } else if (filter === 'research') {
-        // Show research section
-        document.getElementById('research-section').style.display = 'block';
-        document.getElementById('featured-section').style.display = 'block'; // Featured research projects
-        const researchCards = document.querySelectorAll('#research-section .project-card, #featured-section .project-card[data-category="research"]');
-        animateCards(researchCards);
-      } else if (filter === 'personal') {
-        // Show personal section
-        document.getElementById('personal-section').style.display = 'block';
-        document.getElementById('featured-section').style.display = 'block'; // Featured personal projects
-        const personalCards = document.querySelectorAll('#personal-section .project-card, #featured-section .project-card[data-category="personal"]');
-        animateCards(personalCards);
-      } else if (filter === 'active') {
-        // Show all sections but filter by active status
-        sections.forEach(section => {
-          section.style.display = 'block';
-        });
-        const activeCards = document.querySelectorAll('.project-card[data-status="active"]');
+      projectCards.forEach((card, index) => {
+        const shouldShow = shouldShowCard(card, filter);
         
-        // Hide non-active cards
-        projectCards.forEach(card => {
-          if (card.getAttribute('data-status') !== 'active') {
-            card.style.display = 'none';
-          } else {
-            card.style.display = 'block';
-          }
-        });
-        
-        animateCards(activeCards);
-      }
-    }
-    
-    function animateCards(cards) {
-      cards.forEach((card, index) => {
-        if (card.style.display !== 'none') {
-          card.style.opacity = '0';
-          card.style.transform = 'translateY(30px)';
-          
+        if (shouldShow) {
+          card.style.display = 'block';
           setTimeout(() => {
-            card.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
             card.style.opacity = '1';
             card.style.transform = 'translateY(0)';
-          }, index * 100);
+          }, index * 50);
+        } else {
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(20px)';
+          setTimeout(() => {
+            card.style.display = 'none';
+          }, 300);
         }
       });
     }
     
+    function shouldShowCard(card, filter) {
+      if (filter === 'all') return true;
+      
+      const category = card.getAttribute('data-category');
+      const status = card.getAttribute('data-status');
+      const featured = card.getAttribute('data-featured') === 'true';
+      
+      switch (filter) {
+        case 'featured':
+          return featured;
+        case 'research':
+          return category === 'research';
+        case 'personal':
+          return category === 'personal';
+        case 'active':
+          return status === 'active';
+        default:
+          return true;
+      }
+    }
+    
     // Add data attributes to cards for filtering
     projectCards.forEach(card => {
-      const title = card.querySelector('h3').textContent.toLowerCase();
+      const cardData = JSON.parse(card.getAttribute('data-project') || '{}');
       
-      // Add category data attribute based on section
-      if (card.closest('#research-section') || (card.closest('#featured-section') && title.includes('space') || title.includes('satellite') || title.includes('teleoperation'))) {
-        card.setAttribute('data-category', 'research');
-      } else {
-        card.setAttribute('data-category', 'personal');
-      }
+      card.setAttribute('data-category', cardData.category || 'personal');
+      card.setAttribute('data-status', cardData.status || 'completed');
+      card.setAttribute('data-featured', cardData.featured || 'false');
       
-      // Add status data attribute
-      const statusBadge = card.querySelector('[class*="text-green-400"], [class*="text-gray-400"]');
-      if (statusBadge && statusBadge.textContent.includes('active')) {
-        card.setAttribute('data-status', 'active');
-      } else {
-        card.setAttribute('data-status', 'completed');
-      }
+      // Set initial styles for smooth transitions
+      card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
     });
     
     // Intersection Observer for scroll animations
@@ -236,14 +164,6 @@ const featuredProjects = getFeaturedProjects();
     projectCards.forEach(card => {
       observer.observe(card);
     });
-    
-    // Performance optimization: Lazy load videos
-    const videos = document.querySelectorAll('video');
-    videos.forEach(video => {
-      video.addEventListener('loadstart', () => {
-        video.setAttribute('data-loaded', 'true');
-      });
-    });
   });
 </script>
 
@@ -261,21 +181,6 @@ const featuredProjects = getFeaturedProjects();
     cursor: pointer;
     position: relative;
     overflow: hidden;
-  }
-  
-  .filter-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 0.5s ease;
-  }
-  
-  .filter-btn:hover::before {
-    left: 100%;
   }
   
   .filter-btn.active {
@@ -323,17 +228,5 @@ const featuredProjects = getFeaturedProjects();
       padding: 8px 16px;
       font-size: 0.8rem;
     }
-  }
-  
-  /* Loading state for videos */
-  video:not([data-loaded]) {
-    background: linear-gradient(45deg, #1e293b, #334155);
-    background-size: 400% 400%;
-    animation: shimmer 2s ease-in-out infinite;
-  }
-  
-  @keyframes shimmer {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
   }
 </style>

@@ -1,10 +1,9 @@
 ---
-import ParticleBackground from './ParticleBackground.astro';
-import ScholarProfile from './ScholarProfile.astro';
+import StarParticleBackground from './StarParticleBackground.astro';
 ---
 
 <section id="hero" class="min-h-screen flex items-center justify-center relative overflow-hidden">
-  <ParticleBackground />
+  <StarParticleBackground />
   
   <!-- Gradient overlay -->
   <div class="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 z-10"></div>
@@ -58,7 +57,9 @@ import ScholarProfile from './ScholarProfile.astro';
               <i class="fab fa-linkedin text-lg"></i>
             </a>
             <a href="https://x.com/yourusername" target="_blank" class="w-12 h-12 arclab-card rounded-full flex items-center justify-center arclab-text hover:text-white transition-all hover:scale-110">
-              <i class="fab fa-x-twitter text-lg"></i>
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
             </a>
             <a href="mailto:acarrasco@mit.edu" class="w-12 h-12 arclab-card rounded-full flex items-center justify-center arclab-text hover:text-white transition-all hover:scale-110">
               <i class="fas fa-envelope text-lg"></i>
@@ -66,9 +67,8 @@ import ScholarProfile from './ScholarProfile.astro';
           </div>
         </div>
         
-        <!-- Scholar profile and photo -->
+        <!-- Professional Photo -->
         <div class="space-y-6 arclab-fade-in" style="animation-delay: 0.3s;">
-          <!-- Professional Photo -->
           <div class="flex justify-center">
             <div class="relative">
               <div class="relative w-64 h-64 rounded-full overflow-hidden border-2 border-slate-700/50 shadow-2xl">
@@ -80,9 +80,6 @@ import ScholarProfile from './ScholarProfile.astro';
               </div>
             </div>
           </div>
-          
-          <!-- Scholar Profile Card -->
-          <ScholarProfile />
         </div>
       </div>
       
