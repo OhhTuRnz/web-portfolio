@@ -4,12 +4,11 @@
 <div id="particle-canvas" class="fixed inset-0 pointer-events-none z-0"></div>
 
 <script>
-  class ParticleSystem {
+  class GradientParticleSystem {
     constructor() {
       this.canvas = document.createElement('canvas');
       this.ctx = this.canvas.getContext('2d');
       this.particles = [];
-      this.connections = [];
       this.mouse = { x: 0, y: 0 };
       
       this.init();
@@ -36,28 +35,28 @@
     }
     
     createParticles() {
-      const particleCount = Math.floor((this.canvas.width * this.canvas.height) / 15000);
+      const particleCount = Math.floor((this.canvas.width * this.canvas.height) / 12000);
       
       for (let i = 0; i < particleCount; i++) {
         this.particles.push({
           x: Math.random() * this.canvas.width,
           y: Math.random() * this.canvas.height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          size: Math.random() * 2 + 1,
-          opacity: Math.random() * 0.5 + 0.2,
-          color: this.getRandomColor()
+          vx: (Math.random() - 0.5) * 0.8,
+          vy: (Math.random() - 0.5) * 0.8,
+          size: Math.random() * 3 + 1,
+          opacity: Math.random() * 0.8 + 0.2,
+          hue: Math.random() * 60 + 200, // Blue to cyan range
+          saturation: 70 + Math.random() * 30,
+          lightness: 50 + Math.random() * 30,
+          pulseSpeed: 0.02 + Math.random() * 0.03
         });
       }
     }
     
-    getRandomColor() {
-      const colors = ['#60a5fa', '#a855f7', '#06b6d4', '#8b5cf6', '#3b82f6'];
-      return colors[Math.floor(Math.random() * colors.length)];
-    }
-    
     animate() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      
+      const time = Date.now() * 0.001;
       
       // Update and draw particles
       this.particles.forEach((particle, i) => {
@@ -74,16 +73,31 @@
         const dy = this.mouse.y - particle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
-        if (distance < 100) {
-          const force = (100 - distance) / 100;
-          particle.x -= dx * force * 0.01;
-          particle.y -= dy * force * 0.01;
+        if (distance < 150) {
+          const force = (150 - distance) / 150;
+          particle.x -= dx * force * 0.02;
+          particle.y -= dy * force * 0.02;
         }
+        
+        // Pulsing effect
+        const pulse = Math.sin(time * particle.pulseSpeed + i) * 0.3 + 0.7;
+        const currentOpacity = particle.opacity * pulse;
+        
+        // Create gradient for particle
+        const gradient = this.ctx.createRadialGradient(
+          particle.x, particle.y, 0,
+          particle.x, particle.y, particle.size * 2
+        );
+        
+        const color = `hsl(${particle.hue}, ${particle.saturation}%, ${particle.lightness}%)`;
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(1, 'transparent');
         
         // Draw particle
         this.ctx.beginPath();
         this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        this.ctx.fillStyle = particle.color + Math.floor(particle.opacity * 255).toString(16).padStart(2, '0');
+        this.ctx.fillStyle = gradient;
+        this.ctx.globalAlpha = currentOpacity;
         this.ctx.fill();
         
         // Draw connections
@@ -94,22 +108,37 @@
           const distance = Math.sqrt(dx * dx + dy * dy);
           
           if (distance < 120) {
+            const connectionOpacity = (1 - distance / 120) * 0.3;
+            
+            // Create gradient for connection
+            const connectionGradient = this.ctx.createLinearGradient(
+              particle.x, particle.y, other.x, other.y
+            );
+            
+            const color1 = `hsl(${particle.hue}, ${particle.saturation}%, ${particle.lightness}%)`;
+            const color2 = `hsl(${other.hue}, ${other.saturation}%, ${other.lightness}%)`;
+            
+            connectionGradient.addColorStop(0, color1);
+            connectionGradient.addColorStop(1, color2);
+            
             this.ctx.beginPath();
             this.ctx.moveTo(particle.x, particle.y);
             this.ctx.lineTo(other.x, other.y);
-            this.ctx.strokeStyle = particle.color + Math.floor((1 - distance / 120) * 50).toString(16).padStart(2, '0');
-            this.ctx.lineWidth = 0.5;
+            this.ctx.strokeStyle = connectionGradient;
+            this.ctx.globalAlpha = connectionOpacity;
+            this.ctx.lineWidth = 1;
             this.ctx.stroke();
           }
         }
       });
       
+      this.ctx.globalAlpha = 1;
       requestAnimationFrame(() => this.animate());
     }
   }
   
   // Initialize particle system when DOM is loaded
   document.addEventListener('DOMContentLoaded', () => {
-    new ParticleSystem();
+    new GradientParticleSystem();
   });
 </script>

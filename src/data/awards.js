@@ -1,63 +1,63 @@
 export const awards = [
   {
     id: "award-2024-001",
-    title: "Best Paper Award",
-    organization: "International Conference on Machine Learning (ICML)",
+    title: "Best Student Paper Award",
+    organization: "IEEE Aerospace Conference",
     year: 2024,
-    description: "Recognition for outstanding research in autonomous agent decision-making systems for space applications.",
-    link: "https://icml.cc/Conferences/2024/Awards",
+    description: "Recognition for outstanding research in autonomous spacecraft operations using large language models.",
+    link: "https://www.aeroconf.org/awards/",
     category: "research",
     icon: "🏆"
   },
   {
     id: "award-2023-001",
-    title: "MIT Presidential Fellowship",
-    organization: "Massachusetts Institute of Technology",
+    title: "MIT ARC Lab Research Excellence Award",
+    organization: "MIT Autonomous Systems Laboratory",
     year: 2023,
-    description: "Prestigious fellowship awarded to exceptional PhD students for research excellence in artificial intelligence and robotics.",
-    link: "https://odge.mit.edu/finances/fellowships/presidential/",
-    category: "fellowship",
+    description: "Award for exceptional research contributions in space robotics and autonomous systems during Master's studies.",
+    link: "https://aeroastro.mit.edu/arclab/",
+    category: "research",
     icon: "🎓"
   },
   {
     id: "award-2023-002",
-    title: "Outstanding Poster Award",
-    organization: "Neural Information Processing Systems (NeurIPS)",
+    title: "Outstanding Poster Presentation",
+    organization: "International Conference on Robotics and Automation (ICRA)",
     year: 2023,
-    description: "Recognition for innovative research in multi-agent communication systems for space applications.",
-    link: "https://neurips.cc/Conferences/2023/Awards",
+    description: "Recognition for innovative research presentation on teleoperation interface design for space applications.",
+    link: "https://www.icra2023.org/awards",
     category: "research",
     icon: "📊"
   },
   {
     id: "award-2022-001",
-    title: "NASA NIAC Phase II Grant",
-    organization: "NASA Innovative Advanced Concepts",
+    title: "NASA USRP Internship Award",
+    organization: "NASA Jet Propulsion Laboratory",
     year: 2022,
-    description: "Funding award for research in autonomous space systems and large language model integration.",
-    link: "https://www.nasa.gov/directorates/spacetech/niac/",
-    category: "funding",
+    description: "Competitive internship program for undergraduate research in spacecraft anomaly detection systems.",
+    link: "https://www.nasa.gov/learning-resources/internship-programs/",
+    category: "fellowship",
     icon: "🚀"
   },
   {
     id: "award-2022-002",
-    title: "NSF Graduate Research Fellowship",
-    organization: "National Science Foundation",
+    title: "Dean's List Recognition",
+    organization: "Universidad Politécnica de Madrid",
     year: 2022,
-    description: "Three-year fellowship supporting graduate research in artificial intelligence and robotics.",
-    link: "https://www.nsfgrfp.org/",
-    category: "fellowship",
-    icon: "🔬"
+    description: "Academic excellence recognition for outstanding performance in Computer Engineering program.",
+    link: "https://www.upm.es/",
+    category: "academic",
+    icon: "🎖️"
   },
   {
     id: "award-2021-001",
     title: "Summa Cum Laude",
     organization: "Universidad Politécnica de Madrid",
     year: 2021,
-    description: "Graduated with highest honors in Computer Engineering program with focus on artificial intelligence.",
+    description: "Graduated with highest honors in Computer Engineering program with focus on artificial intelligence and robotics.",
     link: "https://www.upm.es/",
     category: "academic",
-    icon: "🎖️"
+    icon: "🎓"
   }
 ];
 
