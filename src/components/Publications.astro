@@ -1,120 +1,160 @@
 ---
-const publications = [
-  {
-    title: "Large Language Models for Autonomous Agent Decision Making",
-    authors: "A. Carrasco, J. Smith, M. Johnson",
-    venue: "International Conference on Machine Learning (ICML)",
-    year: "2024",
-    type: "Conference",
-    pdf: "#",
-    abstract: "We present a novel approach for integrating large language models with autonomous agents to improve decision-making capabilities in complex environments.",
-    tags: ["LLM", "Autonomous Agents", "Decision Making"]
-  },
-  {
-    title: "Neural Network Architectures for Robotic Control: A Comparative Study",
-    authors: "A. Carrasco, L. Chen, R. Williams",
-    venue: "IEEE Transactions on Robotics",
-    year: "2023",
-    type: "Journal",
-    pdf: "#",
-    abstract: "This paper provides a comprehensive comparison of different neural network architectures for robotic control tasks, with focus on sample efficiency and real-world performance.",
-    tags: ["Robotics", "Neural Networks", "Control Systems"]
-  },
-  {
-    title: "Emergent Communication in Multi-Agent Reinforcement Learning",
-    authors: "A. Carrasco, K. Patel, S. Anderson",
-    venue: "Neural Information Processing Systems (NeurIPS)",
-    year: "2023",
-    type: "Conference",
-    pdf: "#",
-    abstract: "We investigate how communication protocols emerge naturally in multi-agent systems and propose methods to guide this emergence for better coordination.",
-    tags: ["Multi-Agent", "Communication", "Reinforcement Learning"]
-  },
-  {
-    title: "Attention Mechanisms for Long-Sequence Language Models",
-    authors: "A. Carrasco, D. Kim, T. Brown",
-    venue: "Association for Computational Linguistics (ACL)",
-    year: "2022",
-    type: "Conference",
-    pdf: "#",
-    abstract: "We introduce novel attention mechanisms that enable language models to process longer sequences more efficiently while maintaining performance.",
-    tags: ["Attention", "Language Models", "Efficiency"]
-  }
-];
+import { publications, getPublicationsByYear } from '../data/publications.js';
 
-const tagColors = {
-  'LLM': 'bg-blue-500',
-  'Autonomous Agents': 'bg-purple-500',
-  'Decision Making': 'bg-indigo-500',
-  'Robotics': 'bg-orange-500',
-  'Neural Networks': 'bg-yellow-500',
-  'Control Systems': 'bg-red-500',
-  'Multi-Agent': 'bg-teal-500',
-  'Communication': 'bg-cyan-500',
-  'Reinforcement Learning': 'bg-pink-500',
-  'Attention': 'bg-green-500',
-  'Language Models': 'bg-violet-500',
-  'Efficiency': 'bg-emerald-500'
+const publicationsByYear = getPublicationsByYear();
+const years = Object.keys(publicationsByYear).sort((a, b) => b - a);
+
+const typeLabels = {
+  'journal': 'Journal Article',
+  'conference': 'Conference Paper',
+  'workshop': 'Workshop Paper',
+  'preprint': 'Preprint'
+};
+
+const typeColors = {
+  'journal': 'bg-blue-600',
+  'conference': 'bg-purple-600',
+  'workshop': 'bg-green-600',
+  'preprint': 'bg-orange-600'
 };
 ---
 
-<section id="publications" class="py-20 bg-slate-800">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto">
-      <h2 class="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-        Publications
-      </h2>
-      
-      <div class="space-y-8">
-        {publications.map((pub, index) => (
-          <div class="bg-slate-700 rounded-lg p-6 hover:bg-slate-600 transition-colors group">
-            <div class="flex items-start justify-between mb-4">
-              <div class="flex-1">
-                <h3 class="text-xl font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors">
-                  {pub.title}
-                </h3>
-                <p class="text-gray-300 mb-2">{pub.authors}</p>
-                <p class="text-blue-400 font-medium">
-                  {pub.venue} • {pub.year} • {pub.type}
-                </p>
-              </div>
-              <div class="flex space-x-3 ml-4">
-                <a 
-                  href={pub.pdf} 
-                  target="_blank"
-                  class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <i class="fas fa-file-pdf mr-2"></i>PDF
-                </a>
-              </div>
-            </div>
-            
-            <p class="text-gray-300 mb-4 leading-relaxed">
-              {pub.abstract}
-            </p>
-            
-            <div class="flex flex-wrap gap-2">
-              {pub.tags.map(tag => (
-                <span class={`px-3 py-1 text-xs font-medium text-white rounded-full ${tagColors[tag] || 'bg-gray-500'}`}>
-                  {tag}
-                </span>
-              ))}
-            </div>
+<section id="publications" class="arclab-section bg-gradient-to-b from-slate-900 to-slate-800">
+  <div class="arclab-container">
+    <div class="text-center mb-16 arclab-fade-in">
+      <h2 class="arclab-heading-2">Publications</h2>
+      <p class="arclab-text text-lg max-w-3xl mx-auto">
+        Peer-reviewed research contributions in artificial intelligence and robotics
+      </p>
+    </div>
+    
+    <!-- Filter buttons -->
+    <div class="flex flex-wrap justify-center gap-3 mb-12 arclab-fade-in" style="animation-delay: 0.2s;">
+      <button class="filter-button active" data-filter="all">All Publications</button>
+      <button class="filter-button" data-filter="journal">Journal Articles</button>
+      <button class="filter-button" data-filter="conference">Conference Papers</button>
+      <button class="filter-button" data-filter="workshop">Workshop Papers</button>
+    </div>
+    
+    <!-- Publications by year -->
+    <div class="space-y-12">
+      {years.map(year => (
+        <div class="year-section">
+          <h3 class="text-xl font-semibold text-white mb-6 border-b border-gray-700 pb-2">{year}</h3>
+          <div class="space-y-6">
+            {publicationsByYear[year].map((pub, index) => (
+              <article class={`publication-item ${pub.type} arclab-card publication-entry arclab-slide-up`} style={`animation-delay: ${index * 0.1}s;`}>
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-2">
+                      <span class={`px-3 py-1 text-xs font-medium text-white rounded-full ${typeColors[pub.type]}`}>
+                        {typeLabels[pub.type]}
+                      </span>
+                      <span class="citation-count">{pub.citations} citations</span>
+                    </div>
+                    
+                    <h4 class="text-lg font-medium text-white mb-2 leading-tight">
+                      {pub.doi ? (
+                        <a href={pub.doi} target="_blank" class="hover:arclab-text-accent transition-colors hover:underline">
+                          {pub.title}
+                        </a>
+                      ) : (
+                        pub.title
+                      )}
+                    </h4>
+                    
+                    <p class="arclab-text text-sm mb-2">
+                      {pub.authors.join(', ')}
+                    </p>
+                    
+                    <p class="arclab-text-accent text-sm font-medium mb-3">
+                      {pub.venue} • {pub.year}
+                    </p>
+                    
+                    <p class="arclab-text text-sm leading-relaxed mb-4">
+                      {pub.abstract}
+                    </p>
+                    
+                    <!-- Keywords -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      {pub.keywords.map(keyword => (
+                        <span class="venue-tag text-xs">{keyword}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Action buttons -->
+                <div class="flex flex-wrap gap-3">
+                  {pub.doi && (
+                    <a href={pub.doi} target="_blank" class="arclab-button arclab-button-small">
+                      <i class="fas fa-external-link-alt"></i>
+                      DOI
+                    </a>
+                  )}
+                  {pub.pdfUrl && (
+                    <a href={pub.pdfUrl} target="_blank" class="arclab-button-secondary arclab-button-small">
+                      <i class="fas fa-file-pdf"></i>
+                      PDF
+                    </a>
+                  )}
+                </div>
+              </article>
+            ))}
           </div>
-        ))}
-      </div>
-      
-      <!-- Google Scholar Link -->
-      <div class="text-center mt-12">
-        <a 
-          href="https://scholar.google.com/citations?user=yourid" 
-          target="_blank"
-          class="inline-flex items-center px-6 py-3 bg-slate-700 text-white font-medium rounded-lg hover:bg-slate-600 transition-colors border border-slate-600 hover:border-slate-500"
-        >
-          <i class="fas fa-graduation-cap mr-2"></i>
-          View Full Publication List on Google Scholar
-        </a>
-      </div>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Google Scholar Link -->
+    <div class="text-center mt-12 arclab-fade-in" style="animation-delay: 0.6s;">
+      <a 
+        href="https://scholar.google.com/citations?user=6KamS70AAAAJ&hl=en" 
+        target="_blank"
+        class="arclab-button-secondary"
+      >
+        <i class="fas fa-graduation-cap"></i>
+        View Complete Publication List on Google Scholar
+      </a>
     </div>
   </div>
 </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-button');
+    const publications = document.querySelectorAll('.publication-item');
+    
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const filter = button.getAttribute('data-filter');
+        
+        // Update active button
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Filter publications
+        publications.forEach(pub => {
+          if (filter === 'all' || pub.classList.contains(filter)) {
+            pub.style.display = 'block';
+            pub.style.animation = 'fadeIn 0.5s ease-out forwards';
+          } else {
+            pub.style.display = 'none';
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  .publication-entry {
+    border-left: 3px solid var(--arclab-accent);
+    padding-left: var(--arclab-spacing-md);
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
