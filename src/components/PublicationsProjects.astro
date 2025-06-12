@@ -1,0 +1,247 @@
+---
+const allItems = [
+  {
+    type: 'journal',
+    title: 'Large Language Models for Autonomous Agent Decision Making',
+    authors: 'A. Carrasco, J. Smith, M. Johnson',
+    venue: 'Nature Machine Intelligence',
+    year: '2024',
+    status: 'Published',
+    doi: 'https://doi.org/10.1038/example',
+    description: 'Novel approach for integrating LLMs with autonomous agents to improve decision-making in complex environments.',
+    tags: ['LLM', 'Autonomous Agents', 'Decision Making'],
+    featured: true
+  },
+  {
+    type: 'conference-oral',
+    title: 'Neural Network Architectures for Robotic Control',
+    authors: 'A. Carrasco, L. Chen, R. Williams',
+    venue: 'International Conference on Machine Learning (ICML)',
+    year: '2024',
+    status: 'Accepted',
+    doi: 'https://proceedings.mlr.press/example',
+    description: 'Comprehensive comparison of neural architectures for robotic control with focus on sample efficiency.',
+    tags: ['Robotics', 'Neural Networks', 'Control Systems']
+  },
+  {
+    type: 'conference-poster',
+    title: 'Emergent Communication in Multi-Agent Systems',
+    authors: 'A. Carrasco, K. Patel, S. Anderson',
+    venue: 'Neural Information Processing Systems (NeurIPS)',
+    year: '2023',
+    status: 'Published',
+    doi: 'https://papers.nips.cc/example',
+    description: 'Investigation of emergent communication protocols in multi-agent reinforcement learning.',
+    tags: ['Multi-Agent', 'Communication', 'Reinforcement Learning']
+  },
+  {
+    type: 'project',
+    title: 'Kerbal Space Program AI Challenge',
+    authors: 'A. Carrasco, MIT ArcLab Team',
+    venue: 'Open Source Project',
+    year: '2024',
+    status: 'Active',
+    link: 'https://github.com/yourusername/kerbal-ai',
+    description: 'AI agents for autonomous spacecraft design and mission execution in KSP simulation environment.',
+    tags: ['Space Robotics', 'Reinforcement Learning', 'Simulation'],
+    featured: true
+  },
+  {
+    type: 'patent',
+    title: 'Adaptive Control System for Robotic Teleoperation',
+    authors: 'A. Carrasco, MIT',
+    venue: 'US Patent Application',
+    year: '2024',
+    status: 'Pending',
+    description: 'Novel control architecture for improved haptic feedback in robotic teleoperation systems.',
+    tags: ['Teleoperation', 'Control Systems', 'Patents']
+  },
+  {
+    type: 'journal',
+    title: 'Attention Mechanisms for Long-Sequence Language Models',
+    authors: 'A. Carrasco, D. Kim, T. Brown',
+    venue: 'Journal of Machine Learning Research',
+    year: '2023',
+    status: 'Published',
+    doi: 'https://jmlr.org/example',
+    description: 'Novel attention mechanisms enabling efficient processing of longer sequences in language models.',
+    tags: ['Attention', 'Language Models', 'Efficiency']
+  }
+];
+
+const typeColors = {
+  'journal': 'bg-blue-500',
+  'conference-oral': 'bg-purple-500',
+  'conference-poster': 'bg-cyan-500',
+  'project': 'bg-green-500',
+  'patent': 'bg-orange-500'
+};
+
+const typeLabels = {
+  'journal': 'Journal Paper',
+  'conference-oral': 'Conference (Oral)',
+  'conference-poster': 'Conference (Poster)',
+  'project': 'Project',
+  'patent': 'Patent'
+};
+---
+
+<section id="publications" class="py-20 bg-slate-900/30 relative">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16 animate-slide-up">
+        <h2 class="text-4xl font-light mb-4 text-white">
+          Publications & Projects
+        </h2>
+        <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+          Research output spanning journals, conferences, and open-source projects
+        </p>
+      </div>
+      
+      <!-- Filter buttons -->
+      <div class="flex flex-wrap justify-center gap-3 mb-12 animate-slide-up" style="animation-delay: 0.2s;">
+        <button class="filter-btn active px-4 py-2 bg-slate-700/50 text-white rounded-lg border border-slate-600/50 hover:bg-slate-600/50 transition-all" data-filter="all">
+          All
+        </button>
+        <button class="filter-btn px-4 py-2 bg-slate-700/50 text-gray-300 rounded-lg border border-slate-600/50 hover:bg-slate-600/50 transition-all" data-filter="journal">
+          Journal Papers
+        </button>
+        <button class="filter-btn px-4 py-2 bg-slate-700/50 text-gray-300 rounded-lg border border-slate-600/50 hover:bg-slate-600/50 transition-all" data-filter="conference-oral">
+          Conference (Oral)
+        </button>
+        <button class="filter-btn px-4 py-2 bg-slate-700/50 text-gray-300 rounded-lg border border-slate-600/50 hover:bg-slate-600/50 transition-all" data-filter="conference-poster">
+          Conference (Poster)
+        </button>
+        <button class="filter-btn px-4 py-2 bg-slate-700/50 text-gray-300 rounded-lg border border-slate-600/50 hover:bg-slate-600/50 transition-all" data-filter="project">
+          Projects
+        </button>
+        <button class="filter-btn px-4 py-2 bg-slate-700/50 text-gray-300 rounded-lg border border-slate-600/50 hover:bg-slate-600/50 transition-all" data-filter="patent">
+          Patents
+        </button>
+      </div>
+      
+      <!-- Items grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="publications-grid">
+        {allItems.map((item, index) => (
+          <div class={`publication-item ${item.type} ${item.featured ? 'featured' : ''} bg-slate-800/40 backdrop-blur-sm rounded-xl p-6 border border-slate-700/30 hover:border-blue-500/50 transition-all duration-300 hover:transform hover:scale-105 animate-slide-up`} style={`animation-delay: ${index * 0.1}s;`}>
+            <!-- Header -->
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="flex items-center space-x-3 mb-2">
+                  <span class={`px-3 py-1 text-xs font-medium text-white rounded-full ${typeColors[item.type]}`}>
+                    {typeLabels[item.type]}
+                  </span>
+                  {item.featured && (
+                    <span class="px-2 py-1 text-xs font-medium text-yellow-300 bg-yellow-600/20 rounded-full border border-yellow-500/30">
+                      Featured
+                    </span>
+                  )}
+                </div>
+                <h3 class="text-lg font-medium text-white mb-2 leading-tight hover:text-blue-400 transition-colors">
+                  {item.doi || item.link ? (
+                    <a href={item.doi || item.link} target="_blank" class="hover:underline">
+                      {item.title}
+                    </a>
+                  ) : (
+                    item.title
+                  )}
+                </h3>
+                <p class="text-gray-400 text-sm mb-1">{item.authors}</p>
+                <p class="text-blue-400 text-sm font-medium">
+                  {item.venue} • {item.year} • {item.status}
+                </p>
+              </div>
+              {(item.doi || item.link) && (
+                <a 
+                  href={item.doi || item.link} 
+                  target="_blank"
+                  class="ml-4 px-3 py-2 bg-blue-600/20 text-blue-400 text-sm font-medium rounded-lg hover:bg-blue-600/30 transition-colors border border-blue-500/30"
+                >
+                  <i class={`${item.type === 'project' ? 'fab fa-github' : 'fas fa-external-link-alt'} mr-1`}></i>
+                  {item.type === 'project' ? 'Code' : 'View'}
+                </a>
+              )}
+            </div>
+            
+            <!-- Description -->
+            <p class="text-gray-300 mb-4 leading-relaxed text-sm">{item.description}</p>
+            
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-2">
+              {item.tags.map(tag => (
+                <span class="px-2 py-1 text-xs font-medium text-gray-300 bg-slate-700/50 rounded-full border border-slate-600/30">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <!-- Google Scholar Link -->
+      <div class="text-center mt-12 animate-slide-up" style="animation-delay: 0.6s;">
+        <a 
+          href="https://scholar.google.com/citations?user=yourid" 
+          target="_blank"
+          class="inline-flex items-center px-6 py-3 bg-slate-700/50 text-white font-medium rounded-lg hover:bg-slate-600/50 transition-colors border border-slate-600/50"
+        >
+          <i class="fas fa-graduation-cap mr-2"></i>
+          View Complete Publication List on Google Scholar
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const items = document.querySelectorAll('.publication-item');
+    
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const filter = button.getAttribute('data-filter');
+        
+        // Update active button
+        filterButtons.forEach(btn => {
+          btn.classList.remove('active');
+          btn.classList.add('text-gray-300');
+          btn.classList.remove('text-white');
+        });
+        button.classList.add('active');
+        button.classList.add('text-white');
+        button.classList.remove('text-gray-300');
+        
+        // Filter items
+        items.forEach(item => {
+          if (filter === 'all' || item.classList.contains(filter)) {
+            item.style.display = 'block';
+            item.style.animation = 'fadeInUp 0.5s ease-out forwards';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  .publication-item {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  
+  .filter-btn.active {
+    background: linear-gradient(to right, #3b82f6, #06b6d4);
+    border-color: #3b82f6;
+  }
+  
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

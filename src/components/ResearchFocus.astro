@@ -1,0 +1,103 @@
+---
+const researchAreas = [
+  {
+    title: "Large Language Models & Autonomous Agents",
+    description: "Developing AI systems that can reason, plan, and execute complex tasks autonomously. Focus on integrating LLMs with robotic control systems for enhanced decision-making capabilities.",
+    icon: "🤖",
+    image: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800",
+    publications: ["LLM-Powered Autonomous Agents for Space Missions", "Neural Planning with Language Models"],
+    projects: ["Autonomous Mars Rover Navigation", "Multi-Agent Coordination Framework"]
+  },
+  {
+    title: "Robotic Teleoperation & Human-Robot Interaction",
+    description: "Advanced teleoperation systems for complex manipulation tasks. Research on haptic feedback, shared autonomy, and intuitive control interfaces for space and terrestrial applications.",
+    icon: "🦾",
+    image: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800",
+    publications: ["Haptic Feedback in Space Teleoperation", "Shared Autonomy for Robotic Manipulation"],
+    projects: ["ISS Robotic Arm Control", "Humanoid Teleoperation System"]
+  },
+  {
+    title: "Space Robotics & Autonomous Systems",
+    description: "Developing robust AI systems for space exploration missions. Focus on autonomous navigation, resource utilization, and multi-robot coordination in extreme environments.",
+    icon: "🚀",
+    image: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800",
+    publications: ["Autonomous Systems for Mars Exploration", "Multi-Robot Coordination in Space"],
+    projects: ["Kerbal Space Program AI Challenge", "Lunar Base Construction Robots"]
+  }
+];
+---
+
+<section id="research" class="py-20 bg-slate-800/30 relative">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16 animate-slide-up">
+        <h2 class="text-4xl font-light mb-4 text-white">
+          Research Focus
+        </h2>
+        <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+          Exploring the intersection of artificial intelligence and robotics to create intelligent systems for the future
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {researchAreas.map((area, index) => (
+          <div class="research-card group bg-slate-800/40 backdrop-blur-sm rounded-2xl overflow-hidden border border-slate-700/30 hover:border-blue-500/50 transition-all duration-500 hover:transform hover:scale-105 animate-slide-up" style={`animation-delay: ${index * 0.2}s;`}>
+            <!-- Image/Icon Header -->
+            <div class="relative h-48 overflow-hidden">
+              <img 
+                src={area.image} 
+                alt={area.title}
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
+              <div class="absolute top-4 left-4 text-4xl">{area.icon}</div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <h3 class="text-xl font-medium text-white mb-2 leading-tight">{area.title}</h3>
+              </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 space-y-4">
+              <p class="text-gray-300 leading-relaxed text-sm">{area.description}</p>
+              
+              <!-- Publications -->
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium text-blue-400">Key Publications</h4>
+                <ul class="space-y-1">
+                  {area.publications.map(pub => (
+                    <li class="text-xs text-gray-400 hover:text-gray-300 transition-colors cursor-pointer">• {pub}</li>
+                  ))}
+                </ul>
+              </div>
+              
+              <!-- Projects -->
+              <div class="space-y-2">
+                <h4 class="text-sm font-medium text-purple-400">Active Projects</h4>
+                <ul class="space-y-1">
+                  {area.projects.map(project => (
+                    <li class="text-xs text-gray-400 hover:text-gray-300 transition-colors cursor-pointer">• {project}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .research-card {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
