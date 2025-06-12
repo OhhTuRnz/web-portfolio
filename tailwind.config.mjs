@@ -34,7 +34,7 @@ export default {
         }
       },
       animation: {
-        'fade-in': 'fadeIn 0.8s ease-in-out',
+        'fade-in': 'fadeIn 1s ease-in-out',
         'slide-up': 'slideUp 0.8s ease-out',
         'float': 'float 6s ease-in-out infinite',
         'spin-slow': 'spin 20s linear infinite',

@@ -1,108 +1,105 @@
 ---
 ---
 
-<section id="about" class="py-20 bg-slate-800 relative overflow-hidden">
-  <!-- Background tech pattern -->
-  <div class="absolute inset-0 opacity-5">
-    <svg class="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern id="tech-grid" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
-          <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#60a5fa" stroke-width="0.5"/>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#tech-grid)"/>
-    </svg>
-  </div>
-
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="max-w-4xl mx-auto">
-      <h2 class="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-500 bg-clip-text text-transparent animate-slide-up">
+<section id="about" class="py-20 bg-slate-800/50 relative">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-4xl font-light text-center mb-16 text-white animate-slide-up">
         About Me
       </h2>
       
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
         <!-- Content -->
-        <div class="space-y-6 animate-slide-up" style="animation-delay: 0.2s;">
-          <p class="text-lg text-gray-300 leading-relaxed">
-            I'm a PhD candidate at MIT specializing in artificial intelligence and robotics. 
-            My research focuses on developing intelligent systems that can understand, reason, 
-            and interact with the world autonomously.
-          </p>
+        <div class="space-y-8 animate-slide-up" style="animation-delay: 0.2s;">
+          <div class="space-y-6">
+            <p class="text-lg text-gray-300 leading-relaxed">
+              I'm a PhD candidate at MIT specializing in artificial intelligence and robotics. 
+              My research focuses on developing intelligent systems that can understand, reason, 
+              and interact with the world autonomously.
+            </p>
+            
+            <p class="text-lg text-gray-300 leading-relaxed">
+              Currently working on <span class="text-blue-400 font-medium">Large Language Models</span> integration with autonomous agents, 
+              exploring how we can create AI systems that not only process information but 
+              can take meaningful actions in complex environments like space missions and robotic teleoperation.
+            </p>
+          </div>
           
-          <p class="text-lg text-gray-300 leading-relaxed">
-            Currently working on <span class="text-blue-400 font-semibold">Large Language Models</span> integration with autonomous agents, 
-            exploring how we can create AI systems that not only process information but 
-            can take meaningful actions in complex environments like space missions and robotic teleoperation.
-          </p>
-          
-          <div class="space-y-4">
-            <h3 class="text-xl font-semibold text-white">Research Focus Areas</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="flex items-center space-x-3 p-3 bg-slate-700/50 rounded-lg border border-blue-500/20 hover:border-blue-500/40 transition-all">
-                <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                <span class="text-gray-300">Large Language Models</span>
+          <div class="space-y-6">
+            <h3 class="text-xl font-medium text-white">Research Focus Areas</h3>
+            <div class="space-y-3">
+              <div class="flex items-center space-x-4 p-4 bg-slate-700/30 rounded-lg border border-slate-600/30 hover:border-blue-500/30 transition-all">
+                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span class="text-gray-300">Large Language Models & Autonomous Agents</span>
               </div>
-              <div class="flex items-center space-x-3 p-3 bg-slate-700/50 rounded-lg border border-purple-500/20 hover:border-purple-500/40 transition-all">
-                <div class="w-3 h-3 bg-purple-500 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
-                <span class="text-gray-300">Autonomous Agents</span>
+              <div class="flex items-center space-x-4 p-4 bg-slate-700/30 rounded-lg border border-slate-600/30 hover:border-purple-500/30 transition-all">
+                <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                <span class="text-gray-300">Robotics Control & Teleoperation</span>
               </div>
-              <div class="flex items-center space-x-3 p-3 bg-slate-700/50 rounded-lg border border-cyan-500/20 hover:border-cyan-500/40 transition-all">
-                <div class="w-3 h-3 bg-cyan-500 rounded-full animate-pulse" style="animation-delay: 1s;"></div>
-                <span class="text-gray-300">Robotics Control</span>
-              </div>
-              <div class="flex items-center space-x-3 p-3 bg-slate-700/50 rounded-lg border border-indigo-500/20 hover:border-indigo-500/40 transition-all">
-                <div class="w-3 h-3 bg-indigo-500 rounded-full animate-pulse" style="animation-delay: 1.5s;"></div>
-                <span class="text-gray-300">Multi-Agent Systems</span>
-              </div>
-              <div class="flex items-center space-x-3 p-3 bg-slate-700/50 rounded-lg border border-pink-500/20 hover:border-pink-500/40 transition-all">
-                <div class="w-3 h-3 bg-pink-500 rounded-full animate-pulse" style="animation-delay: 2s;"></div>
-                <span class="text-gray-300">Teleoperation</span>
-              </div>
-              <div class="flex items-center space-x-3 p-3 bg-slate-700/50 rounded-lg border border-green-500/20 hover:border-green-500/40 transition-all">
-                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse" style="animation-delay: 2.5s;"></div>
-                <span class="text-gray-300">Space Robotics</span>
+              <div class="flex items-center space-x-4 p-4 bg-slate-700/30 rounded-lg border border-slate-600/30 hover:border-cyan-500/30 transition-all">
+                <div class="w-2 h-2 bg-cyan-500 rounded-full"></div>
+                <span class="text-gray-300">Multi-Agent Systems & Space Robotics</span>
               </div>
             </div>
           </div>
         </div>
         
-        <!-- Enhanced Institutions with Twitter/X -->
+        <!-- Institutions -->
         <div class="space-y-8 animate-slide-up" style="animation-delay: 0.4s;">
-          <h3 class="text-xl font-semibold text-white text-center">Affiliated Institutions</h3>
-          <div class="grid grid-cols-2 gap-6">
-            <div class="bg-gradient-to-br from-slate-700 to-slate-600 rounded-lg p-6 text-center hover:from-slate-600 hover:to-slate-500 transition-all transform hover:scale-105 border border-slate-600 hover:border-blue-500/50">
-              <img src="/src/assets/logos/MIT_logo.svg" alt="MIT" class="w-16 h-16 mx-auto mb-3 object-contain">
-              <h4 class="font-semibold text-white">MIT</h4>
-              <p class="text-sm text-gray-400">PhD Candidate</p>
+          <h3 class="text-xl font-medium text-white text-center">Affiliated Institutions</h3>
+          
+          <!-- Linear institution layout -->
+          <div class="space-y-6">
+            <div class="flex items-center space-x-6 p-6 bg-slate-700/20 rounded-lg border border-slate-600/20 hover:border-blue-500/30 transition-all">
+              <img src="/src/assets/logos/MIT_logo.svg" alt="MIT" class="w-16 h-16 object-contain">
+              <div class="flex-1">
+                <h4 class="font-medium text-white text-lg">Massachusetts Institute of Technology</h4>
+                <p class="text-gray-400">PhD Candidate in Artificial Intelligence</p>
+                <p class="text-sm text-blue-400">2022 - Present</p>
+              </div>
             </div>
-            <div class="bg-gradient-to-br from-slate-700 to-slate-600 rounded-lg p-6 text-center hover:from-slate-600 hover:to-slate-500 transition-all transform hover:scale-105 border border-slate-600 hover:border-purple-500/50">
-              <img src="/src/assets/logos/mit-arclab-logo.jpg" alt="MIT ArcLab" class="w-16 h-16 mx-auto mb-3 object-contain rounded">
-              <h4 class="font-semibold text-white">MIT ArcLab</h4>
-              <p class="text-sm text-gray-400">Research Assistant</p>
+            
+            <div class="flex items-center space-x-6 p-6 bg-slate-700/20 rounded-lg border border-slate-600/20 hover:border-purple-500/30 transition-all">
+              <img src="/src/assets/logos/mit-arclab-logo.jpg" alt="MIT ArcLab" class="w-16 h-16 object-contain rounded">
+              <div class="flex-1">
+                <h4 class="font-medium text-white text-lg">MIT ArcLab</h4>
+                <p class="text-gray-400">Research Assistant</p>
+                <p class="text-sm text-purple-400">Autonomous Systems & Robotics</p>
+              </div>
             </div>
-            <div class="bg-gradient-to-br from-slate-700 to-slate-600 rounded-lg p-6 text-center hover:from-slate-600 hover:to-slate-500 transition-all transform hover:scale-105 border border-slate-600 hover:border-cyan-500/50">
-              <img src="/src/assets/logos/upm-logo.png" alt="UPM" class="w-16 h-16 mx-auto mb-3 object-contain">
-              <h4 class="font-semibold text-white">UPM</h4>
-              <p class="text-sm text-gray-400">Master's Degree</p>
+            
+            <div class="flex items-center space-x-6 p-6 bg-slate-700/20 rounded-lg border border-slate-600/20 hover:border-cyan-500/30 transition-all">
+              <img src="/src/assets/logos/upm-logo.png" alt="UPM" class="w-16 h-16 object-contain">
+              <div class="flex-1">
+                <h4 class="font-medium text-white text-lg">Universidad Politécnica de Madrid</h4>
+                <p class="text-gray-400">Master's in Computer Engineering</p>
+                <p class="text-sm text-cyan-400">2020 - 2022</p>
+              </div>
             </div>
-            <div class="bg-gradient-to-br from-slate-700 to-slate-600 rounded-lg p-6 text-center hover:from-slate-600 hover:to-slate-500 transition-all transform hover:scale-105 border border-slate-600 hover:border-green-500/50">
-              <img src="/src/assets/logos/etsisi-logo.png" alt="ETSISI" class="w-16 h-16 mx-auto mb-3 object-contain">
-              <h4 class="font-semibold text-white">ETSISI</h4>
-              <p class="text-sm text-gray-400">Bachelor's Degree</p>
+            
+            <div class="flex items-center space-x-6 p-6 bg-slate-700/20 rounded-lg border border-slate-600/20 hover:border-green-500/30 transition-all">
+              <img src="/src/assets/logos/etsisi-logo.png" alt="ETSISI" class="w-16 h-16 object-contain">
+              <div class="flex-1">
+                <h4 class="font-medium text-white text-lg">ETSISI - UPM</h4>
+                <p class="text-gray-400">Bachelor's in Software Engineering</p>
+                <p class="text-sm text-green-400">2016 - 2020</p>
+              </div>
             </div>
           </div>
           
           <!-- Social Media Presence -->
-          <div class="bg-gradient-to-r from-slate-700/50 to-slate-600/50 rounded-lg p-6 border border-slate-600">
-            <h4 class="text-lg font-semibold text-white mb-4 text-center">Connect & Follow</h4>
+          <div class="bg-slate-700/20 rounded-lg p-6 border border-slate-600/20">
+            <h4 class="text-lg font-medium text-white mb-4 text-center">Connect & Follow</h4>
             <div class="flex justify-center space-x-4">
-              <a href="https://twitter.com/yourusername" target="_blank" 
-                 class="flex items-center space-x-2 bg-slate-800 hover:bg-blue-600 px-4 py-2 rounded-lg transition-all transform hover:scale-105">
-                <i class="fab fa-x-twitter text-white"></i>
+              <a href="https://x.com/yourusername" target="_blank" 
+                 class="flex items-center space-x-2 bg-slate-800/50 hover:bg-slate-700 px-4 py-2 rounded-lg transition-all transform hover:scale-105 border border-slate-700/50">
+                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
                 <span class="text-white text-sm">@YourHandle</span>
               </a>
               <a href="https://github.com/yourusername" target="_blank" 
-                 class="flex items-center space-x-2 bg-slate-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-all transform hover:scale-105">
+                 class="flex items-center space-x-2 bg-slate-800/50 hover:bg-slate-700 px-4 py-2 rounded-lg transition-all transform hover:scale-105 border border-slate-700/50">
                 <i class="fab fa-github text-white"></i>
                 <span class="text-white text-sm">GitHub</span>
               </a>

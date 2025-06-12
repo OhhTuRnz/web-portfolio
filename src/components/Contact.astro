@@ -1,24 +1,11 @@
 ---
 ---
 
-<section id="contact" class="py-20 bg-slate-900 relative overflow-hidden">
-  <!-- Background tech pattern -->
-  <div class="absolute inset-0 opacity-5">
-    <svg class="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern id="contact-circuit" x="0" y="0" width="25" height="25" patternUnits="userSpaceOnUse">
-          <path d="M 12.5,0 L 12.5,12.5 M 0,12.5 L 25,12.5" stroke="#60a5fa" stroke-width="0.5" fill="none"/>
-          <circle cx="12.5" cy="12.5" r="1.5" fill="#60a5fa"/>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#contact-circuit)"/>
-    </svg>
-  </div>
-
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+<section id="contact" class="py-20 bg-slate-900/50 relative">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
       <div class="text-center mb-16 animate-slide-up">
-        <h2 class="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-500 bg-clip-text text-transparent">
+        <h2 class="text-4xl font-light mb-4 text-white">
           Get In Touch
         </h2>
         <p class="text-xl text-gray-400 max-w-2xl mx-auto">
@@ -30,7 +17,7 @@
         <!-- Contact Info -->
         <div class="space-y-8 animate-slide-up" style="animation-delay: 0.2s;">
           <div>
-            <h3 class="text-2xl font-semibold text-white mb-4">Let's Connect</h3>
+            <h3 class="text-2xl font-medium text-white mb-4">Let's Connect</h3>
             <p class="text-gray-300 text-lg leading-relaxed">
               I'm always open to discussing new research opportunities, collaborations, 
               or innovative projects in AI and robotics. Whether you're interested in 
@@ -39,7 +26,7 @@
           </div>
           
           <div class="space-y-6">
-            <div class="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-lg border border-blue-500/20 hover:border-blue-500/40 transition-all">
+            <div class="flex items-center space-x-4 p-4 bg-slate-800/30 rounded-lg border border-slate-700/30">
               <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-full flex items-center justify-center">
                 <i class="fas fa-envelope text-white"></i>
               </div>
@@ -51,7 +38,7 @@
               </div>
             </div>
             
-            <div class="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-lg border border-purple-500/20 hover:border-purple-500/40 transition-all">
+            <div class="flex items-center space-x-4 p-4 bg-slate-800/30 rounded-lg border border-slate-700/30">
               <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
                 <i class="fas fa-map-marker-alt text-white"></i>
               </div>
@@ -61,7 +48,7 @@
               </div>
             </div>
             
-            <div class="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-lg border border-green-500/20 hover:border-green-500/40 transition-all">
+            <div class="flex items-center space-x-4 p-4 bg-slate-800/30 rounded-lg border border-slate-700/30">
               <div class="w-12 h-12 bg-gradient-to-br from-green-600 to-teal-600 rounded-full flex items-center justify-center">
                 <i class="fas fa-calendar text-white"></i>
               </div>
@@ -72,36 +59,38 @@
             </div>
           </div>
           
-          <!-- Enhanced Social Links with Twitter/X -->
+          <!-- Social Links -->
           <div>
             <h4 class="text-white font-medium mb-4">Connect on Social</h4>
             <div class="grid grid-cols-2 gap-3">
               <a href="https://github.com/yourusername" target="_blank" 
-                 class="flex items-center space-x-3 p-3 bg-slate-800 rounded-lg hover:bg-gray-700 transition-all transform hover:scale-105 border border-slate-700 hover:border-gray-500">
-                <i class="fab fa-github text-xl"></i>
+                 class="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 transition-all border border-slate-700/30">
+                <i class="fab fa-github text-lg"></i>
                 <span class="text-white text-sm">GitHub</span>
               </a>
               <a href="https://linkedin.com/in/yourusername" target="_blank" 
-                 class="flex items-center space-x-3 p-3 bg-slate-800 rounded-lg hover:bg-blue-600 transition-all transform hover:scale-105 border border-slate-700 hover:border-blue-500">
-                <i class="fab fa-linkedin text-xl"></i>
+                 class="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 transition-all border border-slate-700/30">
+                <i class="fab fa-linkedin text-lg"></i>
                 <span class="text-white text-sm">LinkedIn</span>
               </a>
-              <a href="https://twitter.com/yourusername" target="_blank" 
-                 class="flex items-center space-x-3 p-3 bg-slate-800 rounded-lg hover:bg-black transition-all transform hover:scale-105 border border-slate-700 hover:border-gray-600">
-                <i class="fab fa-x-twitter text-xl"></i>
+              <a href="https://x.com/yourusername" target="_blank" 
+                 class="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 transition-all border border-slate-700/30">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
                 <span class="text-white text-sm">Twitter/X</span>
               </a>
               <a href="https://scholar.google.com/citations?user=yourid" target="_blank" 
-                 class="flex items-center space-x-3 p-3 bg-slate-800 rounded-lg hover:bg-red-600 transition-all transform hover:scale-105 border border-slate-700 hover:border-red-500">
-                <i class="fas fa-graduation-cap text-xl"></i>
+                 class="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 transition-all border border-slate-700/30">
+                <i class="fas fa-graduation-cap text-lg"></i>
                 <span class="text-white text-sm">Scholar</span>
               </a>
             </div>
           </div>
         </div>
         
-        <!-- Enhanced Contact Form -->
-        <div class="bg-gradient-to-br from-slate-800/80 to-slate-700/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-slate-600 animate-slide-up" style="animation-delay: 0.4s;">
+        <!-- Contact Form -->
+        <div class="bg-slate-800/30 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/30 animate-slide-up" style="animation-delay: 0.4s;">
           <form class="space-y-6" action="#" method="POST">
             <div>
               <label for="name" class="block text-sm font-medium text-gray-300 mb-2">
@@ -112,7 +101,7 @@
                 id="name" 
                 name="name" 
                 required
-                class="w-full px-4 py-3 bg-slate-700/80 backdrop-blur-sm border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all hover:border-slate-500"
+                class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
                 placeholder="Your full name"
               />
             </div>
@@ -126,7 +115,7 @@
                 id="email" 
                 name="email" 
                 required
-                class="w-full px-4 py-3 bg-slate-700/80 backdrop-blur-sm border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all hover:border-slate-500"
+                class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
                 placeholder="your.email@example.com"
               />
             </div>
@@ -139,7 +128,7 @@
                 id="subject" 
                 name="subject" 
                 required
-                class="w-full px-4 py-3 bg-slate-700/80 backdrop-blur-sm border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all hover:border-slate-500"
+                class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
               >
                 <option value="">Select a subject</option>
                 <option value="research">Research Collaboration</option>
@@ -161,18 +150,18 @@
                 name="message" 
                 rows="5" 
                 required
-                class="w-full px-4 py-3 bg-slate-700/80 backdrop-blur-sm border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none hover:border-slate-500"
+                class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all resize-none"
                 placeholder="Tell me about your project or inquiry..."
               ></textarea>
             </div>
             
             <button 
               type="submit"
-              class="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 text-white font-semibold py-4 px-6 rounded-lg hover:from-blue-700 hover:via-purple-700 hover:to-cyan-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-800 shadow-lg hover:shadow-xl"
+              class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-medium py-4 px-6 rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-slate-800 shadow-lg"
             >
               <span class="flex items-center justify-center space-x-2">
                 <span>Send Message</span>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                 </svg>
               </span>
