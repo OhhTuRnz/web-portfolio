@@ -4,25 +4,19 @@ const researchAreas = [
     title: "Large Language Models & Autonomous Agents",
     description: "Developing AI systems that can reason, plan, and execute complex tasks autonomously. Focus on integrating LLMs with robotic control systems for enhanced decision-making capabilities in space and terrestrial environments.",
     image: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800",
-    publications: ["LLM-Powered Autonomous Agents for Space Missions", "Neural Planning with Language Models"],
-    projects: ["Autonomous Mars Rover Navigation", "Multi-Agent Coordination Framework"],
-    technologies: ["PyTorch", "Transformers", "ROS2", "Python"]
+    technologies: ["PyTorch", "Transformers", "ROS2", "Python", "Reinforcement Learning"]
   },
   {
     title: "Robotic Teleoperation & Human-Robot Interaction",
     description: "Advanced teleoperation systems for complex manipulation tasks. Research on haptic feedback, shared autonomy, and intuitive control interfaces for space and terrestrial applications with focus on operator performance.",
     image: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800",
-    publications: ["Haptic Feedback in Space Teleoperation", "Shared Autonomy for Robotic Manipulation"],
-    projects: ["ISS Robotic Arm Control", "Humanoid Teleoperation System"],
-    technologies: ["ROS", "C++", "MATLAB", "Haptic Devices"]
+    technologies: ["ROS", "C++", "MATLAB", "Haptic Devices", "Real-time Systems"]
   },
   {
     title: "Space Robotics & Autonomous Systems",
     description: "Developing robust AI systems for space exploration missions. Focus on autonomous navigation, resource utilization, and multi-robot coordination in extreme environments with limited communication.",
     image: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800",
-    publications: ["Autonomous Systems for Mars Exploration", "Multi-Robot Coordination in Space"],
-    projects: ["Kerbal Space Program AI Challenge", "Lunar Base Construction Robots"],
-    technologies: ["Reinforcement Learning", "Computer Vision", "SLAM", "Mission Planning"]
+    technologies: ["Reinforcement Learning", "Computer Vision", "SLAM", "Mission Planning", "Orbital Mechanics"]
   }
 ];
 ---
@@ -62,26 +56,6 @@ const researchAreas = [
                   <span class="venue-tag text-xs">{tech}</span>
                 ))}
               </div>
-            </div>
-            
-            <!-- Publications -->
-            <div class="space-y-2">
-              <h4 class="text-sm font-medium text-blue-400">Recent Publications</h4>
-              <ul class="space-y-1">
-                {area.publications.slice(0, 2).map(pub => (
-                  <li class="text-xs arclab-text hover:text-gray-300 transition-colors cursor-pointer">• {pub}</li>
-                ))}
-              </ul>
-            </div>
-            
-            <!-- Projects -->
-            <div class="space-y-2">
-              <h4 class="text-sm font-medium text-purple-400">Active Projects</h4>
-              <ul class="space-y-1">
-                {area.projects.slice(0, 2).map(project => (
-                  <li class="text-xs arclab-text hover:text-gray-300 transition-colors cursor-pointer">• {project}</li>
-                ))}
-              </ul>
             </div>
           </div>
         </div>

@@ -1,5 +1,45 @@
 export const awards = [
   {
+    id: "award-2025-001",
+    title: "Kerbal Space Program Differential Games Challenge (KSPDG) 2nd Position",
+    organization: "KSPDG Competition",
+    year: 2025,
+    description: "Second place achievement in the prestigious Kerbal Space Program Differential Games Challenge, demonstrating advanced autonomous control algorithms for space missions.",
+    link: "https://kspdg.com/",
+    category: "research",
+    icon: "🚀"
+  },
+  {
+    id: "award-2024-003",
+    title: "PhD Admission - Top 3% Pool",
+    organization: "MIT Department of Aeronautics and Astronautics",
+    year: 2024,
+    description: "Admitted to the highly selective PhD program in AeroAstro at MIT, ranking in the top 3% of applicants worldwide.",
+    link: "https://aeroastro.mit.edu/",
+    category: "academic",
+    icon: "🎓"
+  },
+  {
+    id: "award-2024-004",
+    title: "Best Bachelor Thesis for National Defense Award",
+    organization: "Centro Superior de Estudios de la Defensa Nacional (CESEDEN)",
+    year: 2024,
+    description: "Recognition for outstanding bachelor thesis contributing to national defense research and applications in autonomous systems.",
+    link: "https://www.defensa.gob.es/ceseden/",
+    category: "academic",
+    icon: "🏅"
+  },
+  {
+    id: "award-2024-005",
+    title: "Kerbal Space Program Differential Games Challenge (KSPDG) 2nd Position",
+    organization: "KSPDG Competition",
+    year: 2024,
+    description: "Second place achievement in the Kerbal Space Program Differential Games Challenge, showcasing best AI solution for autonomous space mission planning and execution.",
+    link: "https://kspdg.com/",
+    category: "research",
+    icon: "🤖"
+  },
+  {
     id: "award-2024-001",
     title: "Best Student Paper Award",
     organization: "IEEE Aerospace Conference",

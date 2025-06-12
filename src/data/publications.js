@@ -154,7 +154,10 @@ export const projects = [
 
 // Helper functions for data manipulation
 export function getPublicationsByYear() {
-  return publications.reduce((acc, pub) => {
+  // Sort publications by year in descending order (newest first)
+  const sortedPublications = [...publications].sort((a, b) => b.year - a.year);
+  
+  return sortedPublications.reduce((acc, pub) => {
     if (!acc[pub.year]) acc[pub.year] = [];
     acc[pub.year].push(pub);
     return acc;
