@@ -1,0 +1,168 @@
+---
+const projects = [
+  {
+    title: 'LLM-Powered Autonomous Agents',
+    description: 'Research on integrating Large Language Models with autonomous agents for enhanced decision-making and task execution capabilities. This project explores advanced techniques for few-shot learning in complex environments.',
+    image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800',
+    technologies: ['LLMs', 'Autonomous Agents', 'Python', 'Reinforcement Learning'],
+    github: 'https://github.com/yourusername/llm-agents',
+    demo: '#',
+    featured: true
+  },
+  {
+    title: 'Robotic Control with Neural Networks',
+    description: 'Implementation of advanced neural network architectures for improved robotic control and motion planning. Focus on sample efficiency and sim-to-real transfer.',
+    image: 'https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800',
+    technologies: ['Robotics', 'Neural Networks', 'ROS', 'PyTorch'],
+    github: 'https://github.com/yourusername/robotic-control',
+    demo: '#',
+    featured: true
+  },
+  {
+    title: 'Multi-Agent Learning Systems',
+    description: 'Development of multi-agent systems using reinforcement learning for collaborative problem-solving. Investigation of emergent communication and coordination strategies.',
+    image: 'https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=800',
+    technologies: ['Multi-Agent', 'RL', 'PyTorch', 'Communication'],
+    github: 'https://github.com/yourusername/multi-agent-learning',
+    demo: '#',
+    featured: false
+  },
+  {
+    title: 'Open Source LLM Framework',
+    description: 'Contributing to and maintaining an open-source framework for training and deploying large language models. Focus on memory optimization and attention mechanisms.',
+    image: 'https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?auto=compress&cs=tinysrgb&w=800',
+    technologies: ['Open Source', 'LLM', 'C++', 'Python'],
+    github: 'https://github.com/yourusername/llm-framework',
+    demo: '#',
+    featured: false
+  }
+];
+
+const techColors = {
+  'LLMs': 'bg-blue-100 text-blue-800',
+  'Autonomous Agents': 'bg-purple-100 text-purple-800',
+  'Python': 'bg-green-100 text-green-800',
+  'Reinforcement Learning': 'bg-red-100 text-red-800',
+  'Robotics': 'bg-orange-100 text-orange-800',
+  'Neural Networks': 'bg-yellow-100 text-yellow-800',
+  'ROS': 'bg-indigo-100 text-indigo-800',
+  'PyTorch': 'bg-pink-100 text-pink-800',
+  'Multi-Agent': 'bg-teal-100 text-teal-800',
+  'RL': 'bg-cyan-100 text-cyan-800',
+  'Communication': 'bg-lime-100 text-lime-800',
+  'Open Source': 'bg-emerald-100 text-emerald-800',
+  'LLM': 'bg-violet-100 text-violet-800',
+  'C++': 'bg-rose-100 text-rose-800'
+};
+---
+
+<section id="projects" class="py-20 bg-slate-900">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+        Featured Projects
+      </h2>
+      
+      <!-- Featured Projects -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+        {projects.filter(p => p.featured).map(project => (
+          <div class="bg-slate-800 rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
+            <div class="relative overflow-hidden">
+              <img 
+                src={project.image} 
+                alt={project.title}
+                class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            
+            <div class="p-6">
+              <h3 class="text-xl font-semibold text-white mb-3 group-hover:text-blue-400 transition-colors">
+                {project.title}
+              </h3>
+              <p class="text-gray-300 mb-4 leading-relaxed">
+                {project.description}
+              </p>
+              
+              <div class="flex flex-wrap gap-2 mb-6">
+                {project.technologies.map(tech => (
+                  <span class={`px-3 py-1 text-xs font-medium rounded-full ${techColors[tech] || 'bg-gray-100 text-gray-800'}`}>
+                    {tech}
+                  </span>
+                ))}
+              </div>
+              
+              <div class="flex space-x-4">
+                <a 
+                  href={project.github} 
+                  target="_blank"
+                  class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors"
+                >
+                  <i class="fab fa-github"></i>
+                  <span>Code</span>
+                </a>
+                <a 
+                  href={project.demo}
+                  class="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  <i class="fas fa-external-link-alt"></i>
+                  <span>Demo</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <!-- Other Projects -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {projects.filter(p => !p.featured).map(project => (
+          <div class="bg-slate-800 rounded-lg p-6 hover:bg-slate-700 transition-colors group">
+            <h3 class="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors">
+              {project.title}
+            </h3>
+            <p class="text-gray-300 text-sm mb-4 leading-relaxed">
+              {project.description}
+            </p>
+            
+            <div class="flex flex-wrap gap-2 mb-4">
+              {project.technologies.slice(0, 3).map(tech => (
+                <span class={`px-2 py-1 text-xs font-medium rounded ${techColors[tech] || 'bg-gray-100 text-gray-800'}`}>
+                  {tech}
+                </span>
+              ))}
+            </div>
+            
+            <div class="flex space-x-4">
+              <a 
+                href={project.github} 
+                target="_blank"
+                class="text-gray-400 hover:text-white transition-colors"
+              >
+                <i class="fab fa-github"></i>
+              </a>
+              <a 
+                href={project.demo}
+                class="text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                <i class="fas fa-external-link-alt"></i>
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <!-- View All Projects Button -->
+      <div class="text-center mt-12">
+        <a 
+          href="https://github.com/yourusername" 
+          target="_blank"
+          class="inline-flex items-center px-6 py-3 bg-slate-800 text-white font-medium rounded-lg hover:bg-slate-700 transition-colors border border-slate-700 hover:border-slate-600"
+        >
+          View All Projects on GitHub
+          <i class="fab fa-github ml-2"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

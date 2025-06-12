@@ -1,0 +1,120 @@
+---
+const publications = [
+  {
+    title: "Large Language Models for Autonomous Agent Decision Making",
+    authors: "A. Carrasco, J. Smith, M. Johnson",
+    venue: "International Conference on Machine Learning (ICML)",
+    year: "2024",
+    type: "Conference",
+    pdf: "#",
+    abstract: "We present a novel approach for integrating large language models with autonomous agents to improve decision-making capabilities in complex environments.",
+    tags: ["LLM", "Autonomous Agents", "Decision Making"]
+  },
+  {
+    title: "Neural Network Architectures for Robotic Control: A Comparative Study",
+    authors: "A. Carrasco, L. Chen, R. Williams",
+    venue: "IEEE Transactions on Robotics",
+    year: "2023",
+    type: "Journal",
+    pdf: "#",
+    abstract: "This paper provides a comprehensive comparison of different neural network architectures for robotic control tasks, with focus on sample efficiency and real-world performance.",
+    tags: ["Robotics", "Neural Networks", "Control Systems"]
+  },
+  {
+    title: "Emergent Communication in Multi-Agent Reinforcement Learning",
+    authors: "A. Carrasco, K. Patel, S. Anderson",
+    venue: "Neural Information Processing Systems (NeurIPS)",
+    year: "2023",
+    type: "Conference",
+    pdf: "#",
+    abstract: "We investigate how communication protocols emerge naturally in multi-agent systems and propose methods to guide this emergence for better coordination.",
+    tags: ["Multi-Agent", "Communication", "Reinforcement Learning"]
+  },
+  {
+    title: "Attention Mechanisms for Long-Sequence Language Models",
+    authors: "A. Carrasco, D. Kim, T. Brown",
+    venue: "Association for Computational Linguistics (ACL)",
+    year: "2022",
+    type: "Conference",
+    pdf: "#",
+    abstract: "We introduce novel attention mechanisms that enable language models to process longer sequences more efficiently while maintaining performance.",
+    tags: ["Attention", "Language Models", "Efficiency"]
+  }
+];
+
+const tagColors = {
+  'LLM': 'bg-blue-500',
+  'Autonomous Agents': 'bg-purple-500',
+  'Decision Making': 'bg-indigo-500',
+  'Robotics': 'bg-orange-500',
+  'Neural Networks': 'bg-yellow-500',
+  'Control Systems': 'bg-red-500',
+  'Multi-Agent': 'bg-teal-500',
+  'Communication': 'bg-cyan-500',
+  'Reinforcement Learning': 'bg-pink-500',
+  'Attention': 'bg-green-500',
+  'Language Models': 'bg-violet-500',
+  'Efficiency': 'bg-emerald-500'
+};
+---
+
+<section id="publications" class="py-20 bg-slate-800">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-4xl font-bold text-center mb-16 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+        Publications
+      </h2>
+      
+      <div class="space-y-8">
+        {publications.map((pub, index) => (
+          <div class="bg-slate-700 rounded-lg p-6 hover:bg-slate-600 transition-colors group">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3 class="text-xl font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                  {pub.title}
+                </h3>
+                <p class="text-gray-300 mb-2">{pub.authors}</p>
+                <p class="text-blue-400 font-medium">
+                  {pub.venue} • {pub.year} • {pub.type}
+                </p>
+              </div>
+              <div class="flex space-x-3 ml-4">
+                <a 
+                  href={pub.pdf} 
+                  target="_blank"
+                  class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <i class="fas fa-file-pdf mr-2"></i>PDF
+                </a>
+              </div>
+            </div>
+            
+            <p class="text-gray-300 mb-4 leading-relaxed">
+              {pub.abstract}
+            </p>
+            
+            <div class="flex flex-wrap gap-2">
+              {pub.tags.map(tag => (
+                <span class={`px-3 py-1 text-xs font-medium text-white rounded-full ${tagColors[tag] || 'bg-gray-500'}`}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <!-- Google Scholar Link -->
+      <div class="text-center mt-12">
+        <a 
+          href="https://scholar.google.com/citations?user=yourid" 
+          target="_blank"
+          class="inline-flex items-center px-6 py-3 bg-slate-700 text-white font-medium rounded-lg hover:bg-slate-600 transition-colors border border-slate-600 hover:border-slate-500"
+        >
+          <i class="fas fa-graduation-cap mr-2"></i>
+          View Full Publication List on Google Scholar
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
