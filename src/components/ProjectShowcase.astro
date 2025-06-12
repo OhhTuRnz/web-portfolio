@@ -1,13 +1,13 @@
 ---
 import { researchProjects, personalProjects, getFeaturedProjects } from '../data/projects.js';
 import ProjectCard from './ProjectCard.astro';
-import StarParticleBackground from './StarParticleBackground.astro';
+import FloatingStarBackground from './FloatingStarBackground.astro';
 
 const featuredProjects = getFeaturedProjects();
 ---
 
-<section id="projects" class="relative min-h-screen py-20 bg-slate-900 overflow-hidden">
-  <StarParticleBackground />
+<section id="projects" class="relative min-h-screen py-20 overflow-hidden">
+  <FloatingStarBackground />
   
   <!-- Content overlay -->
   <div class="relative z-10">
@@ -95,15 +95,15 @@ const featuredProjects = getFeaturedProjects();
         </div>
       </div>
       
-      <!-- Load More Button (for future expansion) -->
-      <div class="text-center mt-12 arclab-fade-in" style="animation-delay: 1s;">
+      <!-- Animation Toggle (Optional) -->
+      <div class="fixed top-4 right-4 z-20">
         <button 
-          id="load-more-btn" 
-          class="arclab-button-secondary hidden"
-          aria-label="Load more projects"
+          id="toggle-stars" 
+          class="bg-slate-800/50 hover:bg-slate-700/50 text-white p-2 rounded-lg backdrop-blur-sm border border-slate-600/30 transition-all"
+          title="Toggle star animation"
+          aria-label="Toggle background animation"
         >
-          <i class="fas fa-plus" aria-hidden="true"></i>
-          Load More Projects
+          <i class="fas fa-star text-yellow-400"></i>
         </button>
       </div>
     </div>
@@ -115,6 +115,27 @@ const featuredProjects = getFeaturedProjects();
     const filterButtons = document.querySelectorAll('.filter-btn');
     const projectCards = document.querySelectorAll('.project-card');
     const sections = document.querySelectorAll('#featured-section, #research-section, #personal-section');
+    const toggleButton = document.getElementById('toggle-stars');
+    let starsEnabled = true;
+    
+    // Star toggle functionality
+    if (toggleButton) {
+      toggleButton.addEventListener('click', () => {
+        starsEnabled = !starsEnabled;
+        if (window.toggleStars) {
+          window.toggleStars(starsEnabled);
+        }
+        
+        const icon = toggleButton.querySelector('i');
+        if (starsEnabled) {
+          icon.className = 'fas fa-star text-yellow-400';
+          toggleButton.title = 'Disable star animation';
+        } else {
+          icon.className = 'fas fa-star-half-alt text-gray-400';
+          toggleButton.title = 'Enable star animation';
+        }
+      });
+    }
     
     // Filter functionality
     filterButtons.forEach(button => {
@@ -154,13 +175,13 @@ const featuredProjects = getFeaturedProjects();
       } else if (filter === 'research') {
         // Show research section
         document.getElementById('research-section').style.display = 'block';
-        document.getElementById('featured-section').style.display = 'block'; // Featured research projects
+        document.getElementById('featured-section').style.display = 'block';
         const researchCards = document.querySelectorAll('#research-section .project-card, #featured-section .project-card[data-category="research"]');
         animateCards(researchCards);
       } else if (filter === 'personal') {
         // Show personal section
         document.getElementById('personal-section').style.display = 'block';
-        document.getElementById('featured-section').style.display = 'block'; // Featured personal projects
+        document.getElementById('featured-section').style.display = 'block';
         const personalCards = document.querySelectorAll('#personal-section .project-card, #featured-section .project-card[data-category="personal"]');
         animateCards(personalCards);
       } else if (filter === 'active') {
@@ -203,7 +224,7 @@ const featuredProjects = getFeaturedProjects();
       const title = card.querySelector('h3').textContent.toLowerCase();
       
       // Add category data attribute based on section
-      if (card.closest('#research-section') || (card.closest('#featured-section') && title.includes('space') || title.includes('satellite') || title.includes('teleoperation'))) {
+      if (card.closest('#research-section') || (card.closest('#featured-section') && (title.includes('space') || title.includes('satellite') || title.includes('teleoperation')))) {
         card.setAttribute('data-category', 'research');
       } else {
         card.setAttribute('data-category', 'personal');
@@ -235,14 +256,6 @@ const featuredProjects = getFeaturedProjects();
     // Observe all project cards
     projectCards.forEach(card => {
       observer.observe(card);
-    });
-    
-    // Performance optimization: Lazy load videos
-    const videos = document.querySelectorAll('video');
-    videos.forEach(video => {
-      video.addEventListener('loadstart', () => {
-        video.setAttribute('data-loaded', 'true');
-      });
     });
   });
 </script>
@@ -324,16 +337,5 @@ const featuredProjects = getFeaturedProjects();
       font-size: 0.8rem;
     }
   }
-  
-  /* Loading state for videos */
-  video:not([data-loaded]) {
-    background: linear-gradient(45deg, #1e293b, #334155);
-    background-size: 400% 400%;
-    animation: shimmer 2s ease-in-out infinite;
-  }
-  
-  @keyframes shimmer {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-  }
 </style>
+```

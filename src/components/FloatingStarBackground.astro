@@ -1,0 +1,279 @@
+---
+---
+
+<div id="floating-stars" class="fixed inset-0 pointer-events-none z-0 overflow-hidden"></div>
+
+<script>
+  class FloatingStarSystem {
+    constructor() {
+      this.canvas = document.createElement('canvas');
+      this.ctx = this.canvas.getContext('2d');
+      this.stars = [];
+      this.mouse = { x: 0, y: 0 };
+      this.animationId = null;
+      this.enableParticles = true;
+      this.particleCount = 60;
+      
+      this.init();
+    }
+    
+    init() {
+      const container = document.getElementById('floating-stars');
+      if (!container) return;
+      
+      container.appendChild(this.canvas);
+      
+      this.resize();
+      this.createStars();
+      this.animate();
+      
+      window.addEventListener('resize', () => this.resize());
+      window.addEventListener('mousemove', (e) => {
+        this.mouse.x = e.clientX;
+        this.mouse.y = e.clientY;
+      });
+    }
+    
+    resize() {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+      
+      // Adjust particle count based on screen size
+      const area = this.canvas.width * this.canvas.height;
+      this.particleCount = Math.min(80, Math.max(30, Math.floor(area / 20000)));
+      
+      // Recreate stars with new dimensions
+      if (this.stars.length > 0) {
+        this.createStars();
+      }
+    }
+    
+    createStars() {
+      this.stars = [];
+      
+      for (let i = 0; i < this.particleCount; i++) {
+        this.stars.push({
+          // Position
+          x: Math.random() * this.canvas.width,
+          y: Math.random() * this.canvas.height,
+          
+          // Movement - gentle floating motion
+          baseVx: (Math.random() - 0.5) * 0.3,
+          baseVy: (Math.random() - 0.5) * 0.3,
+          vx: 0,
+          vy: 0,
+          
+          // Floating animation
+          floatAmplitude: 20 + Math.random() * 30,
+          floatSpeed: 0.01 + Math.random() * 0.02,
+          floatOffset: Math.random() * Math.PI * 2,
+          
+          // Visual properties
+          size: 1 + Math.random() * 2.5,
+          baseOpacity: 0.3 + Math.random() * 0.7,
+          opacity: 0,
+          
+          // Color variation
+          hue: 200 + Math.random() * 80, // Blue to cyan spectrum
+          saturation: 60 + Math.random() * 40,
+          lightness: 60 + Math.random() * 30,
+          
+          // Twinkling
+          twinkleSpeed: 0.02 + Math.random() * 0.03,
+          twinkleOffset: Math.random() * Math.PI * 2,
+          
+          // Lifecycle
+          age: 0,
+          maxAge: 300 + Math.random() * 200,
+          
+          // Unique identifier for consistent behavior
+          id: i
+        });
+      }
+    }
+    
+    updateStar(star, time) {
+      star.age++;
+      
+      // Floating motion - figure-8 or circular patterns
+      const floatX = Math.sin(time * star.floatSpeed + star.floatOffset) * star.floatAmplitude;
+      const floatY = Math.cos(time * star.floatSpeed * 0.7 + star.floatOffset) * star.floatAmplitude * 0.6;
+      
+      // Base movement
+      star.vx = star.baseVx + floatX * 0.01;
+      star.vy = star.baseVy + floatY * 0.01;
+      
+      // Update position
+      star.x += star.vx;
+      star.y += star.vy;
+      
+      // Gentle mouse interaction - subtle attraction/repulsion
+      const dx = this.mouse.x - star.x;
+      const dy = this.mouse.y - star.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance < 120) {
+        const force = (120 - distance) / 120;
+        const angle = Math.atan2(dy, dx);
+        
+        // Gentle repulsion
+        star.x -= Math.cos(angle) * force * 0.5;
+        star.y -= Math.sin(angle) * force * 0.5;
+      }
+      
+      // Wrap around edges with smooth transition
+      if (star.x < -50) star.x = this.canvas.width + 50;
+      if (star.x > this.canvas.width + 50) star.x = -50;
+      if (star.y < -50) star.y = this.canvas.height + 50;
+      if (star.y > this.canvas.height + 50) star.y = -50;
+      
+      // Twinkling effect
+      const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset) * 0.4 + 0.6;
+      
+      // Lifecycle opacity
+      let lifecycleOpacity = 1;
+      if (star.age < 60) {
+        lifecycleOpacity = star.age / 60; // Fade in
+      } else if (star.age > star.maxAge - 60) {
+        lifecycleOpacity = (star.maxAge - star.age) / 60; // Fade out
+      }
+      
+      star.opacity = star.baseOpacity * twinkle * lifecycleOpacity;
+      
+      // Reset star if it's too old
+      if (star.age > star.maxAge) {
+        star.x = Math.random() * this.canvas.width;
+        star.y = Math.random() * this.canvas.height;
+        star.age = 0;
+        star.maxAge = 300 + Math.random() * 200;
+      }
+    }
+    
+    drawStar(star) {
+      if (star.opacity <= 0) return;
+      
+      const ctx = this.ctx;
+      
+      // Create radial gradient for glow effect
+      const gradient = ctx.createRadialGradient(
+        star.x, star.y, 0,
+        star.x, star.y, star.size * 4
+      );
+      
+      const color = `hsl(${star.hue}, ${star.saturation}%, ${star.lightness}%)`;
+      const colorTransparent = `hsla(${star.hue}, ${star.saturation}%, ${star.lightness}%, 0)`;
+      
+      gradient.addColorStop(0, color);
+      gradient.addColorStop(0.3, `hsla(${star.hue}, ${star.saturation}%, ${star.lightness}%, 0.8)`);
+      gradient.addColorStop(0.6, `hsla(${star.hue}, ${star.saturation}%, ${star.lightness}%, 0.3)`);
+      gradient.addColorStop(1, colorTransparent);
+      
+      // Draw main star body
+      ctx.save();
+      ctx.globalAlpha = star.opacity;
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      
+      // Add bright center point
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.size * 0.3, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${star.hue}, ${star.saturation}%, ${Math.min(90, star.lightness + 20)}%, ${star.opacity})`;
+      ctx.fill();
+      
+      // Add subtle outer glow for larger stars
+      if (star.size > 2) {
+        ctx.globalAlpha = star.opacity * 0.3;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size * 6, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${star.hue}, ${star.saturation}%, ${star.lightness}%, 0.1)`;
+        ctx.fill();
+      }
+      
+      ctx.restore();
+    }
+    
+    animate() {
+      if (!this.enableParticles) {
+        this.animationId = requestAnimationFrame(() => this.animate());
+        return;
+      }
+      
+      // Clear canvas with slight trail effect for smoother motion
+      this.ctx.fillStyle = 'rgba(15, 23, 42, 0.05)';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      
+      const time = Date.now() * 0.001;
+      
+      // Update and draw each star
+      this.stars.forEach(star => {
+        this.updateStar(star, time);
+        this.drawStar(star);
+      });
+      
+      this.animationId = requestAnimationFrame(() => this.animate());
+    }
+    
+    toggleParticles(enabled) {
+      this.enableParticles = enabled;
+      if (!enabled) {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      }
+    }
+    
+    destroy() {
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId);
+      }
+      if (this.canvas.parentNode) {
+        this.canvas.parentNode.removeChild(this.canvas);
+      }
+    }
+  }
+  
+  // Initialize floating star system
+  let starSystem = null;
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    starSystem = new FloatingStarSystem();
+    
+    // Add toggle functionality if needed
+    window.toggleStars = (enabled) => {
+      if (starSystem) {
+        starSystem.toggleParticles(enabled);
+      }
+    };
+  });
+  
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    if (starSystem) {
+      starSystem.destroy();
+    }
+  });
+  
+  // Handle visibility change for performance
+  document.addEventListener('visibilitychange', () => {
+    if (starSystem) {
+      if (document.hidden) {
+        starSystem.toggleParticles(false);
+      } else {
+        starSystem.toggleParticles(true);
+      }
+    }
+  });
+</script>
+
+<style>
+  #floating-stars {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  }
+  
+  #floating-stars canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>
+```
