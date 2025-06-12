@@ -21,6 +21,16 @@ export const awards = [
   },
   {
     id: "award-2024-001",
+    title: "92nd Percentile - Bachelor's Degree",
+    organization: "ETSISI - Universidad Politécnica de Madrid",
+    year: 2024,
+    description: "Graduated in the 92nd percentile of the Computer Engineering program, demonstrating exceptional academic performance.",
+    link: "https://www.etsisi.upm.es/",
+    category: "academic",
+    icon: "🎓"
+  },
+  {
+    id: "award-2024-002",
     title: "Best Bachelor Thesis for National Defense Award",
     organization: "Centro Superior de Estudios de la Defensa Nacional (CESEDEN)",
     year: 2024,
@@ -30,7 +40,7 @@ export const awards = [
     icon: "🏅"
   },
   {
-    id: "award-2024-002",
+    id: "award-2024-003",
     title: "Kerbal Space Program Differential Games Challenge (KSPDG) 2nd Position",
     organization: "KSPDG Competition",
     year: 2024,
@@ -38,66 +48,6 @@ export const awards = [
     link: "https://kspdg.com/",
     category: "research",
     icon: "🤖"
-  },
-  {
-    id: "award-2024-003",
-    title: "Best Student Paper Award",
-    organization: "IEEE Aerospace Conference",
-    year: 2024,
-    description: "Recognition for outstanding research in autonomous spacecraft operations using large language models.",
-    link: "https://www.aeroconf.org/awards/",
-    category: "research",
-    icon: "🏆"
-  },
-  {
-    id: "award-2024-004",
-    title: "MIT ARC Lab Research Excellence Award",
-    organization: "MIT Autonomous Systems Laboratory",
-    year: 2024,
-    description: "Award for exceptional research contributions in space robotics and autonomous systems during Master's studies.",
-    link: "https://aeroastro.mit.edu/arclab/",
-    category: "research",
-    icon: "🎓"
-  },
-  {
-    id: "award-2023-001",
-    title: "Outstanding Poster Presentation",
-    organization: "International Conference on Robotics and Automation (ICRA)",
-    year: 2023,
-    description: "Recognition for innovative research presentation on teleoperation interface design for space applications.",
-    link: "https://www.icra2023.org/awards",
-    category: "research",
-    icon: "📊"
-  },
-  {
-    id: "award-2022-001",
-    title: "NASA USRP Internship Award",
-    organization: "NASA Jet Propulsion Laboratory",
-    year: 2022,
-    description: "Competitive internship program for undergraduate research in spacecraft anomaly detection systems.",
-    link: "https://www.nasa.gov/learning-resources/internship-programs/",
-    category: "fellowship",
-    icon: "🚀"
-  },
-  {
-    id: "award-2022-002",
-    title: "Dean's List Recognition",
-    organization: "Universidad Politécnica de Madrid",
-    year: 2022,
-    description: "Academic excellence recognition for outstanding performance in Computer Engineering program.",
-    link: "https://www.upm.es/",
-    category: "academic",
-    icon: "🎖️"
-  },
-  {
-    id: "award-2021-001",
-    title: "Summa Cum Laude",
-    organization: "Universidad Politécnica de Madrid",
-    year: 2021,
-    description: "Graduated with highest honors in Computer Engineering program with focus on artificial intelligence and robotics.",
-    link: "https://www.upm.es/",
-    category: "academic",
-    icon: "🎓"
   }
 ];
 

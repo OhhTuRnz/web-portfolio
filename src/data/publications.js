@@ -15,7 +15,7 @@ export const publications = [
     id: "pub-2024-001",
     title: "Large Language Models as Autonomous Spacecraft Operators in Kerbal Space Program",
     authors: ["A. Carrasco", "J. How", "S. Chung"],
-    venue: "Journal of Spacecraft and Rockets",
+    venue: "Advances in Space Research (Pending)",
     year: 2024,
     type: "journal",
     citations: 8,
@@ -28,7 +28,7 @@ export const publications = [
     id: "pub-2024-002",
     title: "Fine-tuning LLMs for Autonomous Spacecraft Control: A Case Study Using Kerbal Space Program",
     authors: ["A. Carrasco", "M. Johnson", "K. Patel"],
-    venue: "International Conference on Robotics and Automation (ICRA)",
+    venue: "SPAICE 2024",
     year: 2024,
     type: "conference",
     citations: 4,
@@ -38,20 +38,20 @@ export const publications = [
     keywords: ["Fine-tuning", "LLM", "Spacecraft Control", "Autonomous Systems", "Kerbal Space Program"]
   },
   {
-    id: "pub-2024-003",
+    id: "pub-2025-001",
     title: "Visual Language Models as Operator Agents in the Space Domain",
     authors: ["A. Carrasco", "L. Chen", "R. Williams", "J. How"],
-    venue: "AIAA Guidance, Navigation, and Control Conference",
-    year: 2024,
+    venue: "AIAA SciTech 2025",
+    year: 2025,
     type: "conference",
     citations: 2,
     doi: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:d1gkVwhDpl0C",
-    pdfUrl: "/papers/carrasco-2024-visual-language-models.pdf",
+    pdfUrl: "/papers/carrasco-2025-visual-language-models.pdf",
     abstract: "This work explores the application of visual language models as operator agents in space domain operations. We investigate how multimodal AI systems can interpret visual data and natural language instructions to perform complex spacecraft operations.",
     keywords: ["Visual Language Models", "Space Operations", "Multimodal AI", "Operator Agents"]
   },
   {
-    id: "pub-2024-004",
+    id: "pub-2024-003",
     title: "Language models are spacecraft operators",
     authors: ["A. Carrasco", "D. Kim", "S. Anderson"],
     venue: "arXiv preprint",
@@ -119,7 +119,7 @@ export const projects = [
     technologies: ["MATLAB", "Python", "STK", "Distributed Algorithms"],
     team: ["Alejandro Carrasco", "Dr. Lisa Chen", "Prof. Jonathan How"],
     funding: "Air Force Research Laboratory Grant",
-    publications: ["pub-2024-003"],
+    publications: ["pub-2025-001"],
     media: {
       type: "poster",
       url: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800"
@@ -140,7 +140,7 @@ export const projects = [
     technologies: ["Python", "TensorFlow", "Signal Processing", "Time Series Analysis"],
     team: ["Alejandro Carrasco", "Dr. David Kim", "Dr. Sarah Anderson"],
     funding: "NASA JPL Collaboration",
-    publications: ["pub-2024-004"],
+    publications: ["pub-2024-003"],
     media: {
       type: "image",
       url: "https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=800"
