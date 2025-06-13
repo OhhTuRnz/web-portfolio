@@ -67,10 +67,14 @@ import StarParticleBackground from './StarParticleBackground.astro';
           </div>
         </div>
         
-        <!-- Professional Photo -->
+        <!-- Professional Photo with Colorized Contour -->
         <div class="flex justify-center lg:justify-end hero-image-section">
           <div class="relative">
             <div class="profile-image-container">
+              <!-- Animated colorized contour outline -->
+              <div class="contour-outline"></div>
+              <div class="contour-outline-secondary"></div>
+              
               <img 
                 src="/src/assets/images/carrusk_zen.png" 
                 alt="Alejandro Carrasco" 
@@ -172,8 +176,6 @@ import StarParticleBackground from './StarParticleBackground.astro';
     height: 320px;
     border-radius: 50%;
     overflow: hidden;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     animation: profileImageFadeIn 0.8s ease-out forwards;
     opacity: 0;
     transform: scale(0.95);
@@ -183,8 +185,62 @@ import StarParticleBackground from './StarParticleBackground.astro';
   
   .profile-image-container:hover {
     transform: scale(1.05);
-    box-shadow: 0 25px 50px rgba(59, 130, 246, 0.2);
-    border-color: rgba(59, 130, 246, 0.3);
+  }
+  
+  .profile-image-container:hover .contour-outline {
+    animation-duration: 1.5s;
+    box-shadow: 
+      0 0 30px rgba(59, 130, 246, 0.6),
+      0 0 60px rgba(139, 92, 246, 0.4),
+      0 0 90px rgba(6, 182, 212, 0.3);
+  }
+  
+  .profile-image-container:hover .contour-outline-secondary {
+    animation-duration: 2s;
+    opacity: 0.8;
+  }
+  
+  /* Colorized Contour Outlines */
+  .contour-outline {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      #3b82f6,
+      #8b5cf6,
+      #06b6d4,
+      #10b981,
+      #f59e0b,
+      #ef4444,
+      #ec4899,
+      #3b82f6
+    );
+    animation: rotateContour 4s linear infinite;
+    z-index: -1;
+    opacity: 0.8;
+    filter: blur(2px);
+  }
+  
+  .contour-outline-secondary {
+    position: absolute;
+    inset: -16px;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 180deg,
+      rgba(59, 130, 246, 0.3),
+      rgba(139, 92, 246, 0.3),
+      rgba(6, 182, 212, 0.3),
+      rgba(16, 185, 129, 0.3),
+      rgba(245, 158, 11, 0.3),
+      rgba(239, 68, 68, 0.3),
+      rgba(236, 72, 153, 0.3),
+      rgba(59, 130, 246, 0.3)
+    );
+    animation: rotateContour 6s linear infinite reverse;
+    z-index: -2;
+    opacity: 0.4;
+    filter: blur(4px);
   }
   
   .profile-image {
@@ -193,6 +249,8 @@ import StarParticleBackground from './StarParticleBackground.astro';
     object-fit: cover;
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
+    position: relative;
+    z-index: 1;
   }
   
   .profile-image.loaded {
@@ -208,6 +266,8 @@ import StarParticleBackground from './StarParticleBackground.astro';
     justify-content: center;
     opacity: 1;
     transition: opacity 0.5s ease-in-out;
+    z-index: 2;
+    border-radius: 50%;
   }
   
   .loading-overlay.hidden {
@@ -346,6 +406,15 @@ import StarParticleBackground from './StarParticleBackground.astro';
     }
   }
   
+  @keyframes rotateContour {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
   @keyframes spin {
     to {
       transform: rotate(360deg);
@@ -416,6 +485,31 @@ import StarParticleBackground from './StarParticleBackground.astro';
     .social-link {
       width: 44px;
       height: 44px;
+    }
+    
+    .contour-outline {
+      inset: -6px;
+    }
+    
+    .contour-outline-secondary {
+      inset: -12px;
+    }
+  }
+  
+  /* Reduced motion accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .contour-outline,
+    .contour-outline-secondary {
+      animation: none;
+    }
+    
+    .profile-image-container:hover {
+      transform: none;
+    }
+    
+    .scroll-mouse,
+    .scroll-wheel {
+      animation: none;
     }
   }
 </style>
