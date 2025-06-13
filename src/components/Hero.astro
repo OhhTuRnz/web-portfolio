@@ -67,18 +67,21 @@ import StarParticleBackground from './StarParticleBackground.astro';
           </div>
         </div>
         
-        <!-- Professional Photo with Elegant Violet Contour -->
+        <!-- Professional Photo with Animated Violet Contour -->
         <div class="flex justify-center lg:justify-end hero-image-section">
           <div class="relative profile-image-wrapper">
-            <!-- Elegant violet gradient contour -->
-            <div class="elegant-contour"></div>
+            <!-- Animated rotating violet contour -->
+            <div class="rotating-contour"></div>
+            <div class="rotating-contour-secondary"></div>
+            
+            <!-- Static elegant glow -->
             <div class="elegant-contour-glow"></div>
             
             <img 
               src="/src/assets/images/carrusk_zen.png" 
               alt="Alejandro Carrasco" 
               class="profile-image w-80 h-80 rounded-full object-cover relative z-10
-                     shadow-2xl transition-all duration-500"
+                     shadow-2xl"
               loading="eager"
             />
             
@@ -176,60 +179,86 @@ import StarParticleBackground from './StarParticleBackground.astro';
     opacity: 0;
     transform: scale(0.95);
     animation-delay: 0.7s;
-    transition: all 0.4s ease;
+    transition: transform 0.3s ease;
   }
   
   .profile-image-wrapper:hover {
     transform: scale(1.02);
   }
   
-  /* Elegant Violet Contour System */
-  .elegant-contour {
+  /* Animated Rotating Violet Contour System */
+  .rotating-contour {
     position: absolute;
-    inset: -3px;
+    inset: -4px;
     border-radius: 50%;
-    background: linear-gradient(135deg, 
-      rgba(139, 92, 246, 0.8),   /* violet-500 */
-      rgba(168, 85, 247, 0.6),   /* purple-500 */
-      rgba(59, 130, 246, 0.4),   /* blue-500 */
-      rgba(139, 92, 246, 0.8)    /* back to violet */
+    background: conic-gradient(
+      from 0deg,
+      rgba(139, 92, 246, 0.9),   /* violet-500 */
+      rgba(168, 85, 247, 0.7),   /* purple-500 */
+      rgba(59, 130, 246, 0.5),   /* blue-500 */
+      rgba(6, 182, 212, 0.4),    /* cyan-500 */
+      rgba(139, 92, 246, 0.9)    /* back to violet */
     );
+    animation: rotateContour 8s linear infinite;
     z-index: 5;
-    opacity: 0.7;
-    transition: all 0.5s ease;
+    opacity: 0;
+    animation-delay: 1.2s;
+    animation-fill-mode: forwards;
+  }
+  
+  .rotating-contour-secondary {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 180deg,
+      rgba(139, 92, 246, 0.4),   /* violet-500 */
+      rgba(168, 85, 247, 0.3),   /* purple-500 */
+      rgba(59, 130, 246, 0.2),   /* blue-500 */
+      rgba(6, 182, 212, 0.1),    /* cyan-500 */
+      rgba(139, 92, 246, 0.4)    /* back to violet */
+    );
+    animation: rotateContour 12s linear infinite reverse;
+    z-index: 4;
+    opacity: 0;
+    animation-delay: 1.4s;
+    animation-fill-mode: forwards;
+    filter: blur(2px);
   }
   
   .elegant-contour-glow {
     position: absolute;
-    inset: -8px;
+    inset: -12px;
     border-radius: 50%;
     background: radial-gradient(circle, 
       rgba(139, 92, 246, 0.3) 0%,   /* violet glow */
       rgba(168, 85, 247, 0.2) 30%,  /* purple glow */
       transparent 70%
     );
-    z-index: 4;
-    opacity: 0.5;
-    transition: all 0.5s ease;
-    filter: blur(4px);
+    z-index: 3;
+    opacity: 0;
+    animation: fadeInGlow 1s ease-out forwards;
+    animation-delay: 1s;
+    filter: blur(6px);
+    transition: all 0.3s ease;
   }
   
-  .profile-image-wrapper:hover .elegant-contour {
+  /* Enhanced hover effects with better performance */
+  .profile-image-wrapper:hover .rotating-contour {
+    animation-duration: 4s;
     opacity: 1;
-    inset: -4px;
-    background: linear-gradient(135deg, 
-      rgba(139, 92, 246, 1),     /* more intense violet */
-      rgba(168, 85, 247, 0.8),   /* more intense purple */
-      rgba(59, 130, 246, 0.6),   /* blue accent */
-      rgba(139, 92, 246, 1)      /* back to intense violet */
-    );
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+  }
+  
+  .profile-image-wrapper:hover .rotating-contour-secondary {
+    animation-duration: 6s;
+    opacity: 0.8;
   }
   
   .profile-image-wrapper:hover .elegant-contour-glow {
-    opacity: 0.8;
-    inset: -12px;
-    filter: blur(6px);
+    opacity: 0.6;
+    inset: -16px;
+    filter: blur(8px);
   }
   
   .profile-image {
@@ -384,6 +413,21 @@ import StarParticleBackground from './StarParticleBackground.astro';
     }
   }
   
+  @keyframes fadeInGlow {
+    to {
+      opacity: 0.4;
+    }
+  }
+  
+  @keyframes rotateContour {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
   @keyframes spin {
     to {
       transform: rotate(360deg);
@@ -466,6 +510,11 @@ import StarParticleBackground from './StarParticleBackground.astro';
   
   /* Reduced motion accessibility */
   @media (prefers-reduced-motion: reduce) {
+    .rotating-contour,
+    .rotating-contour-secondary {
+      animation: none;
+    }
+    
     .profile-image-wrapper:hover {
       transform: none;
     }
