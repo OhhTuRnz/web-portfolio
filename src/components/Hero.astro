@@ -92,13 +92,13 @@ import StarParticleBackground from './StarParticleBackground.astro';
     </div>
   </div>
   
-  <!-- Scroll indicator - positioned at bottom center of hero section -->
-  <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 scroll-indicator">
-    <a href="#publications" class="scroll-link">
+  <!-- Scroll indicator - centered on full section width -->
+  <div class="absolute inset-x-0 bottom-8 flex justify-center z-30">
+    <a href="#publications" class="scroll-link group">
       <div class="scroll-mouse">
         <div class="scroll-wheel"></div>
       </div>
-      <span class="scroll-text">Scroll to explore</span>
+      <span class="scroll-text group-hover:text-blue-400 transition-colors">Scroll to explore</span>
     </a>
   </div>
 </section>
@@ -314,12 +314,6 @@ import StarParticleBackground from './StarParticleBackground.astro';
   }
   
   /* Scroll Indicator */
-  .scroll-indicator {
-    animation: fadeInUp 1s ease-out forwards;
-    opacity: 0;
-    animation-delay: 1.6s;
-  }
-  
   .scroll-link {
     display: flex;
     flex-direction: column;
@@ -328,6 +322,9 @@ import StarParticleBackground from './StarParticleBackground.astro';
     color: var(--arclab-gray-400);
     text-decoration: none;
     transition: all 0.3s ease;
+    animation: fadeInUp 1s ease-out forwards;
+    opacity: 0;
+    animation-delay: 1.6s;
   }
   
   .scroll-link:hover {
