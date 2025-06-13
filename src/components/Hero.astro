@@ -89,17 +89,17 @@ import StarParticleBackground from './StarParticleBackground.astro';
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  
-  <!-- Scroll indicator - positioned at bottom center -->
-  <div class="scroll-indicator">
-    <a href="#publications" class="scroll-link">
-      <div class="scroll-mouse">
-        <div class="scroll-wheel"></div>
+      
+      <!-- Scroll indicator - positioned at bottom center of hero section -->
+      <div class="scroll-indicator">
+        <a href="#publications" class="scroll-link">
+          <div class="scroll-mouse">
+            <div class="scroll-wheel"></div>
+          </div>
+          <span class="scroll-text">Scroll to explore</span>
+        </a>
       </div>
-      <span class="scroll-text">Scroll to explore</span>
-    </a>
+    </div>
   </div>
 </section>
 
@@ -203,10 +203,10 @@ import StarParticleBackground from './StarParticleBackground.astro';
   /* Always-Visible Colorized Contour Outlines */
   .contour-outline {
     position: absolute;
+    width: calc(100% + 24px);
+    height: calc(100% + 24px);
     top: -12px;
     left: -12px;
-    right: -12px;
-    bottom: -12px;
     border-radius: 50%;
     background: conic-gradient(
       from 0deg,
@@ -227,10 +227,10 @@ import StarParticleBackground from './StarParticleBackground.astro';
   
   .contour-outline-secondary {
     position: absolute;
+    width: calc(100% + 40px);
+    height: calc(100% + 40px);
     top: -20px;
     left: -20px;
-    right: -20px;
-    bottom: -20px;
     border-radius: 50%;
     background: conic-gradient(
       from 180deg,
@@ -313,10 +313,10 @@ import StarParticleBackground from './StarParticleBackground.astro';
     box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
   }
   
-  /* Scroll Indicator - positioned at bottom center */
+  /* Scroll Indicator - positioned at bottom center of hero section */
   .scroll-indicator {
     position: absolute;
-    bottom: 2rem;
+    bottom: 3rem;
     left: 50%;
     transform: translateX(-50%);
     animation: fadeInUp 1s ease-out forwards;
@@ -466,7 +466,7 @@ import StarParticleBackground from './StarParticleBackground.astro';
     }
     
     .scroll-indicator {
-      bottom: 1.5rem;
+      bottom: 2rem;
     }
   }
   
@@ -494,21 +494,21 @@ import StarParticleBackground from './StarParticleBackground.astro';
     }
     
     .scroll-indicator {
-      bottom: 1rem;
+      bottom: 1.5rem;
     }
     
     .contour-outline {
+      width: calc(100% + 16px);
+      height: calc(100% + 16px);
       top: -8px;
       left: -8px;
-      right: -8px;
-      bottom: -8px;
     }
     
     .contour-outline-secondary {
+      width: calc(100% + 28px);
+      height: calc(100% + 28px);
       top: -14px;
       left: -14px;
-      right: -14px;
-      bottom: -14px;
     }
   }
   
@@ -524,17 +524,21 @@ import StarParticleBackground from './StarParticleBackground.astro';
     }
     
     .contour-outline {
+      width: calc(100% + 12px);
+      height: calc(100% + 12px);
       top: -6px;
       left: -6px;
-      right: -6px;
-      bottom: -6px;
     }
     
     .contour-outline-secondary {
+      width: calc(100% + 24px);
+      height: calc(100% + 24px);
       top: -12px;
       left: -12px;
-      right: -12px;
-      bottom: -12px;
+    }
+    
+    .scroll-indicator {
+      bottom: 1rem;
     }
   }
   
