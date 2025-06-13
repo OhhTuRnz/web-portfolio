@@ -2,7 +2,7 @@
 import StarParticleBackground from './StarParticleBackground.astro';
 ---
 
-<section id="hero" class="min-h-screen flex items-center justify-center relative overflow-hidden">
+<section id="hero" class="min-h-screen flex items-center justify-center relative overflow-hidden pt-16">
   <StarParticleBackground />
   
   <!-- Gradient overlay -->
@@ -220,7 +220,7 @@ import StarParticleBackground from './StarParticleBackground.astro';
       #3b82f6
     );
     animation: rotateContour 4s linear infinite;
-    z-index: -1;
+    z-index: 1;
     opacity: 0.9;
     filter: blur(1px);
   }
@@ -244,7 +244,7 @@ import StarParticleBackground from './StarParticleBackground.astro';
       rgba(59, 130, 246, 0.4)
     );
     animation: rotateContour 6s linear infinite reverse;
-    z-index: -2;
+    z-index: 0;
     opacity: 0.6;
     filter: blur(2px);
   }
@@ -256,7 +256,7 @@ import StarParticleBackground from './StarParticleBackground.astro';
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
     position: relative;
-    z-index: 1;
+    z-index: 2;
   }
   
   .profile-image.loaded {
@@ -272,7 +272,7 @@ import StarParticleBackground from './StarParticleBackground.astro';
     justify-content: center;
     opacity: 1;
     transition: opacity 0.5s ease-in-out;
-    z-index: 2;
+    z-index: 3;
     border-radius: 50%;
   }
   
