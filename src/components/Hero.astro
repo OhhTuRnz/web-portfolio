@@ -11,37 +11,37 @@ import StarParticleBackground from './StarParticleBackground.astro';
   <div class="arclab-container relative z-20">
     <div class="max-w-7xl mx-auto">
       <!-- Professional links header -->
-      <div class="text-center mb-16 arclab-fade-in">
-        <div class="flex justify-center items-center space-x-8 mb-8">
-          <a href="/cv.pdf" target="_blank" class="arclab-button-secondary">
+      <div class="text-center mb-20 hero-header">
+        <div class="flex justify-center items-center space-x-8 mb-12">
+          <a href="/cv.pdf" target="_blank" class="arclab-button-secondary hero-button">
             <i class="fas fa-file-pdf"></i>CV
           </a>
-          <a href="https://scholar.google.com/citations?user=6KamS70AAAAJ&hl=en" target="_blank" class="arclab-button-secondary">
+          <a href="https://scholar.google.com/citations?user=6KamS70AAAAJ&hl=en" target="_blank" class="arclab-button-secondary hero-button">
             <i class="fas fa-graduation-cap"></i>Google Scholar
           </a>
-          <a href="https://aeroastro.mit.edu/arclab/" target="_blank" class="arclab-button">
+          <a href="https://aeroastro.mit.edu/arclab/" target="_blank" class="arclab-button hero-button">
             <i class="fas fa-university"></i>MIT ARC Lab
           </a>
         </div>
       </div>
       
       <!-- Main content grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-16 items-center">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-20 items-center">
         <!-- Text content -->
-        <div class="lg:col-span-2 space-y-8 arclab-fade-in">
-          <div class="space-y-6">
-            <h1 class="arclab-heading-1">
-              <span class="block arclab-slide-up">Alejandro Carrasco</span>
-              <span class="block text-xl lg:text-2xl arclab-text font-light mt-4 arclab-slide-up" style="animation-delay: 0.2s;">
+        <div class="lg:col-span-2 space-y-10 hero-content">
+          <div class="space-y-8">
+            <h1 class="hero-title">
+              <span class="block hero-name">Alejandro Carrasco</span>
+              <span class="block text-xl lg:text-2xl arclab-text font-light mt-6 hero-subtitle">
                 AI Researcher & Robotics Engineer
               </span>
-              <span class="block text-lg arclab-text-accent font-medium mt-2 arclab-slide-up" style="animation-delay: 0.4s;">
+              <span class="block text-lg arclab-text-accent font-medium mt-4 hero-affiliation">
                 MIT ARC Lab • Master's Student
               </span>
             </h1>
           </div>
           
-          <p class="text-lg arclab-text max-w-3xl leading-relaxed arclab-slide-up" style="animation-delay: 0.6s;">
+          <p class="text-lg arclab-text max-w-3xl leading-relaxed hero-description">
             Developing intelligent systems that bridge artificial intelligence and robotics, 
             with focus on <span class="arclab-text-accent">Large Language Models</span>, 
             <span class="text-purple-400">autonomous agents</span>, and 
@@ -49,64 +49,148 @@ import StarParticleBackground from './StarParticleBackground.astro';
           </p>
           
           <!-- Social Links -->
-          <div class="flex space-x-4 arclab-slide-up" style="animation-delay: 0.8s;">
-            <a href="https://github.com/yourusername" target="_blank" class="w-12 h-12 arclab-card rounded-full flex items-center justify-center arclab-text hover:text-white transition-all hover:scale-110">
+          <div class="flex space-x-6 hero-social">
+            <a href="https://github.com/yourusername" target="_blank" class="social-link">
               <i class="fab fa-github text-lg"></i>
             </a>
-            <a href="https://linkedin.com/in/yourusername" target="_blank" class="w-12 h-12 arclab-card rounded-full flex items-center justify-center arclab-text hover:text-white transition-all hover:scale-110">
+            <a href="https://linkedin.com/in/yourusername" target="_blank" class="social-link">
               <i class="fab fa-linkedin text-lg"></i>
             </a>
-            <a href="https://x.com/yourusername" target="_blank" class="w-12 h-12 arclab-card rounded-full flex items-center justify-center arclab-text hover:text-white transition-all hover:scale-110">
+            <a href="https://x.com/yourusername" target="_blank" class="social-link">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
               </svg>
             </a>
-            <a href="mailto:acarrasco@mit.edu" class="w-12 h-12 arclab-card rounded-full flex items-center justify-center arclab-text hover:text-white transition-all hover:scale-110">
+            <a href="mailto:acarrasco@mit.edu" class="social-link">
               <i class="fas fa-envelope text-lg"></i>
             </a>
           </div>
         </div>
         
         <!-- Professional Photo -->
-        <div class="space-y-6 arclab-fade-in" style="animation-delay: 0.3s;">
-          <div class="flex justify-center">
-            <div class="relative">
-              <div class="relative w-80 h-80 rounded-full overflow-hidden border-2 border-slate-700/50 shadow-2xl image-container">
-                <img 
-                  src="/src/assets/images/carrusk_zen.png" 
-                  alt="Alejandro Carrasco" 
-                  class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 profile-image"
-                />
-                <!-- Loading animation overlay -->
-                <div class="absolute inset-0 bg-slate-800 flex items-center justify-center loading-overlay">
-                  <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                </div>
+        <div class="flex justify-center lg:justify-end hero-image-section">
+          <div class="relative">
+            <div class="profile-image-container">
+              <img 
+                src="/src/assets/images/carrusk_zen.png" 
+                alt="Alejandro Carrasco" 
+                class="profile-image"
+                loading="eager"
+              />
+              <!-- Loading animation overlay -->
+              <div class="loading-overlay">
+                <div class="loading-spinner"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
-      <!-- Scroll indicator -->
-      <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <a href="#research" class="arclab-text hover:text-gray-300 transition-colors">
-          <div class="w-6 h-10 border-2 border-gray-500 rounded-full flex justify-center">
-            <div class="w-1 h-3 bg-gray-500 rounded-full mt-2 animate-pulse"></div>
-          </div>
-        </a>
-      </div>
+    </div>
+    
+    <!-- Scroll indicator - positioned in bottom third -->
+    <div class="scroll-indicator">
+      <a href="#research" class="scroll-link">
+        <div class="scroll-mouse">
+          <div class="scroll-wheel"></div>
+        </div>
+        <span class="scroll-text">Scroll to explore</span>
+      </a>
     </div>
   </div>
 </section>
 
 <style>
-  .image-container {
-    animation: imageSlideIn 1s ease-out forwards;
+  /* Hero Section Animations */
+  .hero-header {
+    animation: fadeInDown 0.8s ease-out forwards;
     opacity: 0;
-    transform: scale(0.8) translateY(20px);
+    transform: translateY(-30px);
+  }
+  
+  .hero-button {
+    transition: all 0.3s ease;
+    transform: translateY(0);
+  }
+  
+  .hero-button:nth-child(1) { animation-delay: 0.1s; }
+  .hero-button:nth-child(2) { animation-delay: 0.2s; }
+  .hero-button:nth-child(3) { animation-delay: 0.3s; }
+  
+  .hero-content {
+    animation: fadeInLeft 1s ease-out forwards;
+    opacity: 0;
+    transform: translateX(-50px);
+    animation-delay: 0.4s;
+  }
+  
+  .hero-name {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(30px);
+    animation-delay: 0.6s;
+  }
+  
+  .hero-subtitle {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(30px);
+    animation-delay: 0.8s;
+  }
+  
+  .hero-affiliation {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(30px);
+    animation-delay: 1s;
+  }
+  
+  .hero-description {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(30px);
+    animation-delay: 1.2s;
+  }
+  
+  .hero-social {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(30px);
+    animation-delay: 1.4s;
+  }
+  
+  /* Profile Image Animations */
+  .hero-image-section {
+    animation: fadeInRight 1s ease-out forwards;
+    opacity: 0;
+    transform: translateX(50px);
+    animation-delay: 0.5s;
+  }
+  
+  .profile-image-container {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: profileImageFadeIn 0.8s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.95);
+    animation-delay: 0.7s;
+    transition: all 0.4s ease;
+  }
+  
+  .profile-image-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 25px 50px rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.3);
   }
   
   .profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
   }
@@ -116,6 +200,12 @@ import StarParticleBackground from './StarParticleBackground.astro';
   }
   
   .loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     opacity: 1;
     transition: opacity 0.5s ease-in-out;
   }
@@ -125,17 +215,208 @@ import StarParticleBackground from './StarParticleBackground.astro';
     pointer-events: none;
   }
   
-  @keyframes imageSlideIn {
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(59, 130, 246, 0.3);
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  /* Social Links */
+  .social-link {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--arclab-gray-300);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+  
+  .social-link:hover {
+    color: white;
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+  }
+  
+  /* Scroll Indicator - positioned in bottom third */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 33vh; /* Bottom third of viewport */
+    left: 50%;
+    transform: translateX(-50%);
+    animation: fadeInUp 1s ease-out forwards;
+    opacity: 0;
+    animation-delay: 1.6s;
+  }
+  
+  .scroll-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: var(--arclab-gray-400);
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .scroll-link:hover {
+    color: var(--arclab-gray-300);
+    transform: translateY(-4px);
+  }
+  
+  .scroll-mouse {
+    width: 24px;
+    height: 40px;
+    border: 2px solid currentColor;
+    border-radius: 12px;
+    position: relative;
+    animation: bounce 2s infinite;
+  }
+  
+  .scroll-wheel {
+    width: 3px;
+    height: 8px;
+    background: currentColor;
+    border-radius: 2px;
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: scrollWheel 2s infinite;
+  }
+  
+  .scroll-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  
+  /* Typography Enhancements */
+  .hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: white;
+    margin-bottom: 0;
+  }
+  
+  /* Keyframe Animations */
+  @keyframes fadeInDown {
     to {
       opacity: 1;
-      transform: scale(1) translateY(0);
+      transform: translateY(0);
     }
   }
   
-  /* Enhanced hover effect for the image */
-  .image-container:hover {
-    transform: scale(1.02);
-    box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.3);
+  @keyframes fadeInLeft {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes fadeInRight {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes profileImageFadeIn {
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes scrollWheel {
+    0%, 20% {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(-50%) translateY(16px);
+      opacity: 0;
+    }
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .hero-image-section {
+      margin-top: 3rem;
+    }
+    
+    .profile-image-container {
+      width: 280px;
+      height: 280px;
+    }
+    
+    .scroll-indicator {
+      bottom: 25vh;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .hero-header {
+      margin-bottom: 3rem;
+    }
+    
+    .hero-header .flex {
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .profile-image-container {
+      width: 240px;
+      height: 240px;
+    }
+    
+    .hero-content {
+      text-align: center;
+    }
+    
+    .hero-social {
+      justify-content: center;
+    }
+    
+    .scroll-indicator {
+      bottom: 20vh;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .profile-image-container {
+      width: 200px;
+      height: 200px;
+    }
+    
+    .social-link {
+      width: 44px;
+      height: 44px;
+    }
   }
 </style>
 
@@ -146,7 +427,7 @@ import StarParticleBackground from './StarParticleBackground.astro';
     
     if (profileImage && loadingOverlay) {
       // Check if image is already loaded
-      if (profileImage.complete) {
+      if (profileImage.complete && profileImage.naturalHeight !== 0) {
         profileImage.classList.add('loaded');
         loadingOverlay.classList.add('hidden');
       } else {
@@ -159,8 +440,28 @@ import StarParticleBackground from './StarParticleBackground.astro';
         // Handle error case
         profileImage.addEventListener('error', function() {
           loadingOverlay.classList.add('hidden');
+          console.warn('Profile image failed to load');
         });
       }
+    }
+    
+    // Enhanced scroll behavior
+    const scrollLink = document.querySelector('.scroll-link');
+    if (scrollLink) {
+      scrollLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector('#research');
+        if (target) {
+          const headerOffset = 80;
+          const elementPosition = target.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
     }
   });
 </script>
