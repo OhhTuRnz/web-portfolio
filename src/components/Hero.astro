@@ -70,12 +70,12 @@ import StarParticleBackground from './StarParticleBackground.astro';
         <!-- Professional Photo with Animated Violet Contour -->
         <div class="flex justify-center lg:justify-end hero-image-section">
           <div class="relative profile-image-wrapper">
-            <!-- Animated rotating violet contour -->
-            <div class="rotating-contour"></div>
-            <div class="rotating-contour-secondary"></div>
+            <!-- Animated rotating violet contour - appears during startup -->
+            <div class="rotating-contour startup-animation"></div>
+            <div class="rotating-contour-secondary startup-animation"></div>
             
-            <!-- Static elegant glow -->
-            <div class="elegant-contour-glow"></div>
+            <!-- Hover glow effect - only on hover -->
+            <div class="hover-glow-effect"></div>
             
             <img 
               src="/src/assets/images/carrusk_zen.png" 
@@ -186,27 +186,28 @@ import StarParticleBackground from './StarParticleBackground.astro';
     transform: scale(1.02);
   }
   
-  /* Animated Rotating Violet Contour System */
-  .rotating-contour {
+  /* Startup Animation - Rotating Contour that appears during page load */
+  .rotating-contour.startup-animation {
     position: absolute;
     inset: -4px;
     border-radius: 50%;
     background: conic-gradient(
       from 0deg,
-      rgba(139, 92, 246, 0.9),   /* violet-500 */
-      rgba(168, 85, 247, 0.7),   /* purple-500 */
-      rgba(59, 130, 246, 0.5),   /* blue-500 */
-      rgba(6, 182, 212, 0.4),    /* cyan-500 */
-      rgba(139, 92, 246, 0.9)    /* back to violet */
+      rgba(139, 92, 246, 0.8),   /* violet-500 */
+      rgba(168, 85, 247, 0.6),   /* purple-500 */
+      rgba(59, 130, 246, 0.4),   /* blue-500 */
+      rgba(6, 182, 212, 0.3),    /* cyan-500 */
+      rgba(139, 92, 246, 0.8)    /* back to violet */
     );
-    animation: rotateContour 8s linear infinite;
     z-index: 5;
     opacity: 0;
-    animation-delay: 1.2s;
-    animation-fill-mode: forwards;
+    animation: 
+      fadeInContour 1s ease-out forwards,
+      rotateContour 8s linear infinite;
+    animation-delay: 1.2s, 1.2s;
   }
   
-  .rotating-contour-secondary {
+  .rotating-contour-secondary.startup-animation {
     position: absolute;
     inset: -8px;
     border-radius: 50%;
@@ -218,47 +219,54 @@ import StarParticleBackground from './StarParticleBackground.astro';
       rgba(6, 182, 212, 0.1),    /* cyan-500 */
       rgba(139, 92, 246, 0.4)    /* back to violet */
     );
-    animation: rotateContour 12s linear infinite reverse;
     z-index: 4;
     opacity: 0;
-    animation-delay: 1.4s;
-    animation-fill-mode: forwards;
     filter: blur(2px);
+    animation: 
+      fadeInContour 1s ease-out forwards,
+      rotateContour 12s linear infinite reverse;
+    animation-delay: 1.4s, 1.4s;
   }
   
-  .elegant-contour-glow {
+  /* Hover Glow Effect - only appears on hover */
+  .hover-glow-effect {
     position: absolute;
     inset: -12px;
     border-radius: 50%;
     background: radial-gradient(circle, 
-      rgba(139, 92, 246, 0.3) 0%,   /* violet glow */
-      rgba(168, 85, 247, 0.2) 30%,  /* purple glow */
+      rgba(139, 92, 246, 0.4) 0%,   /* violet glow */
+      rgba(168, 85, 247, 0.3) 30%,  /* purple glow */
       transparent 70%
     );
     z-index: 3;
     opacity: 0;
-    animation: fadeInGlow 1s ease-out forwards;
-    animation-delay: 1s;
-    filter: blur(6px);
-    transition: all 0.3s ease;
+    filter: blur(8px);
+    transition: all 0.4s ease;
+    box-shadow: 
+      0 0 20px rgba(139, 92, 246, 0.3),
+      0 0 40px rgba(168, 85, 247, 0.2),
+      0 0 60px rgba(139, 92, 246, 0.1);
   }
   
-  /* Enhanced hover effects with better performance */
-  .profile-image-wrapper:hover .rotating-contour {
+  /* Enhanced hover effects */
+  .profile-image-wrapper:hover .hover-glow-effect {
+    opacity: 1;
+    inset: -16px;
+    filter: blur(12px);
+    box-shadow: 
+      0 0 30px rgba(139, 92, 246, 0.5),
+      0 0 60px rgba(168, 85, 247, 0.3),
+      0 0 90px rgba(139, 92, 246, 0.2);
+  }
+  
+  .profile-image-wrapper:hover .rotating-contour.startup-animation {
     animation-duration: 4s;
     opacity: 1;
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
   }
   
-  .profile-image-wrapper:hover .rotating-contour-secondary {
+  .profile-image-wrapper:hover .rotating-contour-secondary.startup-animation {
     animation-duration: 6s;
     opacity: 0.8;
-  }
-  
-  .profile-image-wrapper:hover .elegant-contour-glow {
-    opacity: 0.6;
-    inset: -16px;
-    filter: blur(8px);
   }
   
   .profile-image {
@@ -413,9 +421,9 @@ import StarParticleBackground from './StarParticleBackground.astro';
     }
   }
   
-  @keyframes fadeInGlow {
+  @keyframes fadeInContour {
     to {
-      opacity: 0.4;
+      opacity: 1;
     }
   }
   
