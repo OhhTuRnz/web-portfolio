@@ -89,17 +89,17 @@ import StarParticleBackground from './StarParticleBackground.astro';
           </div>
         </div>
       </div>
-      
-      <!-- Scroll indicator - positioned at bottom center of hero section -->
-      <div class="scroll-indicator">
-        <a href="#publications" class="scroll-link">
-          <div class="scroll-mouse">
-            <div class="scroll-wheel"></div>
-          </div>
-          <span class="scroll-text">Scroll to explore</span>
-        </a>
-      </div>
     </div>
+  </div>
+  
+  <!-- Scroll indicator - positioned at bottom center of hero section -->
+  <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 scroll-indicator">
+    <a href="#publications" class="scroll-link">
+      <div class="scroll-mouse">
+        <div class="scroll-wheel"></div>
+      </div>
+      <span class="scroll-text">Scroll to explore</span>
+    </a>
   </div>
 </section>
 
@@ -203,10 +203,10 @@ import StarParticleBackground from './StarParticleBackground.astro';
   /* Always-Visible Colorized Contour Outlines */
   .contour-outline {
     position: absolute;
-    width: calc(100% + 24px);
-    height: calc(100% + 24px);
     top: -12px;
     left: -12px;
+    right: -12px;
+    bottom: -12px;
     border-radius: 50%;
     background: conic-gradient(
       from 0deg,
@@ -227,10 +227,10 @@ import StarParticleBackground from './StarParticleBackground.astro';
   
   .contour-outline-secondary {
     position: absolute;
-    width: calc(100% + 40px);
-    height: calc(100% + 40px);
     top: -20px;
     left: -20px;
+    right: -20px;
+    bottom: -20px;
     border-radius: 50%;
     background: conic-gradient(
       from 180deg,
@@ -313,16 +313,11 @@ import StarParticleBackground from './StarParticleBackground.astro';
     box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
   }
   
-  /* Scroll Indicator - positioned at bottom center of hero section */
+  /* Scroll Indicator */
   .scroll-indicator {
-    position: absolute;
-    bottom: 3rem;
-    left: 50%;
-    transform: translateX(-50%);
     animation: fadeInUp 1s ease-out forwards;
     opacity: 0;
     animation-delay: 1.6s;
-    z-index: 30;
   }
   
   .scroll-link {
@@ -428,17 +423,6 @@ import StarParticleBackground from './StarParticleBackground.astro';
     }
   }
   
-  @keyframes scrollWheel {
-    0%, 20% {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-    100% {
-      transform: translateX(-50%) translateY(16px);
-      opacity: 0;
-    }
-  }
-  
   @keyframes bounce {
     0%, 20%, 53%, 80%, 100% {
       transform: translateY(0);
@@ -454,6 +438,17 @@ import StarParticleBackground from './StarParticleBackground.astro';
     }
   }
   
+  @keyframes scrollWheel {
+    0%, 20% {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(-50%) translateY(16px);
+      opacity: 0;
+    }
+  }
+  
   /* Responsive Design */
   @media (max-width: 1024px) {
     .hero-image-section {
@@ -463,10 +458,6 @@ import StarParticleBackground from './StarParticleBackground.astro';
     .profile-image-container {
       width: 280px;
       height: 280px;
-    }
-    
-    .scroll-indicator {
-      bottom: 2rem;
     }
   }
   
@@ -493,22 +484,18 @@ import StarParticleBackground from './StarParticleBackground.astro';
       justify-content: center;
     }
     
-    .scroll-indicator {
-      bottom: 1.5rem;
-    }
-    
     .contour-outline {
-      width: calc(100% + 16px);
-      height: calc(100% + 16px);
       top: -8px;
       left: -8px;
+      right: -8px;
+      bottom: -8px;
     }
     
     .contour-outline-secondary {
-      width: calc(100% + 28px);
-      height: calc(100% + 28px);
       top: -14px;
       left: -14px;
+      right: -14px;
+      bottom: -14px;
     }
   }
   
@@ -524,21 +511,17 @@ import StarParticleBackground from './StarParticleBackground.astro';
     }
     
     .contour-outline {
-      width: calc(100% + 12px);
-      height: calc(100% + 12px);
       top: -6px;
       left: -6px;
+      right: -6px;
+      bottom: -6px;
     }
     
     .contour-outline-secondary {
-      width: calc(100% + 24px);
-      height: calc(100% + 24px);
       top: -12px;
       left: -12px;
-    }
-    
-    .scroll-indicator {
-      bottom: 1rem;
+      right: -12px;
+      bottom: -12px;
     }
   }
   
