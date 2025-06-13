@@ -67,23 +67,24 @@ import StarParticleBackground from './StarParticleBackground.astro';
           </div>
         </div>
         
-        <!-- Professional Photo with Tailwind Ring Contour -->
+        <!-- Professional Photo with Elegant Violet Contour -->
         <div class="flex justify-center lg:justify-end hero-image-section">
-          <div class="relative">
-            <div class="profile-image-container">
-              <img 
-                src="/src/assets/images/carrusk_zen.png" 
-                alt="Alejandro Carrasco" 
-                class="profile-image w-80 h-80 rounded-full object-cover
-                       ring-4 ring-blue-400 ring-offset-4 ring-offset-slate-900
-                       hover:ring-purple-400 transition-all duration-500
-                       shadow-2xl hover:shadow-blue-500/25"
-                loading="eager"
-              />
-              <!-- Loading animation overlay -->
-              <div class="loading-overlay">
-                <div class="loading-spinner"></div>
-              </div>
+          <div class="relative profile-image-wrapper">
+            <!-- Elegant violet gradient contour -->
+            <div class="elegant-contour"></div>
+            <div class="elegant-contour-glow"></div>
+            
+            <img 
+              src="/src/assets/images/carrusk_zen.png" 
+              alt="Alejandro Carrasco" 
+              class="profile-image w-80 h-80 rounded-full object-cover relative z-10
+                     shadow-2xl transition-all duration-500"
+              loading="eager"
+            />
+            
+            <!-- Loading animation overlay -->
+            <div class="loading-overlay">
+              <div class="loading-spinner"></div>
             </div>
           </div>
         </div>
@@ -97,7 +98,7 @@ import StarParticleBackground from './StarParticleBackground.astro';
       <div class="scroll-mouse">
         <div class="scroll-wheel"></div>
       </div>
-      <span class="scroll-text group-hover:text-blue-400 transition-colors">Scroll to explore</span>
+      <span class="scroll-text group-hover:text-violet-400 transition-colors">Scroll to explore</span>
     </a>
   </div>
 </section>
@@ -169,7 +170,7 @@ import StarParticleBackground from './StarParticleBackground.astro';
     animation-delay: 0.5s;
   }
   
-  .profile-image-container {
+  .profile-image-wrapper {
     position: relative;
     animation: profileImageFadeIn 0.8s ease-out forwards;
     opacity: 0;
@@ -178,8 +179,57 @@ import StarParticleBackground from './StarParticleBackground.astro';
     transition: all 0.4s ease;
   }
   
-  .profile-image-container:hover {
-    transform: scale(1.05);
+  .profile-image-wrapper:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Elegant Violet Contour System */
+  .elegant-contour {
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, 
+      rgba(139, 92, 246, 0.8),   /* violet-500 */
+      rgba(168, 85, 247, 0.6),   /* purple-500 */
+      rgba(59, 130, 246, 0.4),   /* blue-500 */
+      rgba(139, 92, 246, 0.8)    /* back to violet */
+    );
+    z-index: 5;
+    opacity: 0.7;
+    transition: all 0.5s ease;
+  }
+  
+  .elegant-contour-glow {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, 
+      rgba(139, 92, 246, 0.3) 0%,   /* violet glow */
+      rgba(168, 85, 247, 0.2) 30%,  /* purple glow */
+      transparent 70%
+    );
+    z-index: 4;
+    opacity: 0.5;
+    transition: all 0.5s ease;
+    filter: blur(4px);
+  }
+  
+  .profile-image-wrapper:hover .elegant-contour {
+    opacity: 1;
+    inset: -4px;
+    background: linear-gradient(135deg, 
+      rgba(139, 92, 246, 1),     /* more intense violet */
+      rgba(168, 85, 247, 0.8),   /* more intense purple */
+      rgba(59, 130, 246, 0.6),   /* blue accent */
+      rgba(139, 92, 246, 1)      /* back to intense violet */
+    );
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  }
+  
+  .profile-image-wrapper:hover .elegant-contour-glow {
+    opacity: 0.8;
+    inset: -12px;
+    filter: blur(6px);
   }
   
   .profile-image {
@@ -213,8 +263,8 @@ import StarParticleBackground from './StarParticleBackground.astro';
   .loading-spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid rgba(59, 130, 246, 0.3);
-    border-top: 3px solid #3b82f6;
+    border: 3px solid rgba(139, 92, 246, 0.3);
+    border-top: 3px solid #8b5cf6;
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
@@ -236,10 +286,10 @@ import StarParticleBackground from './StarParticleBackground.astro';
   
   .social-link:hover {
     color: white;
-    background: rgba(59, 130, 246, 0.2);
-    border-color: rgba(59, 130, 246, 0.4);
+    background: rgba(139, 92, 246, 0.2);
+    border-color: rgba(139, 92, 246, 0.4);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
   }
   
   /* Scroll Indicator */
@@ -416,7 +466,7 @@ import StarParticleBackground from './StarParticleBackground.astro';
   
   /* Reduced motion accessibility */
   @media (prefers-reduced-motion: reduce) {
-    .profile-image-container:hover {
+    .profile-image-wrapper:hover {
       transform: none;
     }
     
