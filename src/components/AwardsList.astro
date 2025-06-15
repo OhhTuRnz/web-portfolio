@@ -1,5 +1,6 @@
 ---
 import { awards, getAwardsByYear } from '../data/awards.js';
+import LinkPreview from './LinkPreview.astro';
 
 const awardsByYear = getAwardsByYear();
 const years = Object.keys(awardsByYear).sort((a, b) => b - a);
@@ -37,29 +38,33 @@ const categoryColors = {
               <div class={`award-item flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'} arclab-slide-up`} style={`animation-delay: ${(yearIndex * awardsByYear[year].length + index) * 0.2}s;`}>
                 <!-- Content -->
                 <div class={`w-5/12 ${index % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
-                  <a 
-                    href={award.link} 
-                    target="_blank"
-                    class="block arclab-card hover:scale-105 transition-all duration-300 group"
+                  <LinkPreview 
+                    url={award.link}
+                    title={award.preview?.title}
+                    description={award.preview?.description}
+                    image={award.preview?.image}
+                    domain={award.preview?.domain}
                   >
-                    <div class={`flex items-center space-x-3 mb-3 ${index % 2 === 0 ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                      <div class={`w-12 h-12 bg-gradient-to-br ${categoryColors[award.category]} rounded-full flex items-center justify-center text-white text-xl shadow-lg`}>
-                        {award.icon}
+                    <div class="block arclab-card hover:scale-105 transition-all duration-300 group cursor-pointer">
+                      <div class={`flex items-center space-x-3 mb-3 ${index % 2 === 0 ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                        <div class={`w-12 h-12 bg-gradient-to-br ${categoryColors[award.category]} rounded-full flex items-center justify-center text-white text-xl shadow-lg`}>
+                          {award.icon}
+                        </div>
+                        <div>
+                          <h4 class="text-lg font-medium text-white group-hover:arclab-text-accent transition-colors">
+                            {award.title}
+                          </h4>
+                          <p class="text-sm arclab-text">{award.organization}</p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 class="text-lg font-medium text-white group-hover:arclab-text-accent transition-colors">
-                          {award.title}
-                        </h4>
-                        <p class="text-sm arclab-text">{award.organization}</p>
+                      <p class="arclab-text text-sm leading-relaxed">{award.description}</p>
+                      
+                      <!-- External link indicator -->
+                      <div class="mt-3 flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="text-xs arclab-text-accent">View Details →</span>
                       </div>
                     </div>
-                    <p class="arclab-text text-sm leading-relaxed">{award.description}</p>
-                    
-                    <!-- External link indicator -->
-                    <div class="mt-3 flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span class="text-xs arclab-text-accent">View Details →</span>
-                    </div>
-                  </a>
+                  </LinkPreview>
                 </div>
                 
                 <!-- Timeline dot -->
