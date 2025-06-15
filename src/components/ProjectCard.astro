@@ -83,6 +83,12 @@ const getYouTubeThumbnail = (url) => {
   const videoId = getYouTubeVideoId(url);
   return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
 };
+
+// Helper function to get YouTube embed URL
+const getYouTubeEmbedUrl = (url) => {
+  const videoId = getYouTubeVideoId(url);
+  return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}` : null;
+};
 ---
 
 <article 
@@ -98,27 +104,42 @@ const getYouTubeThumbnail = (url) => {
     {project.media ? (
       project.media.type === 'video' ? (
         isYouTubeUrl(project.media.url) ? (
-          <!-- YouTube Video - Use thumbnail with play button overlay -->
-          <div class="relative w-full h-full group cursor-pointer" onclick={`window.open('${project.media.url}', '_blank')`}>
-            <img 
-              src={getYouTubeThumbnail(project.media.url) || project.media.poster || 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800'}
-              alt={`${project.title} - YouTube Video Thumbnail`}
-              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              loading="lazy"
-            />
-            
-            <!-- YouTube play button overlay -->
-            <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
-              <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform duration-300">
-                <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
+          <!-- YouTube Video with hover-to-play functionality -->
+          <div class="relative w-full h-full youtube-container" data-video-id={getYouTubeVideoId(project.media.url)} data-video-url={project.media.url}>
+            <!-- Thumbnail (shown by default) -->
+            <div class="youtube-thumbnail">
+              <img 
+                src={getYouTubeThumbnail(project.media.url) || project.media.poster || 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800'}
+                alt={`${project.title} - YouTube Video Thumbnail`}
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                loading="lazy"
+              />
+              
+              <!-- Play button overlay -->
+              <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+                <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform duration-300">
+                  <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- YouTube branding -->
+              <div class="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold">
+                YouTube
               </div>
             </div>
             
-            <!-- YouTube branding -->
-            <div class="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold">
-              YouTube
+            <!-- Embedded video (hidden by default, shown on hover) -->
+            <div class="youtube-iframe hidden">
+              <iframe
+                src=""
+                title={`${project.title} - YouTube Video`}
+                class="w-full h-full"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
             </div>
             
             <!-- Gradient overlay -->
@@ -306,39 +327,63 @@ const getYouTubeThumbnail = (url) => {
     50% { transform: scale(1.02); }
   }
   
-  /* YouTube thumbnail styling */
-  .project-card .youtube-thumbnail {
-    cursor: pointer;
+  /* YouTube hover-to-play functionality */
+  .youtube-container {
+    position: relative;
   }
   
-  .project-card .youtube-thumbnail:hover .play-button {
-    transform: scale(1.1);
+  .youtube-container .youtube-thumbnail {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.3s ease;
+  }
+  
+  .youtube-container .youtube-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+  }
+  
+  /* Show iframe and hide thumbnail on hover */
+  .project-card:hover .youtube-container .youtube-thumbnail {
+    opacity: 0;
+  }
+  
+  .project-card:hover .youtube-container .youtube-iframe {
+    display: block !important;
+  }
+  
+  /* Smooth transitions */
+  .youtube-container .youtube-iframe iframe {
+    transition: opacity 0.3s ease;
   }
 </style>
 
 <script>
-  // Enhanced video interaction (for non-YouTube videos)
   document.addEventListener('DOMContentLoaded', () => {
     const projectCards = document.querySelectorAll('.project-card');
     
     projectCards.forEach(card => {
       const video = card.querySelector('video');
+      const youtubeContainer = card.querySelector('.youtube-container');
       
+      // Handle regular video playback
       if (video) {
-        // Play video on hover
         card.addEventListener('mouseenter', () => {
           video.play().catch(() => {
             // Silently handle autoplay restrictions
           });
         });
         
-        // Pause video when not hovering
         card.addEventListener('mouseleave', () => {
           video.pause();
           video.currentTime = 0;
         });
         
-        // Handle focus for accessibility
         card.addEventListener('focus', () => {
           video.play().catch(() => {});
         });
@@ -346,6 +391,37 @@ const getYouTubeThumbnail = (url) => {
         card.addEventListener('blur', () => {
           video.pause();
           video.currentTime = 0;
+        });
+      }
+      
+      // Handle YouTube video hover-to-play
+      if (youtubeContainer) {
+        const iframe = youtubeContainer.querySelector('iframe');
+        const videoId = youtubeContainer.dataset.videoId;
+        const videoUrl = youtubeContainer.dataset.videoUrl;
+        
+        let isLoaded = false;
+        
+        card.addEventListener('mouseenter', () => {
+          if (!isLoaded && videoId) {
+            // Load the iframe with autoplay when hovering
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&modestbranding=1&rel=0`;
+            isLoaded = true;
+          }
+        });
+        
+        card.addEventListener('mouseleave', () => {
+          // Optional: Stop the video when mouse leaves
+          if (isLoaded) {
+            iframe.src = '';
+            isLoaded = false;
+          }
+        });
+        
+        // Handle click to open full video
+        youtubeContainer.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.open(videoUrl, '_blank');
         });
       }
     });
