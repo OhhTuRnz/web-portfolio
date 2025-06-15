@@ -38,7 +38,13 @@ const techColors = {
   'OpenGL': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
   'TensorFlow': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
   'Reinforcement Learning': 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',
+  'Advanced RL': 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',
   'Space Systems': 'bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300',
+  'Kerbal': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+  'Mission Planning': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+  'Neural Networks': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
+  'Autonomous Systems': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
+  'Game AI': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
   'default': 'bg-gray-100 text-gray-800 dark:bg-gray-700/30 dark:text-gray-300'
 };
 
@@ -57,8 +63,8 @@ const isYouTubeUrl = (url) => {
   return url && (url.includes('youtube.com') || url.includes('youtu.be'));
 };
 
-// Helper function to get YouTube embed URL
-const getYouTubeEmbedUrl = (url) => {
+// Helper function to get YouTube video ID
+const getYouTubeVideoId = (url) => {
   if (!url) return null;
   
   let videoId = null;
@@ -69,21 +75,12 @@ const getYouTubeEmbedUrl = (url) => {
     videoId = url.split('youtu.be/')[1]?.split('?')[0];
   }
   
-  return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  return videoId;
 };
 
 // Helper function to get YouTube thumbnail
 const getYouTubeThumbnail = (url) => {
-  if (!url) return null;
-  
-  let videoId = null;
-  
-  if (url.includes('youtube.com/watch?v=')) {
-    videoId = url.split('v=')[1]?.split('&')[0];
-  } else if (url.includes('youtu.be/')) {
-    videoId = url.split('youtu.be/')[1]?.split('?')[0];
-  }
-  
+  const videoId = getYouTubeVideoId(url);
   return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
 };
 ---
@@ -101,18 +98,30 @@ const getYouTubeThumbnail = (url) => {
     {project.media ? (
       project.media.type === 'video' ? (
         isYouTubeUrl(project.media.url) ? (
-          <!-- YouTube Video -->
-          <div class="relative w-full h-full">
-            <iframe
-              src={getYouTubeEmbedUrl(project.media.url)}
-              title={`${project.title} - YouTube Video`}
-              class="w-full h-full"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-            ></iframe>
+          <!-- YouTube Video - Use thumbnail with play button overlay -->
+          <div class="relative w-full h-full group cursor-pointer" onclick={`window.open('${project.media.url}', '_blank')`}>
+            <img 
+              src={getYouTubeThumbnail(project.media.url) || project.media.poster || 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800'}
+              alt={`${project.title} - YouTube Video Thumbnail`}
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              loading="lazy"
+            />
             
-            <!-- YouTube overlay for styling -->
+            <!-- YouTube play button overlay -->
+            <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
+              <div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform duration-300">
+                <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+            </div>
+            
+            <!-- YouTube branding -->
+            <div class="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold">
+              YouTube
+            </div>
+            
+            <!-- Gradient overlay -->
             <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
           </div>
         ) : (
@@ -297,9 +306,13 @@ const getYouTubeThumbnail = (url) => {
     50% { transform: scale(1.02); }
   }
   
-  /* YouTube iframe styling */
-  iframe {
-    border-radius: 0;
+  /* YouTube thumbnail styling */
+  .project-card .youtube-thumbnail {
+    cursor: pointer;
+  }
+  
+  .project-card .youtube-thumbnail:hover .play-button {
+    transform: scale(1.1);
   }
 </style>
 
