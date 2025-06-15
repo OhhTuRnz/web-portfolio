@@ -12,8 +12,8 @@ export const projects = [
     team: ["Alejandro Carrasco", "VR Research Team"],
     funding: "MIT ARC Lab",
     media: {
-      type: "gif", // NEW: GIF support
-      url: "/src/assets/gifs/beavr-demo.gif", // Your GIF file
+      type: "image", // Keep as image for now since no BeaVR GIF yet
+      url: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800",
       fallback: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
@@ -34,8 +34,8 @@ export const projects = [
     endDate: "2024-12",
     team: ["Alejandro Carrasco"],
     media: {
-      type: "gif", // GIF preview
-      url: "/src/assets/gifs/kspdg-2024-demo.gif", // Your GIF file
+      type: "gif", // 🎉 Using your actual GIF!
+      url: "/src/assets/gifs/KSPDG-2024-Embed.gif", // Your actual file
       fallback: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
@@ -56,8 +56,8 @@ export const projects = [
     startDate: "2025-01",
     team: ["Alejandro Carrasco"],
     media: {
-      type: "gif", // GIF preview
-      url: "/src/assets/gifs/kspdg-2025-demo.gif", // Your GIF file
+      type: "gif", // 🎉 Using your actual GIF!
+      url: "/src/assets/gifs/KSPDG 2025 - Demo.gif", // Your actual file (with space in name)
       fallback: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
@@ -77,8 +77,8 @@ export const projects = [
     startDate: "2023-08",
     team: ["Alejandro Carrasco"],
     media: {
-      type: "gif", // GIF preview
-      url: "/src/assets/gifs/mobile-app-demo.gif", // Your GIF file
+      type: "image", // Keep as image for now since no mobile app GIF yet
+      url: "https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=800",
       fallback: "https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
