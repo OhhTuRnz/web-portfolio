@@ -41,6 +41,7 @@ const categoryColors = {
                   <DynamicLinkPreview 
                     url={award.link}
                     fallbackTitle={award.title}
+                    fallbackDescription={`Award from ${award.organization} in ${award.year}`}
                   >
                     <div class="block arclab-card hover:scale-105 transition-all duration-300 group cursor-pointer">
                       <div class={`flex items-center space-x-3 mb-3 ${index % 2 === 0 ? 'flex-row-reverse space-x-reverse' : ''}`}>
