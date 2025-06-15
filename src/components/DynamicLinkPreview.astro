@@ -215,12 +215,12 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
       }
       
       try {
-        // Using LinkPreview.net API (free tier available)
-        const apiUrl = `https://api.linkpreview.net/?key=YOUR_API_KEY&q=${encodeURIComponent(url)}`;
+        // For real implementation, you would use:
+        // const response = await fetch(`https://api.linkpreview.net/?key=YOUR_API_KEY&q=${encodeURIComponent(url)}`);
+        // const data = await response.json();
         
-        // For demo purposes, we'll simulate the API response
-        // In production, you'd use a real API key
-        const mockData = await this.getMockPreviewData(url);
+        // For now, we'll use enhanced mock data with real website scraping simulation
+        const mockData = await this.getEnhancedPreviewData(url);
         
         this.cache.set(url, mockData);
         this.renderPreview(mockData, popup);
@@ -231,40 +231,53 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
       }
     }
     
-    async getMockPreviewData(url) {
+    async getEnhancedPreviewData(url) {
       // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Mock data based on URL patterns
-      if (url.includes('upm.es')) {
+      // Enhanced mock data with more realistic website content
+      if (url.includes('upm.es') && url.includes('CON16695')) {
         return {
           title: 'La Cátedra UPM-CESEDEN premia los mejores trabajos e investigaciones sobre defensa y seguridad',
-          description: 'La Universidad Politécnica de Madrid y el Centro Superior de Estudios de la Defensa Nacional reconocen la excelencia en investigación aplicada a la defensa nacional.',
+          description: 'La Universidad Politécnica de Madrid y el Centro Superior de Estudios de la Defensa Nacional han reconocido los mejores trabajos de fin de grado y máster relacionados con la defensa nacional y la seguridad.',
           image: 'https://images.pexels.com/photos/8828597/pexels-photo-8828597.jpeg?auto=compress&cs=tinysrgb&w=800',
-          domain: 'upm.es'
+          domain: 'upm.es',
+          favicon: '🎓'
         };
       } else if (url.includes('kspdg.com')) {
         return {
-          title: 'Kerbal Space Program Differential Games Challenge',
-          description: 'International competition for autonomous spacecraft control using AI agents in the Kerbal Space Program environment.',
+          title: 'Kerbal Space Program Differential Games Challenge 2024',
+          description: 'International AI competition where teams develop autonomous agents to control spacecraft in complex orbital missions. Test your algorithms against real space physics!',
           image: 'https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800',
-          domain: 'kspdg.com'
+          domain: 'kspdg.com',
+          favicon: '🚀'
         };
       } else if (url.includes('aeroastro.mit.edu')) {
         return {
           title: 'MIT Department of Aeronautics and Astronautics',
-          description: 'Leading aerospace engineering education and research at MIT, advancing the frontiers of flight and space exploration.',
+          description: 'Leading the world in aerospace engineering education and research. Home to cutting-edge programs in space systems, autonomous vehicles, and advanced propulsion technologies.',
           image: 'https://images.pexels.com/photos/2159/flight-sky-earth-space.jpg?auto=compress&cs=tinysrgb&w=800',
-          domain: 'aeroastro.mit.edu'
+          domain: 'aeroastro.mit.edu',
+          favicon: '🛩️'
+        };
+      } else if (url.includes('etsisi.upm.es')) {
+        return {
+          title: 'ETSISI - Escuela Técnica Superior de Ingeniería de Sistemas Informáticos',
+          description: 'Leading computer science and software engineering education at Universidad Politécnica de Madrid. Excellence in technology and innovation.',
+          image: 'https://images.pexels.com/photos/207692/pexels-photo-207692.jpeg?auto=compress&cs=tinysrgb&w=800',
+          domain: 'etsisi.upm.es',
+          favicon: '💻'
         };
       }
       
-      // Default fallback
+      // Default fallback with better content
+      const domain = new URL(url).hostname.replace('www.', '');
       return {
-        title: 'External Link',
-        description: 'Click to visit this external website.',
-        image: null,
-        domain: new URL(url).hostname.replace('www.', '')
+        title: `Visit ${domain}`,
+        description: 'Click to view this external website for more information.',
+        image: 'https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg?auto=compress&cs=tinysrgb&w=800',
+        domain: domain,
+        favicon: '🔗'
       };
     }
     
@@ -277,11 +290,11 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
       const html = `
         ${data.image ? `
           <div class="preview-image">
-            <img src="${data.image}" alt="${data.title}" />
+            <img src="${data.image}" alt="${data.title}" loading="lazy" />
           </div>
         ` : ''}
         <div class="preview-text">
-          <div class="preview-domain">${data.domain}</div>
+          <div class="preview-domain">${data.favicon || '🔗'} ${data.domain}</div>
           <h4 class="preview-title">${data.title}</h4>
           ${data.description ? `<p class="preview-description">${data.description}</p>` : ''}
         </div>
@@ -299,7 +312,8 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
       
       contentEl.innerHTML = `
         <div class="preview-error">
-          <p>Unable to load preview</p>
+          <p>⚠️ Unable to load preview</p>
+          <p style="font-size: 0.7rem; margin-top: 4px;">Click to visit the website</p>
         </div>
       `;
       contentEl.style.display = 'block';
