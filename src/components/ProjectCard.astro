@@ -180,7 +180,7 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
         </div>
       ) : project.media.type === 'video' ? (
         <!-- For regular videos, check if it's YouTube or regular video -->
-        isYouTubeUrl(project.media.url) ? (
+        (isYouTubeUrl(project.media.url) ? (
           <!-- YouTube Video with Actual YouTube Thumbnail -->
           <div class="youtube-video-container relative w-full h-full" 
                data-video-url={project.media.url} 
@@ -302,7 +302,7 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
               </div>
             </div>
           </div>
-        )
+        ))
       ) : (
         <div class="relative w-full h-full">
           <img 
