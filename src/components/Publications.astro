@@ -17,6 +17,18 @@ const typeColors = {
   'workshop': 'bg-green-600',
   'preprint': 'bg-orange-600'
 };
+
+// Helper function to truncate abstract to word limit
+function truncateAbstract(text, wordLimit = 30) {
+  if (!text) return '';
+  
+  const words = text.split(' ');
+  if (words.length <= wordLimit) {
+    return text;
+  }
+  
+  return words.slice(0, wordLimit).join(' ') + '...';
+}
 ---
 
 <section id="publications" class="arclab-section bg-gradient-to-b from-slate-900 to-slate-800">
@@ -72,7 +84,7 @@ const typeColors = {
                     </p>
                     
                     <p class="arclab-text text-sm leading-relaxed mb-4">
-                      {pub.abstract}
+                      {truncateAbstract(pub.abstract, 30)}
                     </p>
                     
                     <!-- Keywords -->

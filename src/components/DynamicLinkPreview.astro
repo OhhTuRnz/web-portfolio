@@ -285,10 +285,10 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
       // Convert to string and handle various input types
       let cleaned = String(description);
       
-      // First pass: Remove HTML tags completely
+      // Remove HTML tags completely
       cleaned = cleaned.replace(/<[^>]*>/g, '');
       
-      // Second pass: Decode HTML entities using DOM parser
+      // Decode HTML entities
       try {
         const parser = new DOMParser();
         const doc = parser.parseFromString(`<!DOCTYPE html><html><body>${cleaned}</body></html>`, 'text/html');
@@ -296,64 +296,31 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
       } catch (e) {
         // Fallback manual entity decoding
         cleaned = cleaned
-          .replace(/"/g, '"')
+          .replace(/&quot;/g, '"')
           .replace(/&#39;/g, "'")
-          .replace(/</g, '<')
-          .replace(/>/g, '>')
-          .replace(/&/g, '&');
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&amp;/g, '&');
       }
       
-      // Third pass: AGGRESSIVE cleanup of the specific problematic patterns
-      // This targets the exact '" /> pattern you're seeing
-      cleaned = cleaned
-        // Remove the EXACT pattern '" />
-        .replace(/['"]\s*\/>\s*/g, '')
-        // Remove variations of this pattern
-        .replace(/['"]\s*\/\s*>\s*/g, '')
-        .replace(/['"]\s*>\s*/g, '')
-        .replace(/['"]\s*\/\s*/g, '')
-        // Remove other HTML-like artifacts
-        .replace(/^["\s]*["']?\s*>\s*/g, '')
-        .replace(/^["\s]*["']?\s*\/>\s*/g, '')
-        .replace(/^["\s]*["']?\s*\]\s*/g, '')
-        .replace(/^["\s]*["']?\s*\}\s*/g, '')
-        .replace(/^["\s]*["']?\s*\)\s*/g, '')
-        .replace(/^["\s]*["']?\s*\|\s*/g, '')
-        .replace(/^["\s]*["']?\s*-\s*/g, '')
-        .replace(/^["\s]*["']?\s*:\s*/g, '')
-        .replace(/^["\s]*["']?\s*;\s*/g, '')
-        .replace(/^["\s]*["']?\s*,\s*/g, '')
-        .replace(/^["\s]*["']?\s*\.\s*/g, '')
-        // Remove quotes and extra whitespace
-        .replace(/^[\s"'`]+|[\s"'`]+$/g, '')
-        // Normalize all whitespace
-        .replace(/\s+/g, ' ')
-        .trim();
-      
-      // Fourth pass: Remove common web artifacts
+      // Clean up common web artifacts and normalize whitespace
       cleaned = cleaned
         .replace(/^(Read more|Learn more|Click here|More info|Continue reading|View details|See more)[\s\.:]*\s*/i, '')
         .replace(/^(Home|About|Contact|News|Blog|Menu|Navigation)[\s\|>-]*\s*/i, '')
         .replace(/^(Skip to|Jump to|Go to|Navigate to)[\s\w]*\s*/i, '')
-        .replace(/^(Cookie|Privacy|Terms|Legal)[\s\w]*\s*/i, '');
+        .replace(/^(Cookie|Privacy|Terms|Legal)[\s\w]*\s*/i, '')
+        .replace(/^[^\w\s]*\s*/, '') // Remove leading punctuation
+        .replace(/\s+/g, ' ')
+        .trim();
       
-      // Fifth pass: Handle edge cases and final cleanup
-      // Remove any remaining leading punctuation or symbols
-      cleaned = cleaned.replace(/^[^\w\s]*\s*/, '');
-      
-      // FINAL SAFETY CHECK: Remove any remaining '" /> patterns anywhere in the text
-      cleaned = cleaned.replace(/['"]\s*\/>\s*/g, '');
-      cleaned = cleaned.replace(/['"]\s*\/\s*>\s*/g, '');
-      
-      // If the description is too short after cleaning, return empty
+      // If too short after cleaning, return empty
       if (cleaned.length < 15) {
         return '';
       }
       
-      // Limit length and add ellipsis if needed
+      // Limit length and add ellipsis
       if (cleaned.length > 200) {
         cleaned = cleaned.substring(0, 200);
-        // Try to break at a word boundary
         const lastSpace = cleaned.lastIndexOf(' ');
         if (lastSpace > 150) {
           cleaned = cleaned.substring(0, lastSpace);
@@ -429,7 +396,7 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
       
       const imageSection = data.image ? 
         `<div class="preview-image">
-           <img src="${data.image}" alt="${data.title}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\"preview-image-placeholder\\">🔗</div>'" />
+           <img src="${this.escapeHtml(data.image)}" alt="${this.escapeHtml(data.title)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\"preview-image-placeholder\\">🔗</div>'" />
          </div>` :
         `<div class="preview-image">
            <div class="preview-image-placeholder">🔗</div>
@@ -438,14 +405,20 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
       const html = `
         ${imageSection}
         <div class="preview-text">
-          <div class="preview-domain">${data.domain}</div>
-          <h4 class="preview-title">${data.title}</h4>
-          ${data.description ? `<p class="preview-description">${data.description}</p>` : ''}
+          <div class="preview-domain">${this.escapeHtml(data.domain)}</div>
+          <h4 class="preview-title">${this.escapeHtml(data.title)}</h4>
+          ${data.description ? `<p class="preview-description">${this.escapeHtml(data.description)}</p>` : ''}
         </div>
       `;
       
       contentEl.innerHTML = html;
       contentEl.style.display = 'block';
+    }
+    
+    escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     }
   }
   
