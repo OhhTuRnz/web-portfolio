@@ -36,14 +36,14 @@ export const projects = [
     team: ["Alejandro Carrasco"],
     media: {
       type: "video",
-      url: "https://drive.google.com/file/d/YOUR_GOOGLE_DRIVE_FILE_ID_2024/preview", // Replace with your actual Google Drive file ID
+      url: "https://drive.google.com/file/d/1WjuRngFochZxm-BSDGQlWHCNIpoHoKbP/preview",
       poster: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800",
       thumbnail: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=400"
     },
     links: {
       github: "https://github.com/acarrasco/kspdg-2024",
       paper: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:9yKSN-GCB0IC",
-      demo: "https://drive.google.com/file/d/YOUR_GOOGLE_DRIVE_FILE_ID_2024/view" // Direct Google Drive link
+      demo: "https://drive.google.com/file/d/1WjuRngFochZxm-BSDGQlWHCNIpoHoKbP/view?usp=sharing"
     },
     featured: true
   },
@@ -59,13 +59,13 @@ export const projects = [
     team: ["Alejandro Carrasco"],
     media: {
       type: "video",
-      url: "https://drive.google.com/file/d/YOUR_GOOGLE_DRIVE_FILE_ID_2025/preview", // Replace with your actual Google Drive file ID
+      url: "https://drive.google.com/file/d/10Ns7dQS1RJU6DxbfgDzwerZBaKFVbnQ7/preview",
       poster: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800",
       thumbnail: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=400"
     },
     links: {
       github: "https://github.com/acarrasco/kspdg-2025",
-      demo: "https://drive.google.com/file/d/YOUR_GOOGLE_DRIVE_FILE_ID_2025/view" // Direct Google Drive link
+      demo: "https://drive.google.com/file/d/10Ns7dQS1RJU6DxbfgDzwerZBaKFVbnQ7/view?usp=sharing"
     },
     featured: true
   },
