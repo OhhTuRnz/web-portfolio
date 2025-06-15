@@ -14,7 +14,7 @@ export const publications = [
   {
     id: "pub-2025-002",
     title: "Large Language Models as Autonomous Spacecraft Operators in Kerbal Space Program",
-    authors: [],
+    authors: ["Alejandro Carrasco", "Victor Rodriguez-Fernandez", "Richard Linares"],
     venue: "Advances in Space Research (In Progress)",
     year: 2025,
     type: "journal",
@@ -28,7 +28,7 @@ export const publications = [
   {
     id: "pub-2024-002",
     title: "Fine-tuning LLMs for Autonomous Spacecraft Control: A Case Study Using Kerbal Space Program",
-    authors: ["A. Carrasco", "M. Johnson", "K. Patel"],
+    authors: ["Alejandro Carrasco", "Victor Rodriguez-Fernandez", "Richard Linares"],
     venue: "SPAICE 2024",
     year: 2024,
     type: "conference",
