@@ -14,7 +14,7 @@ export const publications = [
   {
     id: "pub-2025-002",
     title: "Large Language Models as Autonomous Spacecraft Operators in Kerbal Space Program",
-    authors: ["A. Carrasco", "J. How", "S. Chung"],
+    authors: ["Victor Rodriguez-Fernandez", "Alejandro Carrasco", "Jason Cheng", "Eli Scharf", "Peng Mun Siew", "Richard Linares"],
     venue: "Advances in Space Research (In Progress)",
     year: 2025,
     type: "journal",
