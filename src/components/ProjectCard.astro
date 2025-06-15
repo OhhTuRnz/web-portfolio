@@ -72,31 +72,6 @@ const isYouTubeUrl = (url) => {
   return url && (url.includes('youtube.com') || url.includes('youtu.be'));
 };
 
-// Helper function to check if URL is Google Drive
-const isGoogleDriveUrl = (url) => {
-  return url && url.includes('drive.google.com');
-};
-
-// Helper function to get Google Drive file ID
-const getGoogleDriveFileId = (url) => {
-  if (!url) return null;
-  
-  const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  return match ? match[1] : null;
-};
-
-// Helper function to get Google Drive embed URL
-const getGoogleDriveEmbedUrl = (url) => {
-  const fileId = getGoogleDriveFileId(url);
-  return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : url;
-};
-
-// Helper function to get Google Drive thumbnail
-const getGoogleDriveThumbnail = (url) => {
-  const fileId = getGoogleDriveFileId(url);
-  return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w800` : null;
-};
-
 // Helper function to get YouTube video ID
 const getYouTubeVideoId = (url) => {
   if (!url) return null;
@@ -110,6 +85,12 @@ const getYouTubeVideoId = (url) => {
   }
   
   return videoId;
+};
+
+// Helper function to get YouTube embed URL with nocookie domain
+const getYouTubeEmbedUrl = (url) => {
+  const videoId = getYouTubeVideoId(url);
+  return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1` : null;
 };
 
 // Helper function to get YouTube thumbnail with multiple quality options
@@ -137,121 +118,8 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
   <div class="relative overflow-hidden aspect-video bg-slate-900/50">
     {project.media ? (
       project.media.type === 'video' ? (
-        isGoogleDriveUrl(project.media.url) ? (
-          <!-- Google Drive Video -->
-          <div class="google-drive-video-container relative w-full h-full" 
-               data-video-url={project.media.url} 
-               data-file-id={getGoogleDriveFileId(project.media.url)}>
-            
-            <!-- High-Quality Thumbnail Preview -->
-            <div class="google-drive-thumbnail-preview relative w-full h-full cursor-pointer">
-              <img 
-                src={getGoogleDriveThumbnail(project.media.url) || project.media.poster || 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800'}
-                alt={`${project.title} - Google Drive Video Thumbnail`}
-                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                loading="lazy"
-                onerror={`this.src='${project.media.poster || 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800'}'`}
-              />
-              
-              <!-- Enhanced Play Button with Pulse Animation -->
-              <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
-                <div class="play-button relative">
-                  <!-- Pulsing ring animation -->
-                  <div class="absolute inset-0 w-20 h-20 bg-blue-600/30 rounded-full animate-ping"></div>
-                  <div class="absolute inset-0 w-20 h-20 bg-blue-600/20 rounded-full animate-pulse"></div>
-                  
-                  <!-- Main play button -->
-                  <div class="relative w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-300 hover:bg-blue-700 cursor-pointer z-10">
-                    <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M8 5v14l11-7z"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Google Drive Branding -->
-              <div class="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded text-sm font-semibold flex items-center gap-1 shadow-lg">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.01 2C6.5 2 2.01 6.49 2.01 12s4.49 10 9.99 10c5.51 0 10-4.49 10-10S17.52 2 12.01 2zM10 17l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
-                Drive
-              </div>
-              
-              <!-- Mobile-Friendly Preview Indicator -->
-              <div class="absolute bottom-4 left-4 bg-black/80 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 shadow-lg">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
-                <span class="hidden sm:inline">Click to preview • Full screen available</span>
-                <span class="sm:hidden">Tap to play</span>
-              </div>
-              
-              <!-- Video Duration (if available) -->
-              <div class="absolute bottom-4 right-4 bg-black/80 text-white px-2 py-1 rounded text-xs font-mono">
-                Video
-              </div>
-            </div>
-            
-            <!-- Full-Screen Modal for Video -->
-            <div class="google-drive-modal-overlay fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
-              <div class="relative w-full max-w-6xl aspect-video bg-black rounded-lg overflow-hidden">
-                <!-- Close Button -->
-                <button class="close-video absolute top-4 right-4 bg-black/70 text-white p-3 rounded-full hover:bg-black/90 transition-colors z-20 md:top-6 md:right-6">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                  </svg>
-                </button>
-                
-                <!-- Open in Google Drive Button -->
-                <a class="open-drive absolute top-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-full text-sm hover:bg-blue-700 transition-colors z-20 flex items-center gap-2 md:top-6 md:left-6" 
-                   target="_blank" 
-                   rel="noopener noreferrer">
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12.01 2C6.5 2 2.01 6.49 2.01 12s4.49 10 9.99 10c5.51 0 10-4.49 10-10S17.52 2 12.01 2zM10 17l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                  </svg>
-                  <span class="hidden sm:inline">Open in Drive</span>
-                  <span class="sm:hidden">Drive</span>
-                </a>
-                
-                <!-- Loading Indicator -->
-                <div class="loading-indicator absolute inset-0 flex items-center justify-center bg-slate-900">
-                  <div class="flex flex-col items-center gap-4">
-                    <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-white text-sm">Loading video...</p>
-                  </div>
-                </div>
-                
-                <!-- Video Container -->
-                <div class="video-container w-full h-full">
-                  <!-- Iframe will be inserted here -->
-                </div>
-                
-                <!-- Fallback Message -->
-                <div class="fallback-message hidden absolute inset-0 flex items-center justify-center bg-slate-900 text-center p-8">
-                  <div class="max-w-md">
-                    <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                    </svg>
-                    <h3 class="text-white text-lg font-semibold mb-2">Video Preview Unavailable</h3>
-                    <p class="text-gray-300 text-sm mb-4">This video cannot be embedded. Please check sharing permissions.</p>
-                    <a class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors" 
-                       target="_blank" 
-                       rel="noopener noreferrer">
-                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12.01 2C6.5 2 2.01 6.49 2.01 12s4.49 10 9.99 10c5.51 0 10-4.49 10-10S17.52 2 12.01 2zM10 17l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                      </svg>
-                      Open in Google Drive
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Gradient overlay -->
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-          </div>
-        ) : isYouTubeUrl(project.media.url) ? (
-          <!-- YouTube Video (keeping existing implementation) -->
+        isYouTubeUrl(project.media.url) ? (
+          <!-- YouTube Video with Enhanced Embedding -->
           <div class="youtube-video-container relative w-full h-full" 
                data-video-url={project.media.url} 
                data-video-id={getYouTubeVideoId(project.media.url)}>
@@ -289,7 +157,74 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
                 </svg>
                 YouTube
               </div>
+              
+              <!-- Mobile-Friendly Preview Indicator -->
+              <div class="absolute bottom-4 left-4 bg-black/80 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 shadow-lg">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                <span class="hidden sm:inline">Click to watch • Full screen available</span>
+                <span class="sm:hidden">Tap to play</span>
+              </div>
             </div>
+            
+            <!-- Full-Screen Modal for Video -->
+            <div class="youtube-modal-overlay fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
+              <div class="relative w-full max-w-6xl aspect-video bg-black rounded-lg overflow-hidden">
+                <!-- Close Button -->
+                <button class="close-video absolute top-4 right-4 bg-black/70 text-white p-3 rounded-full hover:bg-black/90 transition-colors z-20 md:top-6 md:right-6">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+                
+                <!-- Open in YouTube Button -->
+                <a class="open-youtube absolute top-4 left-4 bg-red-600 text-white px-4 py-2 rounded-full text-sm hover:bg-red-700 transition-colors z-20 flex items-center gap-2 md:top-6 md:left-6" 
+                   target="_blank" 
+                   rel="noopener noreferrer">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  </svg>
+                  <span class="hidden sm:inline">Open in YouTube</span>
+                  <span class="sm:hidden">YouTube</span>
+                </a>
+                
+                <!-- Loading Indicator -->
+                <div class="loading-indicator absolute inset-0 flex items-center justify-center bg-slate-900">
+                  <div class="flex flex-col items-center gap-4">
+                    <div class="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-white text-sm">Loading video...</p>
+                  </div>
+                </div>
+                
+                <!-- Video Container -->
+                <div class="video-container w-full h-full">
+                  <!-- Iframe will be inserted here -->
+                </div>
+                
+                <!-- Fallback Message -->
+                <div class="fallback-message hidden absolute inset-0 flex items-center justify-center bg-slate-900 text-center p-8">
+                  <div class="max-w-md">
+                    <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    <h3 class="text-white text-lg font-semibold mb-2">Video Unavailable</h3>
+                    <p class="text-gray-300 text-sm mb-4">This video cannot be embedded. Please check embedding permissions.</p>
+                    <a class="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors" 
+                       target="_blank" 
+                       rel="noopener noreferrer">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                      </svg>
+                      Open in YouTube
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Gradient overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
           </div>
         ) : (
           <!-- Regular Video -->
@@ -409,19 +344,12 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
           class="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors hover:bg-blue-900/20 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50"
           aria-label={`View ${project.title} demo`}
         >
-          {isGoogleDriveUrl(project.links.demo) ? (
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12.01 2C6.5 2 2.01 6.49 2.01 12s4.49 10 9.99 10c5.51 0 10-4.49 10-10S17.52 2 12.01 2zM10 17l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
-          ) : isYouTubeUrl(project.links.demo) ? (
+          {isYouTubeUrl(project.links.demo) ? (
             <i class="fab fa-youtube" aria-hidden="true"></i>
           ) : (
             <i class="fas fa-external-link-alt" aria-hidden="true"></i>
           )}
-          <span class="text-sm">
-            {isGoogleDriveUrl(project.links.demo) ? 'Video' : 
-             isYouTubeUrl(project.links.demo) ? 'Video' : 'Demo'}
-          </span>
+          <span class="text-sm">{isYouTubeUrl(project.links.demo) ? 'Video' : 'Demo'}</span>
         </a>
       )}
       
@@ -470,21 +398,21 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
     outline-offset: 2px;
   }
   
-  /* Google Drive container styling */
-  .google-drive-video-container {
+  /* YouTube container styling */
+  .youtube-video-container {
     position: relative;
     width: 100%;
     height: 100%;
   }
   
-  .google-drive-thumbnail-preview {
+  .youtube-thumbnail-preview {
     position: relative;
     width: 100%;
     height: 100%;
     transition: all 0.3s ease;
   }
   
-  /* Enhanced Google Drive play button with animations */
+  /* Enhanced YouTube play button with animations */
   .play-button {
     position: relative;
     display: flex;
@@ -493,18 +421,18 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
   }
   
   .play-button:hover .relative {
-    background-color: #1d4ed8;
+    background-color: #dc2626;
     transform: scale(1.15);
-    box-shadow: 0 0 30px rgba(29, 78, 216, 0.6);
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.6);
   }
   
   /* Modal styling for mobile-friendly video preview */
-  .google-drive-modal-overlay {
+  .youtube-modal-overlay {
     backdrop-filter: blur(10px);
     z-index: 9999;
   }
   
-  .google-drive-modal-overlay.visible {
+  .youtube-modal-overlay.visible {
     display: flex !important;
   }
   
@@ -524,12 +452,12 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
   
   /* Responsive adjustments */
   @media (max-width: 768px) {
-    .google-drive-modal-overlay .relative {
+    .youtube-modal-overlay .relative {
       margin: 1rem;
       max-height: calc(100vh - 2rem);
     }
     
-    .close-video, .open-drive {
+    .close-video, .open-youtube {
       top: 1rem;
     }
     
@@ -537,27 +465,27 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
       right: 1rem;
     }
     
-    .open-drive {
+    .open-youtube {
       left: 1rem;
     }
   }
   
   /* Smooth transitions */
-  .google-drive-thumbnail-preview {
+  .youtube-thumbnail-preview {
     transition: transform 0.3s ease;
   }
   
-  .google-drive-thumbnail-preview:hover {
+  .youtube-thumbnail-preview:hover {
     transform: scale(1.02);
   }
   
   /* Button styling */
-  .close-video, .open-drive {
+  .close-video, .open-youtube {
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
   }
   
-  .close-video:hover, .open-drive:hover {
+  .close-video:hover, .open-youtube:hover {
     transform: scale(1.1);
   }
   
@@ -578,7 +506,7 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
     
     projectCards.forEach(card => {
       const video = card.querySelector('video');
-      const googleDriveContainer = card.querySelector('.google-drive-video-container');
+      const youtubeContainer = card.querySelector('.youtube-video-container');
       
       // Handle regular video playback
       if (video) {
@@ -604,20 +532,20 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
         });
       }
       
-      // Handle Google Drive video preview functionality
-      if (googleDriveContainer) {
-        const videoUrl = googleDriveContainer.dataset.videoUrl;
-        const fileId = googleDriveContainer.dataset.fileId;
-        const thumbnailPreview = googleDriveContainer.querySelector('.google-drive-thumbnail-preview');
-        const modalOverlay = googleDriveContainer.querySelector('.google-drive-modal-overlay');
+      // Handle YouTube video preview functionality
+      if (youtubeContainer) {
+        const videoUrl = youtubeContainer.dataset.videoUrl;
+        const videoId = youtubeContainer.dataset.videoId;
+        const thumbnailPreview = youtubeContainer.querySelector('.youtube-thumbnail-preview');
+        const modalOverlay = youtubeContainer.querySelector('.youtube-modal-overlay');
         const closeButton = modalOverlay?.querySelector('.close-video');
-        const openDriveButton = modalOverlay?.querySelector('.open-drive');
-        const playButton = googleDriveContainer.querySelector('.play-button');
+        const openYouTubeButton = modalOverlay?.querySelector('.open-youtube');
+        const playButton = youtubeContainer.querySelector('.play-button');
         
-        if (fileId) {
-          // Set up Google Drive links
-          const driveViewUrl = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
-          if (openDriveButton) openDriveButton.href = driveViewUrl;
+        if (videoId) {
+          // Set up YouTube links
+          const youtubeViewUrl = `https://www.youtube.com/watch?v=${videoId}`;
+          if (openYouTubeButton) openYouTubeButton.href = youtubeViewUrl;
           
           // Function to show full-screen video modal
           const showVideoModal = () => {
@@ -625,8 +553,8 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
             modalOverlay.classList.add('visible');
             document.body.style.overflow = 'hidden';
             
-            // Load Google Drive video
-            loadGoogleDriveVideo();
+            // Load YouTube video
+            loadYouTubeVideo();
           };
           
           // Function to hide video modal
@@ -653,27 +581,27 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
             }
           };
           
-          // Function to load Google Drive video
-          const loadGoogleDriveVideo = () => {
+          // Function to load YouTube video
+          const loadYouTubeVideo = () => {
             const videoContainer = modalOverlay.querySelector('.video-container');
             const loadingIndicator = modalOverlay.querySelector('.loading-indicator');
             const fallbackMessage = modalOverlay.querySelector('.fallback-message');
             
-            if (!videoContainer || !fileId) return;
+            if (!videoContainer || !videoId) return;
             
             // Show loading indicator
             if (loadingIndicator) {
               loadingIndicator.classList.remove('hidden');
             }
             
-            // Create iframe for Google Drive video
+            // Create iframe for YouTube video with enhanced parameters
             const iframe = document.createElement('iframe');
-            iframe.src = `https://drive.google.com/file/d/${fileId}/preview`;
+            iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`;
             iframe.className = 'w-full h-full';
             iframe.setAttribute('frameborder', '0');
             iframe.setAttribute('allowfullscreen', '');
-            iframe.setAttribute('allow', 'autoplay');
-            iframe.setAttribute('title', `${card.querySelector('h3')?.textContent || 'Video'} - Google Drive Video`);
+            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+            iframe.setAttribute('title', `${card.querySelector('h3')?.textContent || 'Video'} - YouTube Video`);
             
             let loaded = false;
             let errorTimeout;
@@ -706,7 +634,7 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
                 loaded = true;
                 showFallbackMessage();
               }
-            }, 10000); // 10 second timeout
+            }, 8000); // 8 second timeout
             
             const showFallbackMessage = () => {
               if (loadingIndicator) {
@@ -718,7 +646,7 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
                 
                 const fallbackLink = fallbackMessage.querySelector('a');
                 if (fallbackLink) {
-                  fallbackLink.href = driveViewUrl;
+                  fallbackLink.href = youtubeViewUrl;
                 }
               }
             };
