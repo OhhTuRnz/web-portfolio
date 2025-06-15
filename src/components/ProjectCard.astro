@@ -27,6 +27,36 @@ export interface Props {
 
 const { project, index = 0 } = Astro.props;
 
+// Helper function to check if URL is YouTube
+const isYouTubeUrl = (url) => {
+  return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+};
+
+// Helper function to get YouTube video ID
+const getYouTubeVideoId = (url) => {
+  if (!url) return null;
+  
+  let videoId = null;
+  
+  if (url.includes('youtube.com/watch?v=')) {
+    videoId = url.split('v=')[1]?.split('&')[0];
+  } else if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1]?.split('?')[0];
+  } else if (url.includes('youtube.com/embed/')) {
+    videoId = url.split('embed/')[1]?.split('?')[0];
+  }
+  
+  return videoId;
+};
+
+// Helper function to get YouTube thumbnail
+const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
+  const videoId = getYouTubeVideoId(url);
+  if (!videoId) return null;
+  
+  return `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
+};
+
 const techColors = {
   'Python': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
   'PyTorch': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
@@ -58,36 +88,6 @@ const statusColors = {
   'active': 'text-green-400 bg-green-900/20 border-green-500/30',
   'completed': 'text-gray-400 bg-gray-900/20 border-gray-500/30'
 };
-
-// Helper function to check if URL is YouTube
-const isYouTubeUrl = (url) => {
-  return url && (url.includes('youtube.com') || url.includes('youtu.be'));
-};
-
-// Helper function to get YouTube video ID
-const getYouTubeVideoId = (url) => {
-  if (!url) return null;
-  
-  let videoId = null;
-  
-  if (url.includes('youtube.com/watch?v=')) {
-    videoId = url.split('v=')[1]?.split('&')[0];
-  } else if (url.includes('youtu.be/')) {
-    videoId = url.split('youtu.be/')[1]?.split('?')[0];
-  } else if (url.includes('youtube.com/embed/')) {
-    videoId = url.split('embed/')[1]?.split('?')[0];
-  }
-  
-  return videoId;
-};
-
-// Helper function to get YouTube thumbnail
-const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
-  const videoId = getYouTubeVideoId(url);
-  if (!videoId) return null;
-  
-  return `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
-};
 ---
 
 <article 
@@ -102,21 +102,41 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
   <div class="relative overflow-hidden aspect-video bg-slate-900/50">
     {project.media ? (
       project.media.type === 'gif' ? (
-        <!-- GIF with Static First Frame and Hover-to-Play -->
+        <!-- GIF with YouTube Thumbnail as Static Preview -->
         <div class="gif-demo-container relative w-full h-full group cursor-pointer" 
              data-demo-url={project.links?.demo}
              data-gif-url={project.media.url}
              data-fallback={project.media.fallback}>
           
-          <!-- Static preview image (first frame) - Always visible -->
-          <div class="gif-preview-static absolute inset-0">
-            <img 
-              src={project.media.fallback || "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800"}
-              alt={`${project.title} - Demo Preview`}
-              class="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
-              loading="lazy"
-            />
-          </div>
+          <!-- YouTube Thumbnail as Static Preview (if demo is YouTube) -->
+          {project.links?.demo && isYouTubeUrl(project.links.demo) ? (
+            <div class="gif-preview-static absolute inset-0">
+              <img 
+                src={getYouTubeThumbnail(project.links.demo, 'maxresdefault')}
+                alt={`${project.title} - YouTube Thumbnail`}
+                class="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+                loading="lazy"
+                onerror={`
+                  this.onerror=null;
+                  this.src='${getYouTubeThumbnail(project.links.demo, 'hqdefault')}';
+                  this.onerror=function(){
+                    this.onerror=null;
+                    this.src='${project.media.fallback || "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800"}';
+                  };
+                `}
+              />
+            </div>
+          ) : (
+            <!-- Fallback static image if no YouTube demo -->
+            <div class="gif-preview-static absolute inset-0">
+              <img 
+                src={project.media.fallback || "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800"}
+                alt={`${project.title} - Demo Preview`}
+                class="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+                loading="lazy"
+              />
+            </div>
+          )}
           
           <!-- Animated GIF - Only visible on hover -->
           <div class="gif-preview-animated absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
@@ -180,7 +200,7 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
         </div>
       ) : project.media.type === 'video' ? (
         <!-- For regular videos, check if it's YouTube or regular video -->
-        (isYouTubeUrl(project.media.url) ? (
+        isYouTubeUrl(project.media.url) ? (
           <!-- YouTube Video with Actual YouTube Thumbnail -->
           <div class="youtube-video-container relative w-full h-full" 
                data-video-url={project.media.url} 
@@ -302,7 +322,7 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
               </div>
             </div>
           </div>
-        ))
+        )
       ) : (
         <div class="relative w-full h-full">
           <img 
