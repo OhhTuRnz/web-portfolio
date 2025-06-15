@@ -12,13 +12,13 @@ export const scholarProfile = {
 
 export const publications = [
   {
-    id: "pub-2024-001",
+    id: "pub-2025-002",
     title: "Large Language Models as Autonomous Spacecraft Operators in Kerbal Space Program",
     authors: ["A. Carrasco", "J. How", "S. Chung"],
-    venue: "Advances in Space Research (Pending)",
-    year: 2024,
+    venue: "Advances in Space Research (In Progress)",
+    year: 2025,
     type: "journal",
-    citations: 8,
+    citations: 0,
     doi: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:9yKSN-GCB0IC",
     pdfUrl: "/papers/carrasco-2024-llm-spacecraft-operators.pdf",
     abstract: "This paper presents a comprehensive framework for utilizing large language models as autonomous spacecraft operators in the Kerbal Space Program environment. We demonstrate how LLMs can be trained to understand complex mission requirements, plan trajectories, and execute spacecraft operations with minimal human intervention.",
@@ -47,7 +47,7 @@ export const publications = [
     citations: 2,
     doi: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:d1gkVwhDpl0C",
     pdfUrl: "/papers/carrasco-2025-visual-language-models.pdf",
-    abstract: "This work explores the application of visual language models as operator agents in space domain operations. We investigate how multimodal AI systems can interpret visual data and natural language instructions to perform complex spacecraft operations.",
+    abstract: "This paper explores the application of Vision-Language Models (VLMs) as operator agents in the space domain, focusing on both software and hardware operational paradigms. Building on advances in Large Language Models (LLMs) and their multimodal extensions, we investigate how VLMs can enhance autonomous control and decision-making in space missions. In the software context, we employ VLMs within the Kerbal Space Program Differential Games (KSPDG) simulation environment, enabling the agent to interpret visual screenshots of the graphical user interface to perform complex orbital maneuvers. In the hardware context, we integrate VLMs with robotic systems equipped with cameras to inspect and diagnose physical space objects, such as satellites. Our results demonstrate that VLMs can effectively process visual and textual data to generate contextually appropriate actions, competing with traditional methods and non-multimodal LLMs in simulation tasks, and showing promise in real-world applications.",
     keywords: ["Visual Language Models", "Space Operations", "Multimodal AI", "Operator Agents"]
   },
   {
