@@ -282,27 +282,58 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
     cleanDescription(description) {
       if (!description) return '';
       
-      // Remove HTML tags first
-      const withoutHtml = description.replace(/<[^>]*>/g, '');
+      // First, handle the raw text and remove any HTML-like patterns
+      let cleaned = description;
       
-      // Decode HTML entities
-      const textarea = document.createElement('textarea');
-      textarea.innerHTML = withoutHtml;
-      const decoded = textarea.value;
+      // Remove HTML tags completely
+      cleaned = cleaned.replace(/<[^>]*>/g, '');
       
-      // Remove the specific "> pattern at the start
-      const withoutQuoteBracket = decoded.replace(/^["\s]*>\s*/, '');
+      // Decode HTML entities using a more robust method
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(cleaned, 'text/html');
+      cleaned = doc.documentElement.textContent || cleaned;
       
-      // Remove other common problematic patterns
-      const cleaned = withoutQuoteBracket
-        .replace(/^["\s]*\/>\s*/, '') // Remove "/> at start
-        .replace(/^["\s]*\]\s*/, '')  // Remove "] at start
-        .replace(/^["\s]*\}\s*/, '')  // Remove "} at start
-        .replace(/\s+/g, ' ')         // Normalize whitespace
-        .trim();
+      // Remove the specific problematic patterns at the start
+      cleaned = cleaned
+        .replace(/^["\s]*>\s*/, '')     // Remove "> at start (the main issue)
+        .replace(/^["\s]*\/>\s*/, '')   // Remove "/> at start
+        .replace(/^["\s]*\]\s*/, '')    // Remove "] at start
+        .replace(/^["\s]*\}\s*/, '')    // Remove "} at start
+        .replace(/^["\s]*\)\s*/, '')    // Remove ") at start
+        .replace(/^["\s]*\|\s*/, '')    // Remove "| at start
+        .replace(/^["\s]*-\s*/, '')     // Remove "- at start
+        .replace(/^["\s]*:\s*/, '')     // Remove ": at start
+        .replace(/^["\s]*;\s*/, '')     // Remove "; at start
+        .replace(/^["\s]*,\s*/, '')     // Remove ", at start
+        .replace(/^["\s]*\.\s*/, '')    // Remove ". at start
+        .replace(/^\s*['"]\s*/, '')     // Remove quotes at start
+        .replace(/\s*['"]\s*$/, '')     // Remove quotes at end
+        .replace(/\s+/g, ' ')           // Normalize all whitespace
+        .trim();                        // Remove leading/trailing whitespace
       
-      // Limit length
-      return cleaned.length > 200 ? cleaned.substring(0, 200) + '...' : cleaned;
+      // Additional cleanup for common web scraping artifacts
+      cleaned = cleaned
+        .replace(/^(Read more|Learn more|Click here|More info|Continue reading)[\s\.:]*/, '')
+        .replace(/^(Home|About|Contact|News|Blog)[\s\|>-]*/, '')
+        .replace(/^(Skip to|Jump to|Go to)[\s\w]*/, '');
+      
+      // If the description is too short after cleaning, return empty
+      if (cleaned.length < 10) {
+        return '';
+      }
+      
+      // Limit length and add ellipsis if needed
+      if (cleaned.length > 200) {
+        cleaned = cleaned.substring(0, 200);
+        // Try to break at a word boundary
+        const lastSpace = cleaned.lastIndexOf(' ');
+        if (lastSpace > 150) {
+          cleaned = cleaned.substring(0, lastSpace);
+        }
+        cleaned += '...';
+      }
+      
+      return cleaned;
     }
     
     getHardcodedMetadata(url, fallbackTitle, fallbackDescription, hardcodedImage) {
@@ -310,6 +341,11 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
       
       // Domain-specific metadata
       const domainData = {
+        'll.mit.edu': {
+          title: 'MIT Lincoln Laboratory',
+          description: 'MIT Lincoln Laboratory develops advanced technology solutions for national security.',
+          image: hardcodedImage || null
+        },
         'upm.es': {
           title: 'Universidad Politécnica de Madrid',
           description: 'Leading technical university in Spain, excellence in engineering and technology education.',
