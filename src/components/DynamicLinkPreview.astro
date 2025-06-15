@@ -3,9 +3,10 @@ export interface Props {
   url: string;
   fallbackTitle?: string;
   fallbackDescription?: string;
+  fallbackImage?: string;
 }
 
-const { url, fallbackTitle, fallbackDescription } = Astro.props;
+const { url, fallbackTitle, fallbackDescription, fallbackImage } = Astro.props;
 ---
 
 <div class="dynamic-link-preview-container">
@@ -17,6 +18,7 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
     data-url={url}
     data-fallback-title={fallbackTitle}
     data-fallback-description={fallbackDescription}
+    data-fallback-image={fallbackImage}
   >
     <slot />
   </a>
@@ -223,6 +225,7 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
       const url = trigger.dataset.url;
       const fallbackTitle = trigger.dataset.fallbackTitle;
       const fallbackDescription = trigger.dataset.fallbackDescription;
+      const fallbackImage = trigger.dataset.fallbackImage;
       
       if (!url) return;
       
@@ -233,7 +236,7 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
       
       try {
         // Try to fetch metadata using a CORS proxy or direct fetch
-        const metadata = await this.fetchMetadata(url, fallbackTitle, fallbackDescription);
+        const metadata = await this.fetchMetadata(url, fallbackTitle, fallbackDescription, fallbackImage);
         this.cache.set(url, metadata);
         this.renderPreview(metadata, popup);
       } catch (error) {
@@ -243,13 +246,13 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
           title: fallbackTitle || this.getDomainName(url),
           description: fallbackDescription || 'Click to visit this website',
           domain: this.getDomainName(url),
-          image: null
+          image: fallbackImage || null
         };
         this.renderPreview(fallbackData, popup);
       }
     }
     
-    async fetchMetadata(url, fallbackTitle, fallbackDescription) {
+    async fetchMetadata(url, fallbackTitle, fallbackDescription, fallbackImage) {
       // Try multiple methods to get metadata
       
       // Method 1: Try direct fetch (will work for same-origin or CORS-enabled sites)
@@ -264,7 +267,7 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
         
         if (response.ok) {
           const html = await response.text();
-          return this.parseMetadata(html, url);
+          return this.parseMetadata(html, url, fallbackImage);
         }
       } catch (e) {
         console.log('Direct fetch failed, trying alternative methods');
@@ -282,7 +285,7 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
               title: data.data.title || fallbackTitle || this.getDomainName(url),
               description: data.data.description || fallbackDescription || '',
               domain: this.getDomainName(url),
-              image: data.data.image?.url || null
+              image: data.data.image?.url || fallbackImage || null
             };
           }
         }
@@ -291,10 +294,10 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
       }
       
       // Method 3: Fallback to domain-specific hardcoded data
-      return this.getHardcodedMetadata(url, fallbackTitle, fallbackDescription);
+      return this.getHardcodedMetadata(url, fallbackTitle, fallbackDescription, fallbackImage);
     }
     
-    parseMetadata(html, url) {
+    parseMetadata(html, url, fallbackImage) {
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
       
@@ -314,7 +317,8 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
                          '';
       
       const image = getMetaContent('meta[property="og:image"]') ||
-                   getMetaContent('meta[name="twitter:image"]');
+                   getMetaContent('meta[name="twitter:image"]') ||
+                   fallbackImage;
       
       return {
         title: title.trim(),
@@ -324,38 +328,42 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
       };
     }
     
-    getHardcodedMetadata(url, fallbackTitle, fallbackDescription) {
+    getHardcodedMetadata(url, fallbackTitle, fallbackDescription, fallbackImage) {
       const domain = this.getDomainName(url);
       
       // Domain-specific metadata
       const domainData = {
         'upm.es': {
           title: 'Universidad Politécnica de Madrid',
-          description: 'Leading technical university in Spain, excellence in engineering and technology education.'
+          description: 'Leading technical university in Spain, excellence in engineering and technology education.',
+          image: fallbackImage || 'https://www.upm.es/gsfs/SFS24014'
         },
         'kspdg.com': {
           title: 'Kerbal Space Program Differential Games Challenge',
-          description: 'International AI competition for autonomous spacecraft control algorithms.'
+          description: 'International AI competition for autonomous spacecraft control algorithms.',
+          image: fallbackImage
         },
         'aeroastro.mit.edu': {
           title: 'MIT Aeronautics and Astronautics',
-          description: 'Leading aerospace engineering education and research at MIT.'
+          description: 'Leading aerospace engineering education and research at MIT.',
+          image: fallbackImage
         },
         'etsisi.upm.es': {
           title: 'ETSISI - UPM',
-          description: 'School of Computer Systems Engineering at Universidad Politécnica de Madrid.'
+          description: 'School of Computer Systems Engineering at Universidad Politécnica de Madrid.',
+          image: fallbackImage
         }
       };
       
       const data = domainData[domain] || {
         title: fallbackTitle || domain,
-        description: fallbackDescription || 'Visit this website for more information.'
+        description: fallbackDescription || 'Visit this website for more information.',
+        image: fallbackImage
       };
       
       return {
         ...data,
-        domain: domain,
-        image: null
+        domain: domain
       };
     }
     
