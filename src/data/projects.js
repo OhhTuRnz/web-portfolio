@@ -59,13 +59,13 @@ export const projects = [
     team: ["Alejandro Carrasco"],
     media: {
       type: "video",
-      url: "https://www.youtube.com/watch?v=qK2dbhiIw8c",
+      url: "https://www.youtube.com/watch?v=UNhrkZW-eJc",
       poster: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800",
       thumbnail: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=400"
     },
     links: {
       github: "https://github.com/acarrasco/kspdg-2025",
-      demo: "https://www.youtube.com/watch?v=qK2dbhiIw8c"
+      demo: "https://www.youtube.com/watch?v=UNhrkZW-eJc"
     },
     featured: true
   },
