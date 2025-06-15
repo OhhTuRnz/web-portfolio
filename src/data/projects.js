@@ -1,4 +1,4 @@
-// Enhanced project data structure with GIF preview support
+// Enhanced project data structure with hover-to-play GIF support and YouTube thumbnails
 export const projects = [
   {
     id: "beavr-teleoperation",
@@ -34,9 +34,9 @@ export const projects = [
     endDate: "2024-12",
     team: ["Alejandro Carrasco"],
     media: {
-      type: "gif", // 🎉 Using your actual GIF!
-      url: "/src/assets/gifs/KSPDG-2024-Embed.gif", // Your actual file
-      fallback: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800"
+      type: "gif", // 🎉 Hover-to-play GIF with YouTube thumbnail!
+      url: "/src/assets/gifs/KSPDG-2024-Embed.gif", // Your actual GIF file
+      fallback: "https://img.youtube.com/vi/ioy0TIyqa8w/maxresdefault.jpg" // YouTube thumbnail as static image
     },
     links: {
       github: "https://github.com/acarrasco/kspdg-2024",
@@ -56,9 +56,9 @@ export const projects = [
     startDate: "2025-01",
     team: ["Alejandro Carrasco"],
     media: {
-      type: "gif", // 🎉 Using your actual GIF!
-      url: "/src/assets/gifs/KSPDG 2025 - Demo.gif", // Your actual file (with space in name)
-      fallback: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800"
+      type: "gif", // 🎉 Hover-to-play GIF with YouTube thumbnail!
+      url: "/src/assets/gifs/KSPDG 2025 - Demo.gif", // Your actual GIF file (with space in name)
+      fallback: "https://img.youtube.com/vi/UNhrkZW-eJc/maxresdefault.jpg" // YouTube thumbnail as static image
     },
     links: {
       github: "https://github.com/acarrasco/kspdg-2025",
