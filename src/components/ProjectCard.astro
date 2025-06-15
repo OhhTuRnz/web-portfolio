@@ -213,7 +213,7 @@ const statusColors = {
             </div>
           </div>
         </div>
-      ) : project.media.type === 'video' ? (
+      ) : (project.media.type === 'video' ? (
         <!-- For regular videos, check if it's YouTube or regular video -->
         isYouTubeUrl(project.media.url) ? (
           <!-- YouTube Video with Actual YouTube Thumbnail -->
@@ -344,7 +344,7 @@ const statusColors = {
           />
           <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </div>
-      )
+      ))
     ) : (
       <!-- Fallback gradient -->
       <div class="w-full h-full bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-cyan-600/20 flex items-center justify-center">
