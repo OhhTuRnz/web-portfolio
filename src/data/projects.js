@@ -35,13 +35,15 @@ export const projects = [
     endDate: "2024-12",
     team: ["Alejandro Carrasco"],
     media: {
-      type: "image",
-      url: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800",
+      type: "video",
+      url: "https://www.youtube.com/watch?v=ioy0TIyqa8w",
+      poster: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800",
       thumbnail: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=400"
     },
     links: {
       github: "https://github.com/acarrasco/kspdg-2024",
-      paper: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:9yKSN-GCB0IC"
+      paper: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:9yKSN-GCB0IC",
+      demo: "https://www.youtube.com/watch?v=ioy0TIyqa8w"
     },
     featured: true
   },
@@ -56,12 +58,14 @@ export const projects = [
     startDate: "2025-01",
     team: ["Alejandro Carrasco"],
     media: {
-      type: "image",
-      url: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800",
+      type: "video",
+      url: "https://www.youtube.com/watch?v=qK2dbhiIw8c",
+      poster: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800",
       thumbnail: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=400"
     },
     links: {
-      github: "https://github.com/acarrasco/kspdg-2025"
+      github: "https://github.com/acarrasco/kspdg-2025",
+      demo: "https://www.youtube.com/watch?v=qK2dbhiIw8c"
     },
     featured: true
   },

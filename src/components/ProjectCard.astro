@@ -51,6 +51,41 @@ const statusColors = {
   'active': 'text-green-400 bg-green-900/20 border-green-500/30',
   'completed': 'text-gray-400 bg-gray-900/20 border-gray-500/30'
 };
+
+// Helper function to check if URL is YouTube
+const isYouTubeUrl = (url) => {
+  return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+};
+
+// Helper function to get YouTube embed URL
+const getYouTubeEmbedUrl = (url) => {
+  if (!url) return null;
+  
+  let videoId = null;
+  
+  if (url.includes('youtube.com/watch?v=')) {
+    videoId = url.split('v=')[1]?.split('&')[0];
+  } else if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1]?.split('?')[0];
+  }
+  
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+};
+
+// Helper function to get YouTube thumbnail
+const getYouTubeThumbnail = (url) => {
+  if (!url) return null;
+  
+  let videoId = null;
+  
+  if (url.includes('youtube.com/watch?v=')) {
+    videoId = url.split('v=')[1]?.split('&')[0];
+  } else if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1]?.split('?')[0];
+  }
+  
+  return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
+};
 ---
 
 <article 
@@ -65,32 +100,50 @@ const statusColors = {
   <div class="relative overflow-hidden aspect-video bg-slate-900/50">
     {project.media ? (
       project.media.type === 'video' ? (
-        <div class="relative w-full h-full">
-          <video 
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            poster={project.media.poster || project.media.thumbnail}
-            muted
-            loop
-            playsinline
-            preload="metadata"
-            aria-label={`Video demonstration of ${project.title}`}
-          >
-            <source src={project.media.url} type="video/mp4" />
-            <p>Your browser does not support the video tag.</p>
-          </video>
-          
-          <!-- Video overlay -->
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          
-          <!-- Play indicator -->
-          <div class="absolute inset-0 flex items-center justify-center opacity-70 group-hover:opacity-0 transition-opacity duration-300">
-            <div class="w-16 h-16 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm">
-              <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
-              </svg>
+        isYouTubeUrl(project.media.url) ? (
+          <!-- YouTube Video -->
+          <div class="relative w-full h-full">
+            <iframe
+              src={getYouTubeEmbedUrl(project.media.url)}
+              title={`${project.title} - YouTube Video`}
+              class="w-full h-full"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+            
+            <!-- YouTube overlay for styling -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+          </div>
+        ) : (
+          <!-- Regular Video -->
+          <div class="relative w-full h-full">
+            <video 
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              poster={project.media.poster || project.media.thumbnail}
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              aria-label={`Video demonstration of ${project.title}`}
+            >
+              <source src={project.media.url} type="video/mp4" />
+              <p>Your browser does not support the video tag.</p>
+            </video>
+            
+            <!-- Video overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            <!-- Play indicator -->
+            <div class="absolute inset-0 flex items-center justify-center opacity-70 group-hover:opacity-0 transition-opacity duration-300">
+              <div class="w-16 h-16 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm">
+                <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
             </div>
           </div>
-        </div>
+        )
       ) : (
         <div class="relative w-full h-full">
           <img 
@@ -178,10 +231,14 @@ const statusColors = {
           target="_blank"
           rel="noopener noreferrer"
           class="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors hover:bg-blue-900/20 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-          aria-label={`View ${project.title} live demo`}
+          aria-label={`View ${project.title} demo`}
         >
-          <i class="fas fa-external-link-alt" aria-hidden="true"></i>
-          <span class="text-sm">Demo</span>
+          {isYouTubeUrl(project.links.demo) ? (
+            <i class="fab fa-youtube" aria-hidden="true"></i>
+          ) : (
+            <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+          )}
+          <span class="text-sm">{isYouTubeUrl(project.links.demo) ? 'Video' : 'Demo'}</span>
         </a>
       )}
       
@@ -239,10 +296,15 @@ const statusColors = {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.02); }
   }
+  
+  /* YouTube iframe styling */
+  iframe {
+    border-radius: 0;
+  }
 </style>
 
 <script>
-  // Enhanced video interaction
+  // Enhanced video interaction (for non-YouTube videos)
   document.addEventListener('DOMContentLoaded', () => {
     const projectCards = document.querySelectorAll('.project-card');
     
