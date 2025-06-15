@@ -14,7 +14,7 @@ export const publications = [
   {
     id: "pub-2025-002",
     title: "Large Language Models as Autonomous Spacecraft Operators in Kerbal Space Program",
-    authors: ["Victor Rodriguez-Fernandez", "Alejandro Carrasco", "Jason Cheng", "Eli Scharf", "Peng Mun Siew", "Richard Linares"],
+    authors: [],
     venue: "Advances in Space Research (In Progress)",
     year: 2025,
     type: "journal",
@@ -54,7 +54,7 @@ export const publications = [
   {
     id: "pub-2024-001",
     title: "Language models are spacecraft operators",
-    authors: ["A. Carrasco", "D. Kim", "S. Anderson"],
+    authors: ["Victor Rodriguez-Fernandez", "Alejandro Carrasco", "Jason Cheng", "Eli Scharf", "Peng Mun Siew", "Richard Linares"],
     venue: "arXiv preprint",
     year: 2024,
     type: "preprint",
