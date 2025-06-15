@@ -45,15 +45,6 @@ const techColors = {
   'Neural Networks': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
   'Autonomous Systems': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
   'Game AI': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-  'Unity': 'bg-gray-100 text-gray-800 dark:bg-gray-700/30 dark:text-gray-300',
-  'C#': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-  'VR': 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',
-  'Haptic Devices': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
-  'Real-time Systems': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-  'React Native': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
-  'WebRTC': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-  'ROS Bridge': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-  'Mobile Development': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
   'default': 'bg-gray-100 text-gray-800 dark:bg-gray-700/30 dark:text-gray-300'
 };
 
@@ -87,12 +78,6 @@ const getYouTubeVideoId = (url) => {
   return videoId;
 };
 
-// Helper function to get YouTube embed URL with nocookie domain
-const getYouTubeEmbedUrl = (url) => {
-  const videoId = getYouTubeVideoId(url);
-  return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1` : null;
-};
-
 // Helper function to get YouTube thumbnail with multiple quality options
 const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
   const videoId = getYouTubeVideoId(url);
@@ -119,7 +104,7 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
     {project.media ? (
       project.media.type === 'video' ? (
         isYouTubeUrl(project.media.url) ? (
-          <!-- YouTube Video with Enhanced Embedding -->
+          <!-- YouTube Video with Hover Preview -->
           <div class="youtube-video-container relative w-full h-full" 
                data-video-url={project.media.url} 
                data-video-id={getYouTubeVideoId(project.media.url)}>
@@ -163,13 +148,58 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
-                <span class="hidden sm:inline">Click to watch • Full screen available</span>
+                <span class="hidden sm:inline">Hover to preview • Click to play</span>
                 <span class="sm:hidden">Tap to play</span>
+              </div>
+              
+              <!-- Video Duration (if available) -->
+              <div class="absolute bottom-4 right-4 bg-black/80 text-white px-2 py-1 rounded text-xs font-mono">
+                Video
               </div>
             </div>
             
-            <!-- Full-Screen Modal for Video -->
-            <div class="youtube-modal-overlay fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4">
+            <!-- Hover Preview Container (Desktop Only) -->
+            <div class="youtube-hover-preview absolute inset-0 bg-black opacity-0 pointer-events-none transition-all duration-500 hidden md:block">
+              <div class="relative w-full h-full">
+                <!-- Loading indicator for hover preview -->
+                <div class="hover-loading-indicator absolute inset-0 flex items-center justify-center">
+                  <div class="flex flex-col items-center gap-2">
+                    <div class="w-8 h-8 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-white text-xs">Loading preview...</p>
+                  </div>
+                </div>
+                
+                <!-- Hover video container -->
+                <div class="hover-video-container w-full h-full">
+                  <!-- Iframe will be inserted here on hover -->
+                </div>
+                
+                <!-- Hover overlay with controls -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 opacity-0 hover:opacity-100 transition-opacity duration-300">
+                  <div class="absolute top-4 right-4 flex gap-2">
+                    <button class="expand-video bg-black/70 text-white p-2 rounded-full hover:bg-black/90 transition-colors">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                      </svg>
+                    </button>
+                    <a class="open-youtube-hover bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors" 
+                       target="_blank" 
+                       rel="noopener noreferrer">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                      </svg>
+                    </a>
+                  </div>
+                  
+                  <div class="absolute bottom-4 left-4 text-white text-sm">
+                    <span class="bg-black/70 px-2 py-1 rounded">Hover Preview • Click to expand</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Full-Screen Modal for Video (Mobile + Desktop Expand) -->
+            <div class="youtube-modal-overlay fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
               <div class="relative w-full max-w-6xl aspect-video bg-black rounded-lg overflow-hidden">
                 <!-- Close Button -->
                 <button class="close-video absolute top-4 right-4 bg-black/70 text-white p-3 rounded-full hover:bg-black/90 transition-colors z-20 md:top-6 md:right-6">
@@ -208,15 +238,15 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
                     <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
-                    <h3 class="text-white text-lg font-semibold mb-2">Video Unavailable</h3>
-                    <p class="text-gray-300 text-sm mb-4">This video cannot be embedded. Please check embedding permissions.</p>
+                    <h3 class="text-white text-lg font-semibold mb-2">Video Preview Unavailable</h3>
+                    <p class="text-gray-300 text-sm mb-4">This video cannot be embedded due to YouTube's restrictions.</p>
                     <a class="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors" 
                        target="_blank" 
                        rel="noopener noreferrer">
                       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                       </svg>
-                      Open in YouTube
+                      Watch on YouTube
                     </a>
                   </div>
                 </div>
@@ -426,6 +456,25 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
     box-shadow: 0 0 30px rgba(220, 38, 38, 0.6);
   }
   
+  /* Hover Preview Styling (Desktop Only) */
+  .youtube-hover-preview {
+    z-index: 15;
+  }
+  
+  .youtube-video-container:hover .youtube-hover-preview {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  .hover-loading-indicator {
+    transition: opacity 0.3s ease;
+  }
+  
+  .hover-loading-indicator.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  
   /* Modal styling for mobile-friendly video preview */
   .youtube-modal-overlay {
     backdrop-filter: blur(10px);
@@ -468,6 +517,11 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
     .open-youtube {
       left: 1rem;
     }
+    
+    /* Hide hover preview on mobile */
+    .youtube-hover-preview {
+      display: none !important;
+    }
   }
   
   /* Smooth transitions */
@@ -480,12 +534,12 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
   }
   
   /* Button styling */
-  .close-video, .open-youtube {
+  .close-video, .open-youtube, .expand-video, .open-youtube-hover {
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
   }
   
-  .close-video:hover, .open-youtube:hover {
+  .close-video:hover, .expand-video:hover {
     transform: scale(1.1);
   }
   
@@ -537,15 +591,118 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
         const videoUrl = youtubeContainer.dataset.videoUrl;
         const videoId = youtubeContainer.dataset.videoId;
         const thumbnailPreview = youtubeContainer.querySelector('.youtube-thumbnail-preview');
+        const hoverPreview = youtubeContainer.querySelector('.youtube-hover-preview');
         const modalOverlay = youtubeContainer.querySelector('.youtube-modal-overlay');
         const closeButton = modalOverlay?.querySelector('.close-video');
         const openYouTubeButton = modalOverlay?.querySelector('.open-youtube');
+        const openYouTubeHoverButton = hoverPreview?.querySelector('.open-youtube-hover');
+        const expandButton = hoverPreview?.querySelector('.expand-video');
         const playButton = youtubeContainer.querySelector('.play-button');
         
         if (videoId) {
           // Set up YouTube links
-          const youtubeViewUrl = `https://www.youtube.com/watch?v=${videoId}`;
-          if (openYouTubeButton) openYouTubeButton.href = youtubeViewUrl;
+          if (openYouTubeButton) openYouTubeButton.href = videoUrl;
+          if (openYouTubeHoverButton) openYouTubeHoverButton.href = videoUrl;
+          
+          let hoverTimeout;
+          let isHoverPreviewLoaded = false;
+          
+          // Desktop hover preview functionality
+          if (hoverPreview && window.innerWidth >= 768) {
+            const hoverLoadingIndicator = hoverPreview.querySelector('.hover-loading-indicator');
+            const hoverVideoContainer = hoverPreview.querySelector('.hover-video-container');
+            
+            // Mouse enter - start hover preview
+            youtubeContainer.addEventListener('mouseenter', () => {
+              hoverTimeout = setTimeout(() => {
+                if (!isHoverPreviewLoaded) {
+                  loadHoverPreview();
+                }
+              }, 800); // Delay before loading hover preview
+            });
+            
+            // Mouse leave - clear timeout and reset
+            youtubeContainer.addEventListener('mouseleave', () => {
+              clearTimeout(hoverTimeout);
+              if (isHoverPreviewLoaded) {
+                // Clear hover preview after a short delay
+                setTimeout(() => {
+                  if (hoverVideoContainer) {
+                    hoverVideoContainer.innerHTML = '';
+                  }
+                  if (hoverLoadingIndicator) {
+                    hoverLoadingIndicator.classList.remove('hidden');
+                  }
+                  isHoverPreviewLoaded = false;
+                }, 500);
+              }
+            });
+            
+            // Load hover preview
+            const loadHoverPreview = () => {
+              if (!hoverVideoContainer || !videoId) return;
+              
+              // Show loading indicator
+              if (hoverLoadingIndicator) {
+                hoverLoadingIndicator.classList.remove('hidden');
+              }
+              
+              // Create iframe for hover preview
+              const iframe = document.createElement('iframe');
+              iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`;
+              iframe.className = 'w-full h-full';
+              iframe.setAttribute('frameborder', '0');
+              iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+              iframe.setAttribute('title', `${card.querySelector('h3')?.textContent || 'Video'} - Hover Preview`);
+              
+              let loaded = false;
+              
+              iframe.onload = () => {
+                if (!loaded) {
+                  loaded = true;
+                  isHoverPreviewLoaded = true;
+                  
+                  // Hide loading indicator
+                  if (hoverLoadingIndicator) {
+                    hoverLoadingIndicator.classList.add('hidden');
+                  }
+                  
+                  // Show video
+                  hoverVideoContainer.innerHTML = '';
+                  hoverVideoContainer.appendChild(iframe);
+                }
+              };
+              
+              iframe.onerror = () => {
+                if (!loaded) {
+                  loaded = true;
+                  // Hide loading indicator on error
+                  if (hoverLoadingIndicator) {
+                    hoverLoadingIndicator.classList.add('hidden');
+                  }
+                }
+              };
+              
+              // Timeout fallback
+              setTimeout(() => {
+                if (!loaded) {
+                  loaded = true;
+                  if (hoverLoadingIndicator) {
+                    hoverLoadingIndicator.classList.add('hidden');
+                  }
+                }
+              }, 5000);
+            };
+            
+            // Expand button functionality
+            if (expandButton) {
+              expandButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showVideoModal();
+              });
+            }
+          }
           
           // Function to show full-screen video modal
           const showVideoModal = () => {
@@ -553,7 +710,7 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
             modalOverlay.classList.add('visible');
             document.body.style.overflow = 'hidden';
             
-            // Load YouTube video
+            // Load video with multiple fallback strategies
             loadYouTubeVideo();
           };
           
@@ -581,7 +738,7 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
             }
           };
           
-          // Function to load YouTube video
+          // Function to load YouTube video with CORS-friendly approaches
           const loadYouTubeVideo = () => {
             const videoContainer = modalOverlay.querySelector('.video-container');
             const loadingIndicator = modalOverlay.querySelector('.loading-indicator');
@@ -594,47 +751,77 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
               loadingIndicator.classList.remove('hidden');
             }
             
-            // Create iframe for YouTube video with enhanced parameters
-            const iframe = document.createElement('iframe');
-            iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`;
-            iframe.className = 'w-full h-full';
-            iframe.setAttribute('frameborder', '0');
-            iframe.setAttribute('allowfullscreen', '');
-            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-            iframe.setAttribute('title', `${card.querySelector('h3')?.textContent || 'Video'} - YouTube Video`);
+            // Multiple embed strategies
+            const embedStrategies = [
+              {
+                url: `https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1`,
+                timeout: 5000
+              },
+              {
+                url: `https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1`,
+                timeout: 5000
+              },
+              {
+                url: `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&enablejsapi=1&rel=0&modestbranding=1&playsinline=1`,
+                timeout: 3000
+              }
+            ];
             
-            let loaded = false;
-            let errorTimeout;
+            let currentStrategy = 0;
             
-            iframe.onload = () => {
-              if (!loaded) {
-                loaded = true;
-                clearTimeout(errorTimeout);
-                
-                if (loadingIndicator) {
-                  loadingIndicator.classList.add('hidden');
+            const tryNextStrategy = () => {
+              if (currentStrategy >= embedStrategies.length) {
+                showFallbackMessage();
+                return;
+              }
+              
+              const strategy = embedStrategies[currentStrategy];
+              const iframe = document.createElement('iframe');
+              
+              iframe.src = strategy.url;
+              iframe.className = 'w-full h-full';
+              iframe.setAttribute('frameborder', '0');
+              iframe.setAttribute('allowfullscreen', '');
+              iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+              iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+              iframe.setAttribute('title', `${card.querySelector('h3')?.textContent || 'Video'} - YouTube Video`);
+              
+              let loaded = false;
+              let errorTimeout;
+              
+              iframe.onload = () => {
+                if (!loaded) {
+                  loaded = true;
+                  clearTimeout(errorTimeout);
+                  
+                  if (loadingIndicator) {
+                    loadingIndicator.classList.add('hidden');
+                  }
+                  
+                  videoContainer.innerHTML = '';
+                  videoContainer.appendChild(iframe);
                 }
-                
-                videoContainer.innerHTML = '';
-                videoContainer.appendChild(iframe);
-              }
+              };
+              
+              iframe.onerror = () => {
+                if (!loaded) {
+                  loaded = true;
+                  clearTimeout(errorTimeout);
+                  currentStrategy++;
+                  tryNextStrategy();
+                }
+              };
+              
+              errorTimeout = setTimeout(() => {
+                if (!loaded) {
+                  loaded = true;
+                  currentStrategy++;
+                  tryNextStrategy();
+                }
+              }, strategy.timeout);
+              
+              currentStrategy++;
             };
-            
-            iframe.onerror = () => {
-              if (!loaded) {
-                loaded = true;
-                clearTimeout(errorTimeout);
-                showFallbackMessage();
-              }
-            };
-            
-            // Timeout fallback
-            errorTimeout = setTimeout(() => {
-              if (!loaded) {
-                loaded = true;
-                showFallbackMessage();
-              }
-            }, 8000); // 8 second timeout
             
             const showFallbackMessage = () => {
               if (loadingIndicator) {
@@ -646,10 +833,12 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
                 
                 const fallbackLink = fallbackMessage.querySelector('a');
                 if (fallbackLink) {
-                  fallbackLink.href = youtubeViewUrl;
+                  fallbackLink.href = videoUrl;
                 }
               }
             };
+            
+            tryNextStrategy();
           };
           
           // Event listeners for modal
