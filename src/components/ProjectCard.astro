@@ -83,12 +83,6 @@ const getYouTubeThumbnail = (url) => {
   const videoId = getYouTubeVideoId(url);
   return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
 };
-
-// Helper function to get YouTube embed URL
-const getYouTubeEmbedUrl = (url) => {
-  const videoId = getYouTubeVideoId(url);
-  return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}` : null;
-};
 ---
 
 <article 
@@ -104,9 +98,9 @@ const getYouTubeEmbedUrl = (url) => {
     {project.media ? (
       project.media.type === 'video' ? (
         isYouTubeUrl(project.media.url) ? (
-          <!-- YouTube Video with hover-to-play functionality -->
-          <div class="relative w-full h-full youtube-container" data-video-id={getYouTubeVideoId(project.media.url)} data-video-url={project.media.url}>
-            <!-- Thumbnail (shown by default) -->
+          <!-- YouTube Video with click-to-play functionality -->
+          <div class="relative w-full h-full youtube-container cursor-pointer" data-video-url={project.media.url}>
+            <!-- Thumbnail (always shown) -->
             <div class="youtube-thumbnail">
               <img 
                 src={getYouTubeThumbnail(project.media.url) || project.media.poster || 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800'}
@@ -128,18 +122,11 @@ const getYouTubeEmbedUrl = (url) => {
               <div class="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold">
                 YouTube
               </div>
-            </div>
-            
-            <!-- Embedded video (hidden by default, shown on hover) -->
-            <div class="youtube-iframe hidden">
-              <iframe
-                src=""
-                title={`${project.title} - YouTube Video`}
-                class="w-full h-full"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              ></iframe>
+              
+              <!-- Click to play indicator -->
+              <div class="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded text-sm">
+                Click to play video
+              </div>
             </div>
             
             <!-- Gradient overlay -->
@@ -327,39 +314,26 @@ const getYouTubeEmbedUrl = (url) => {
     50% { transform: scale(1.02); }
   }
   
-  /* YouTube hover-to-play functionality */
+  /* YouTube click-to-play styling */
   .youtube-container {
     position: relative;
+    cursor: pointer;
   }
   
-  .youtube-container .youtube-thumbnail {
+  .youtube-container:hover .youtube-thumbnail {
+    transform: scale(1.02);
+  }
+  
+  .youtube-thumbnail {
     position: relative;
     width: 100%;
     height: 100%;
-    transition: opacity 0.3s ease;
+    transition: transform 0.3s ease;
   }
   
-  .youtube-container .youtube-iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10;
-  }
-  
-  /* Show iframe and hide thumbnail on hover */
-  .project-card:hover .youtube-container .youtube-thumbnail {
-    opacity: 0;
-  }
-  
-  .project-card:hover .youtube-container .youtube-iframe {
-    display: block !important;
-  }
-  
-  /* Smooth transitions */
-  .youtube-container .youtube-iframe iframe {
-    transition: opacity 0.3s ease;
+  /* Hover effects for YouTube thumbnails */
+  .youtube-container:hover .youtube-thumbnail img {
+    filter: brightness(1.1);
   }
 </style>
 
@@ -394,34 +368,22 @@ const getYouTubeEmbedUrl = (url) => {
         });
       }
       
-      // Handle YouTube video hover-to-play
+      // Handle YouTube video click-to-play
       if (youtubeContainer) {
-        const iframe = youtubeContainer.querySelector('iframe');
-        const videoId = youtubeContainer.dataset.videoId;
         const videoUrl = youtubeContainer.dataset.videoUrl;
         
-        let isLoaded = false;
-        
-        card.addEventListener('mouseenter', () => {
-          if (!isLoaded && videoId) {
-            // Load the iframe with autoplay when hovering
-            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&modestbranding=1&rel=0`;
-            isLoaded = true;
-          }
-        });
-        
-        card.addEventListener('mouseleave', () => {
-          // Optional: Stop the video when mouse leaves
-          if (isLoaded) {
-            iframe.src = '';
-            isLoaded = false;
-          }
-        });
-        
-        // Handle click to open full video
+        // Handle click to open full video in new tab
         youtubeContainer.addEventListener('click', (e) => {
           e.preventDefault();
-          window.open(videoUrl, '_blank');
+          e.stopPropagation();
+          if (videoUrl) {
+            window.open(videoUrl, '_blank', 'noopener,noreferrer');
+          }
+        });
+        
+        // Prevent card click when clicking on YouTube container
+        youtubeContainer.addEventListener('click', (e) => {
+          e.stopPropagation();
         });
       }
     });
