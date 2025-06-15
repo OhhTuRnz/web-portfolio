@@ -3,10 +3,10 @@ export interface Props {
   url: string;
   fallbackTitle?: string;
   fallbackDescription?: string;
-  fallbackImage?: string;
+  hardcodedImage?: string; // New prop for hardcoded images
 }
 
-const { url, fallbackTitle, fallbackDescription, fallbackImage } = Astro.props;
+const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
 ---
 
 <div class="dynamic-link-preview-container">
@@ -18,7 +18,7 @@ const { url, fallbackTitle, fallbackDescription, fallbackImage } = Astro.props;
     data-url={url}
     data-fallback-title={fallbackTitle}
     data-fallback-description={fallbackDescription}
-    data-fallback-image={fallbackImage}
+    data-hardcoded-image={hardcodedImage}
   >
     <slot />
   </a>
@@ -225,7 +225,7 @@ const { url, fallbackTitle, fallbackDescription, fallbackImage } = Astro.props;
       const url = trigger.dataset.url;
       const fallbackTitle = trigger.dataset.fallbackTitle;
       const fallbackDescription = trigger.dataset.fallbackDescription;
-      const fallbackImage = trigger.dataset.fallbackImage;
+      const hardcodedImage = trigger.dataset.hardcodedImage;
       
       if (!url) return;
       
@@ -236,7 +236,7 @@ const { url, fallbackTitle, fallbackDescription, fallbackImage } = Astro.props;
       
       try {
         // Try to fetch metadata using a CORS proxy or direct fetch
-        const metadata = await this.fetchMetadata(url, fallbackTitle, fallbackDescription, fallbackImage);
+        const metadata = await this.fetchMetadata(url, fallbackTitle, fallbackDescription, hardcodedImage);
         this.cache.set(url, metadata);
         this.renderPreview(metadata, popup);
       } catch (error) {
@@ -246,34 +246,16 @@ const { url, fallbackTitle, fallbackDescription, fallbackImage } = Astro.props;
           title: fallbackTitle || this.getDomainName(url),
           description: fallbackDescription || 'Click to visit this website',
           domain: this.getDomainName(url),
-          image: fallbackImage || null
+          image: hardcodedImage || null
         };
         this.renderPreview(fallbackData, popup);
       }
     }
     
-    async fetchMetadata(url, fallbackTitle, fallbackDescription, fallbackImage) {
-      // Try multiple methods to get metadata
+    async fetchMetadata(url, fallbackTitle, fallbackDescription, hardcodedImage) {
+      // If hardcoded image is provided, use it and try to get other metadata
       
-      // Method 1: Try direct fetch (will work for same-origin or CORS-enabled sites)
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          mode: 'cors',
-          headers: {
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          }
-        });
-        
-        if (response.ok) {
-          const html = await response.text();
-          return this.parseMetadata(html, url, fallbackImage);
-        }
-      } catch (e) {
-        console.log('Direct fetch failed, trying alternative methods');
-      }
-      
-      // Method 2: Use a public metadata API service
+      // Method 1: Use a public metadata API service
       try {
         const apiUrl = `https://api.microlink.io/?url=${encodeURIComponent(url)}`;
         const response = await fetch(apiUrl);
@@ -283,9 +265,9 @@ const { url, fallbackTitle, fallbackDescription, fallbackImage } = Astro.props;
           if (data.status === 'success') {
             return {
               title: data.data.title || fallbackTitle || this.getDomainName(url),
-              description: data.data.description || fallbackDescription || '',
+              description: this.cleanDescription(data.data.description) || fallbackDescription || '',
               domain: this.getDomainName(url),
-              image: data.data.image?.url || fallbackImage || null
+              image: hardcodedImage || data.data.image?.url || null // Prioritize hardcoded image
             };
           }
         }
@@ -293,42 +275,29 @@ const { url, fallbackTitle, fallbackDescription, fallbackImage } = Astro.props;
         console.log('API fetch failed');
       }
       
-      // Method 3: Fallback to domain-specific hardcoded data
-      return this.getHardcodedMetadata(url, fallbackTitle, fallbackDescription, fallbackImage);
+      // Method 2: Fallback to domain-specific hardcoded data
+      return this.getHardcodedMetadata(url, fallbackTitle, fallbackDescription, hardcodedImage);
     }
     
-    parseMetadata(html, url, fallbackImage) {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
+    cleanDescription(description) {
+      if (!description) return '';
       
-      const getMetaContent = (selector) => {
-        const element = doc.querySelector(selector);
-        return element ? element.getAttribute('content') : null;
-      };
+      // Remove HTML tags
+      const withoutHtml = description.replace(/<[^>]*>/g, '');
       
-      const title = getMetaContent('meta[property="og:title"]') ||
-                   getMetaContent('meta[name="twitter:title"]') ||
-                   doc.querySelector('title')?.textContent ||
-                   this.getDomainName(url);
+      // Decode HTML entities
+      const textarea = document.createElement('textarea');
+      textarea.innerHTML = withoutHtml;
+      const decoded = textarea.value;
       
-      const description = getMetaContent('meta[property="og:description"]') ||
-                         getMetaContent('meta[name="twitter:description"]') ||
-                         getMetaContent('meta[name="description"]') ||
-                         '';
+      // Remove extra whitespace and newlines
+      const cleaned = decoded.replace(/\s+/g, ' ').trim();
       
-      const image = getMetaContent('meta[property="og:image"]') ||
-                   getMetaContent('meta[name="twitter:image"]') ||
-                   fallbackImage;
-      
-      return {
-        title: title.trim(),
-        description: description.trim(),
-        domain: this.getDomainName(url),
-        image: image
-      };
+      // Limit length
+      return cleaned.length > 200 ? cleaned.substring(0, 200) + '...' : cleaned;
     }
     
-    getHardcodedMetadata(url, fallbackTitle, fallbackDescription, fallbackImage) {
+    getHardcodedMetadata(url, fallbackTitle, fallbackDescription, hardcodedImage) {
       const domain = this.getDomainName(url);
       
       // Domain-specific metadata
@@ -336,29 +305,29 @@ const { url, fallbackTitle, fallbackDescription, fallbackImage } = Astro.props;
         'upm.es': {
           title: 'Universidad Politécnica de Madrid',
           description: 'Leading technical university in Spain, excellence in engineering and technology education.',
-          image: fallbackImage || 'https://www.upm.es/gsfs/SFS24014'
+          image: hardcodedImage || null
         },
         'kspdg.com': {
           title: 'Kerbal Space Program Differential Games Challenge',
           description: 'International AI competition for autonomous spacecraft control algorithms.',
-          image: fallbackImage
+          image: hardcodedImage || null
         },
         'aeroastro.mit.edu': {
           title: 'MIT Aeronautics and Astronautics',
           description: 'Leading aerospace engineering education and research at MIT.',
-          image: fallbackImage
+          image: hardcodedImage || null
         },
         'etsisi.upm.es': {
           title: 'ETSISI - UPM',
           description: 'School of Computer Systems Engineering at Universidad Politécnica de Madrid.',
-          image: fallbackImage
+          image: hardcodedImage || null
         }
       };
       
       const data = domainData[domain] || {
         title: fallbackTitle || domain,
         description: fallbackDescription || 'Visit this website for more information.',
-        image: fallbackImage
+        image: hardcodedImage || null
       };
       
       return {
