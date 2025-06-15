@@ -179,15 +179,16 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
           </div>
         </div>
       ) : project.media.type === 'video' ? (
+        <!-- For regular videos, check if it's YouTube or regular video -->
         isYouTubeUrl(project.media.url) ? (
-          <!-- YouTube Terms Compliant Video Display -->
+          <!-- YouTube Video with Actual YouTube Thumbnail -->
           <div class="youtube-video-container relative w-full h-full" 
                data-video-url={project.media.url} 
                data-video-id={getYouTubeVideoId(project.media.url)}>
             
-            <!-- High Quality Thumbnail with Click-to-Watch -->
+            <!-- High Quality YouTube Thumbnail -->
             <div class="youtube-thumbnail-display relative w-full h-full cursor-pointer group">
-              <!-- YouTube Thumbnail -->
+              <!-- ACTUAL YouTube Thumbnail -->
               <img 
                 src={getYouTubeThumbnail(project.media.url, 'maxresdefault')}
                 alt={`${project.title} - YouTube Video Thumbnail`}
@@ -198,7 +199,7 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
                   this.src='${getYouTubeThumbnail(project.media.url, 'hqdefault')}';
                   this.onerror=function(){
                     this.onerror=null;
-                    this.src='https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800';
+                    this.src='${getYouTubeThumbnail(project.media.url, 'mqdefault')}';
                   };
                 `}
               />
