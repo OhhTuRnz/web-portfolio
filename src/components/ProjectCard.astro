@@ -57,6 +57,25 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
   return `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
 };
 
+// Helper function to create fallback image error handler
+const createImageErrorHandler = (fallbackUrls) => {
+  return `
+    let fallbacks = ${JSON.stringify(fallbackUrls)};
+    let currentIndex = 0;
+    this.onerror = function() {
+      currentIndex++;
+      if (currentIndex < fallbacks.length) {
+        this.src = fallbacks[currentIndex];
+      } else {
+        this.onerror = null;
+      }
+    };
+    if (fallbacks[currentIndex]) {
+      this.src = fallbacks[currentIndex];
+    }
+  `;
+};
+
 const techColors = {
   'Python': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
   'PyTorch': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
@@ -116,14 +135,10 @@ const statusColors = {
                 alt={`${project.title} - YouTube Thumbnail`}
                 class="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                 loading="lazy"
-                onerror={`
-                  this.onerror=null;
-                  this.src='${getYouTubeThumbnail(project.links.demo, 'hqdefault')}';
-                  this.onerror=function(){
-                    this.onerror=null;
-                    this.src='${project.media.fallback || "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800"}';
-                  };
-                `}
+                data-fallback-urls={JSON.stringify([
+                  getYouTubeThumbnail(project.links.demo, 'hqdefault'),
+                  project.media.fallback || "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800"
+                ])}
               />
             </div>
           ) : (
@@ -214,14 +229,10 @@ const statusColors = {
                 alt={`${project.title} - YouTube Video Thumbnail`}
                 class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-90"
                 loading="lazy"
-                onerror={`
-                  this.onerror=null;
-                  this.src='${getYouTubeThumbnail(project.media.url, 'hqdefault')}';
-                  this.onerror=function(){
-                    this.onerror=null;
-                    this.src='${getYouTubeThumbnail(project.media.url, 'mqdefault')}';
-                  };
-                `}
+                data-fallback-urls={JSON.stringify([
+                  getYouTubeThumbnail(project.media.url, 'hqdefault'),
+                  getYouTubeThumbnail(project.media.url, 'mqdefault')
+                ])}
               />
               
               <!-- Elegant Overlay with YouTube Branding -->
@@ -553,6 +564,38 @@ const statusColors = {
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const projectCards = document.querySelectorAll('.project-card');
+    
+    // Handle image fallbacks
+    const handleImageError = (img) => {
+      const fallbackUrls = img.dataset.fallbackUrls;
+      if (fallbackUrls) {
+        try {
+          const urls = JSON.parse(fallbackUrls);
+          let currentIndex = 0;
+          
+          const tryNextFallback = () => {
+            currentIndex++;
+            if (currentIndex < urls.length) {
+              img.src = urls[currentIndex];
+            } else {
+              img.onerror = null; // Stop trying
+            }
+          };
+          
+          img.onerror = tryNextFallback;
+          if (urls[currentIndex]) {
+            img.src = urls[currentIndex];
+          }
+        } catch (e) {
+          console.warn('Failed to parse fallback URLs:', e);
+        }
+      }
+    };
+    
+    // Set up image error handlers
+    document.querySelectorAll('img[data-fallback-urls]').forEach(img => {
+      img.addEventListener('error', () => handleImageError(img));
+    });
     
     projectCards.forEach(card => {
       const youtubeContainer = card.querySelector('.youtube-video-container');
