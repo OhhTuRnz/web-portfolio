@@ -53,14 +53,14 @@ export const awards = [
     organization: "Centro Superior de Estudios de la Defensa Nacional (CESEDEN)",
     year: 2024,
     description: "Recognition for outstanding bachelor thesis contributing to national defense research and applications in autonomous systems.",
-    link: "https://www.defensa.gob.es/ceseden/",
+    link: "https://www.upm.es/UPM?id=CON16695&prefmt=articulo&fmt=detail",
     category: "academic",
     icon: "🏅",
     preview: {
-      title: "Centro Superior de Estudios de la Defensa Nacional",
-      description: "CESEDEN is Spain's premier defense studies institution, promoting research and education in national security, defense strategy, and military technology applications.",
+      title: "Best Bachelor Thesis for National Defense Award",
+      description: "CESEDEN recognition for outstanding research contributions to national defense applications in autonomous systems and AI technologies.",
       image: "https://images.pexels.com/photos/8828597/pexels-photo-8828597.jpeg?auto=compress&cs=tinysrgb&w=800",
-      domain: "defensa.gob.es"
+      domain: "upm.es"
     }
   },
   {
