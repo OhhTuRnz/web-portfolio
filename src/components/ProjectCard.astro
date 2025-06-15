@@ -83,6 +83,12 @@ const getYouTubeThumbnail = (url) => {
   const videoId = getYouTubeVideoId(url);
   return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
 };
+
+// Helper function to get YouTube embed URL
+const getYouTubeEmbedUrl = (url) => {
+  const videoId = getYouTubeVideoId(url);
+  return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1` : null;
+};
 ---
 
 <article 
@@ -98,9 +104,9 @@ const getYouTubeThumbnail = (url) => {
     {project.media ? (
       project.media.type === 'video' ? (
         isYouTubeUrl(project.media.url) ? (
-          <!-- YouTube Video with click-to-play functionality -->
-          <div class="relative w-full h-full youtube-container cursor-pointer" data-video-url={project.media.url}>
-            <!-- Thumbnail (always shown) -->
+          <!-- YouTube Video with hover-to-play functionality -->
+          <div class="relative w-full h-full youtube-container" data-video-id={getYouTubeVideoId(project.media.url)}>
+            <!-- Thumbnail (shown by default) -->
             <div class="youtube-thumbnail">
               <img 
                 src={getYouTubeThumbnail(project.media.url) || project.media.poster || 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800'}
@@ -123,10 +129,23 @@ const getYouTubeThumbnail = (url) => {
                 YouTube
               </div>
               
-              <!-- Click to play indicator -->
+              <!-- Hover to play indicator -->
               <div class="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded text-sm">
-                Click to play video
+                Hover to play video
               </div>
+            </div>
+            
+            <!-- YouTube iframe (hidden by default, shown on hover) -->
+            <div class="youtube-player absolute inset-0 opacity-0 pointer-events-none transition-opacity duration-500">
+              <iframe
+                src=""
+                title={`${project.title} - YouTube Video`}
+                class="w-full h-full"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
             </div>
             
             <!-- Gradient overlay -->
@@ -314,14 +333,11 @@ const getYouTubeThumbnail = (url) => {
     50% { transform: scale(1.02); }
   }
   
-  /* YouTube click-to-play styling */
+  /* YouTube container styling */
   .youtube-container {
     position: relative;
-    cursor: pointer;
-  }
-  
-  .youtube-container:hover .youtube-thumbnail {
-    transform: scale(1.02);
+    width: 100%;
+    height: 100%;
   }
   
   .youtube-thumbnail {
@@ -331,9 +347,34 @@ const getYouTubeThumbnail = (url) => {
     transition: transform 0.3s ease;
   }
   
+  .youtube-player {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+  }
+  
+  /* Show YouTube player on hover */
+  .project-card:hover .youtube-container .youtube-thumbnail {
+    opacity: 0;
+  }
+  
+  .project-card:hover .youtube-container .youtube-player {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
   /* Hover effects for YouTube thumbnails */
   .youtube-container:hover .youtube-thumbnail img {
     filter: brightness(1.1);
+  }
+  
+  /* Smooth transitions */
+  .youtube-thumbnail,
+  .youtube-player {
+    transition: opacity 0.5s ease;
   }
 </style>
 
@@ -358,6 +399,7 @@ const getYouTubeThumbnail = (url) => {
           video.currentTime = 0;
         });
         
+        // Handle focus for accessibility
         card.addEventListener('focus', () => {
           video.play().catch(() => {});
         });
@@ -368,23 +410,28 @@ const getYouTubeThumbnail = (url) => {
         });
       }
       
-      // Handle YouTube video click-to-play
+      // Handle YouTube video hover-to-play
       if (youtubeContainer) {
-        const videoUrl = youtubeContainer.dataset.videoUrl;
+        const videoId = youtubeContainer.dataset.videoId;
+        const iframe = youtubeContainer.querySelector('iframe');
+        let isLoaded = false;
         
-        // Handle click to open full video in new tab
-        youtubeContainer.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (videoUrl) {
-            window.open(videoUrl, '_blank', 'noopener,noreferrer');
+        // Load YouTube video on hover
+        card.addEventListener('mouseenter', () => {
+          if (videoId && iframe && !isLoaded) {
+            const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&enablejsapi=1`;
+            iframe.src = embedUrl;
+            isLoaded = true;
           }
         });
         
-        // Prevent card click when clicking on YouTube container
-        youtubeContainer.addEventListener('click', (e) => {
-          e.stopPropagation();
-        });
+        // Optional: Reset video when mouse leaves (uncomment if desired)
+        // card.addEventListener('mouseleave', () => {
+        //   if (iframe && isLoaded) {
+        //     iframe.src = '';
+        //     isLoaded = false;
+        //   }
+        // });
       }
     });
   });
