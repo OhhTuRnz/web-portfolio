@@ -282,7 +282,7 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
     cleanDescription(description) {
       if (!description) return '';
       
-      // Remove HTML tags
+      // Remove HTML tags first
       const withoutHtml = description.replace(/<[^>]*>/g, '');
       
       // Decode HTML entities
@@ -290,8 +290,16 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
       textarea.innerHTML = withoutHtml;
       const decoded = textarea.value;
       
-      // Remove extra whitespace and newlines
-      const cleaned = decoded.replace(/\s+/g, ' ').trim();
+      // Remove the specific "> pattern at the start
+      const withoutQuoteBracket = decoded.replace(/^["\s]*>\s*/, '');
+      
+      // Remove other common problematic patterns
+      const cleaned = withoutQuoteBracket
+        .replace(/^["\s]*\/>\s*/, '') // Remove "/> at start
+        .replace(/^["\s]*\]\s*/, '')  // Remove "] at start
+        .replace(/^["\s]*\}\s*/, '')  // Remove "} at start
+        .replace(/\s+/g, ' ')         // Normalize whitespace
+        .trim();
       
       // Limit length
       return cleaned.length > 200 ? cleaned.substring(0, 200) + '...' : cleaned;
