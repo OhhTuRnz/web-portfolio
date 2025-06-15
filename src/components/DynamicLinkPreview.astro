@@ -93,12 +93,20 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
     height: 180px;
     overflow: hidden;
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(168, 85, 247, 0.1));
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .preview-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+  
+  .preview-image-placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 3rem;
   }
   
   .preview-text {
@@ -195,7 +203,7 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
           trigger.addEventListener('mouseenter', () => {
             hoverTimeout = setTimeout(() => {
               this.loadPreview(trigger.dataset.url, popup);
-            }, 300); // Delay to avoid unnecessary requests
+            }, 300);
           });
           
           trigger.addEventListener('mouseleave', () => {
@@ -208,76 +216,63 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
     async loadPreview(url, popup) {
       if (!url) return;
       
-      // Check cache first
       if (this.cache.has(url)) {
         this.renderPreview(this.cache.get(url), popup);
         return;
       }
       
       try {
-        // For real implementation, you would use:
-        // const response = await fetch(`https://api.linkpreview.net/?key=YOUR_API_KEY&q=${encodeURIComponent(url)}`);
-        // const data = await response.json();
-        
-        // For now, we'll use enhanced mock data with real website scraping simulation
-        const mockData = await this.getEnhancedPreviewData(url);
-        
+        const mockData = await this.getCleanPreviewData(url);
         this.cache.set(url, mockData);
         this.renderPreview(mockData, popup);
-        
       } catch (error) {
         console.error('Failed to load preview:', error);
         this.renderError(popup);
       }
     }
     
-    async getEnhancedPreviewData(url) {
+    async getCleanPreviewData(url) {
       // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 600));
       
-      // Enhanced mock data with more realistic website content
+      // Clean preview data without emojis, with proper fallbacks for missing images
       if (url.includes('upm.es') && url.includes('CON16695')) {
         return {
           title: 'La Cátedra UPM-CESEDEN premia los mejores trabajos e investigaciones sobre defensa y seguridad',
           description: 'La Universidad Politécnica de Madrid y el Centro Superior de Estudios de la Defensa Nacional han reconocido los mejores trabajos de fin de grado y máster relacionados con la defensa nacional y la seguridad.',
-          image: 'https://images.pexels.com/photos/8828597/pexels-photo-8828597.jpeg?auto=compress&cs=tinysrgb&w=800',
           domain: 'upm.es',
-          favicon: '🎓'
+          hasImage: false // No static image, will show placeholder
         };
       } else if (url.includes('kspdg.com')) {
         return {
-          title: 'Kerbal Space Program Differential Games Challenge 2024',
-          description: 'International AI competition where teams develop autonomous agents to control spacecraft in complex orbital missions. Test your algorithms against real space physics!',
-          image: 'https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800',
+          title: 'Kerbal Space Program Differential Games Challenge',
+          description: 'International AI competition where teams develop autonomous agents to control spacecraft in complex orbital missions using advanced algorithms.',
           domain: 'kspdg.com',
-          favicon: '🚀'
+          hasImage: false
         };
       } else if (url.includes('aeroastro.mit.edu')) {
         return {
           title: 'MIT Department of Aeronautics and Astronautics',
-          description: 'Leading the world in aerospace engineering education and research. Home to cutting-edge programs in space systems, autonomous vehicles, and advanced propulsion technologies.',
-          image: 'https://images.pexels.com/photos/2159/flight-sky-earth-space.jpg?auto=compress&cs=tinysrgb&w=800',
+          description: 'Leading aerospace engineering education and research. Home to cutting-edge programs in space systems, autonomous vehicles, and advanced propulsion.',
           domain: 'aeroastro.mit.edu',
-          favicon: '🛩️'
+          hasImage: false
         };
       } else if (url.includes('etsisi.upm.es')) {
         return {
           title: 'ETSISI - Escuela Técnica Superior de Ingeniería de Sistemas Informáticos',
           description: 'Leading computer science and software engineering education at Universidad Politécnica de Madrid. Excellence in technology and innovation.',
-          image: 'https://images.pexels.com/photos/207692/pexels-photo-207692.jpeg?auto=compress&cs=tinysrgb&w=800',
           domain: 'etsisi.upm.es',
-          favicon: '💻'
+          hasImage: false
         };
       }
       
-      // Default fallback with better content
+      // Default fallback
       const domain = new URL(url).hostname.replace('www.', '');
       return {
         title: `Visit ${domain}`,
         description: 'Click to view this external website for more information.',
-        image: 'https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg?auto=compress&cs=tinysrgb&w=800',
         domain: domain,
-        favicon: '🔗'
+        hasImage: false
       };
     }
     
@@ -287,14 +282,18 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
       
       if (loadingEl) loadingEl.style.display = 'none';
       
+      const imageSection = data.hasImage ? 
+        `<div class="preview-image">
+           <img src="${data.image}" alt="${data.title}" loading="lazy" />
+         </div>` :
+        `<div class="preview-image">
+           <div class="preview-image-placeholder">🔗</div>
+         </div>`;
+      
       const html = `
-        ${data.image ? `
-          <div class="preview-image">
-            <img src="${data.image}" alt="${data.title}" loading="lazy" />
-          </div>
-        ` : ''}
+        ${imageSection}
         <div class="preview-text">
-          <div class="preview-domain">${data.favicon || '🔗'} ${data.domain}</div>
+          <div class="preview-domain">${data.domain}</div>
           <h4 class="preview-title">${data.title}</h4>
           ${data.description ? `<p class="preview-description">${data.description}</p>` : ''}
         </div>
@@ -312,7 +311,7 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
       
       contentEl.innerHTML = `
         <div class="preview-error">
-          <p>⚠️ Unable to load preview</p>
+          <p>Unable to load preview</p>
           <p style="font-size: 0.7rem; margin-top: 4px;">Click to visit the website</p>
         </div>
       `;
@@ -320,7 +319,6 @@ const { url, fallbackTitle, fallbackDescription } = Astro.props;
     }
   }
   
-  // Initialize when DOM is loaded
   document.addEventListener('DOMContentLoaded', () => {
     new DynamicLinkPreview();
   });
