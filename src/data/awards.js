@@ -13,7 +13,7 @@ export const awards = [
     title: "Kerbal Space Program Differential Games Challenge (KSPDG) 2nd Position",
     organization: "MIT Lincoln Lab",
     year: 2025,
-    link: "https://kspdg.com/",
+    link: "https://www.ll.mit.edu/conferences-events/2025/01/ksp-software-design-challenge-2025",
     category: "research",
     icon: "🚀"
   },
