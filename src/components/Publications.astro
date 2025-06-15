@@ -19,7 +19,7 @@ const typeColors = {
 };
 
 // Helper function to truncate abstract to word limit
-function truncateAbstract(text, wordLimit = 30) {
+function truncateAbstract(text, wordLimit = 60) {
   if (!text) return '';
   
   const words = text.split(' ');
@@ -84,7 +84,7 @@ function truncateAbstract(text, wordLimit = 30) {
                     </p>
                     
                     <p class="arclab-text text-sm leading-relaxed mb-4">
-                      {truncateAbstract(pub.abstract, 30)}
+                      {truncateAbstract(pub.abstract, 60)}
                     </p>
                     
                     <!-- Keywords -->
