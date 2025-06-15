@@ -41,7 +41,7 @@ export const publications = [
   {
     id: "pub-2025-001",
     title: "Visual Language Models as Operator Agents in the Space Domain",
-    authors: ["A. Carrasco", "L. Chen", "R. Williams", "J. How"],
+    authors: ["Alejandro Carrasco", "Marco Nedungadi", "Victor Rodriguez-Fernandez", "Richard Linares"],
     venue: "AIAA SciTech 2025",
     year: 2025,
     type: "conference",
