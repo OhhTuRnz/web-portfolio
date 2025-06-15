@@ -1,4 +1,4 @@
-// Simplified project data structure with 4 main projects
+// Enhanced project data structure with GIF preview support
 export const projects = [
   {
     id: "beavr-teleoperation",
@@ -12,10 +12,9 @@ export const projects = [
     team: ["Alejandro Carrasco", "VR Research Team"],
     funding: "MIT ARC Lab",
     media: {
-      type: "video",
-      url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
-      poster: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800",
-      thumbnail: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=400"
+      type: "gif", // NEW: GIF support
+      url: "/src/assets/gifs/beavr-demo.gif", // Your GIF file
+      fallback: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
       github: "https://github.com/mit-arclab/beavr-teleoperation",
@@ -35,10 +34,9 @@ export const projects = [
     endDate: "2024-12",
     team: ["Alejandro Carrasco"],
     media: {
-      type: "video",
-      url: "https://www.youtube.com/watch?v=ioy0TIyqa8w",
-      poster: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800",
-      thumbnail: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=400"
+      type: "gif", // GIF preview
+      url: "/src/assets/gifs/kspdg-2024-demo.gif", // Your GIF file
+      fallback: "https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
       github: "https://github.com/acarrasco/kspdg-2024",
@@ -58,10 +56,9 @@ export const projects = [
     startDate: "2025-01",
     team: ["Alejandro Carrasco"],
     media: {
-      type: "video",
-      url: "https://www.youtube.com/watch?v=UNhrkZW-eJc",
-      poster: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800",
-      thumbnail: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=400"
+      type: "gif", // GIF preview
+      url: "/src/assets/gifs/kspdg-2025-demo.gif", // Your GIF file
+      fallback: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
       github: "https://github.com/acarrasco/kspdg-2025",
@@ -80,9 +77,9 @@ export const projects = [
     startDate: "2023-08",
     team: ["Alejandro Carrasco"],
     media: {
-      type: "image",
-      url: "https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=800",
-      thumbnail: "https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=400"
+      type: "gif", // GIF preview
+      url: "/src/assets/gifs/mobile-app-demo.gif", // Your GIF file
+      fallback: "https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
       github: "https://github.com/acarrasco/mobile-robotics-app",
