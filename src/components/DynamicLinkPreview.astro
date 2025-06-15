@@ -272,7 +272,7 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
           }
         }
       } catch (e) {
-        console.log('API fetch failed');
+        console.log('API fetch failed, using fallback');
       }
       
       // Method 2: Fallback to domain-specific hardcoded data
@@ -282,43 +282,61 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
     cleanDescription(description) {
       if (!description) return '';
       
-      // First, handle the raw text and remove any HTML-like patterns
-      let cleaned = description;
+      // Convert to string and handle various input types
+      let cleaned = String(description);
       
-      // Remove HTML tags completely
+      // First pass: Remove HTML tags completely
       cleaned = cleaned.replace(/<[^>]*>/g, '');
       
-      // Decode HTML entities using a more robust method
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(cleaned, 'text/html');
-      cleaned = doc.documentElement.textContent || cleaned;
+      // Second pass: Decode HTML entities using DOM parser
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(`<!DOCTYPE html><html><body>${cleaned}</body></html>`, 'text/html');
+        cleaned = doc.body.textContent || cleaned;
+      } catch (e) {
+        // Fallback manual entity decoding
+        cleaned = cleaned
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'")
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&amp;/g, '&');
+      }
       
-      // Remove the specific problematic patterns at the start
+      // Third pass: Aggressive cleanup of problematic patterns
+      // This is the key fix - more comprehensive pattern matching
       cleaned = cleaned
-        .replace(/^["\s]*>\s*/, '')     // Remove "> at start (the main issue)
-        .replace(/^["\s]*\/>\s*/, '')   // Remove "/> at start
-        .replace(/^["\s]*\]\s*/, '')    // Remove "] at start
-        .replace(/^["\s]*\}\s*/, '')    // Remove "} at start
-        .replace(/^["\s]*\)\s*/, '')    // Remove ") at start
-        .replace(/^["\s]*\|\s*/, '')    // Remove "| at start
-        .replace(/^["\s]*-\s*/, '')     // Remove "- at start
-        .replace(/^["\s]*:\s*/, '')     // Remove ": at start
-        .replace(/^["\s]*;\s*/, '')     // Remove "; at start
-        .replace(/^["\s]*,\s*/, '')     // Remove ", at start
-        .replace(/^["\s]*\.\s*/, '')    // Remove ". at start
-        .replace(/^\s*['"]\s*/, '')     // Remove quotes at start
-        .replace(/\s*['"]\s*$/, '')     // Remove quotes at end
-        .replace(/\s+/g, ' ')           // Normalize all whitespace
-        .trim();                        // Remove leading/trailing whitespace
+        // Remove the specific "> pattern that keeps appearing
+        .replace(/^["\s]*["']?\s*>\s*/g, '')
+        .replace(/^["\s]*["']?\s*\/>\s*/g, '')
+        .replace(/^["\s]*["']?\s*\]\s*/g, '')
+        .replace(/^["\s]*["']?\s*\}\s*/g, '')
+        .replace(/^["\s]*["']?\s*\)\s*/g, '')
+        .replace(/^["\s]*["']?\s*\|\s*/g, '')
+        .replace(/^["\s]*["']?\s*-\s*/g, '')
+        .replace(/^["\s]*["']?\s*:\s*/g, '')
+        .replace(/^["\s]*["']?\s*;\s*/g, '')
+        .replace(/^["\s]*["']?\s*,\s*/g, '')
+        .replace(/^["\s]*["']?\s*\.\s*/g, '')
+        // Remove quotes and extra whitespace
+        .replace(/^[\s"'`]+|[\s"'`]+$/g, '')
+        // Normalize all whitespace
+        .replace(/\s+/g, ' ')
+        .trim();
       
-      // Additional cleanup for common web scraping artifacts
+      // Fourth pass: Remove common web artifacts
       cleaned = cleaned
-        .replace(/^(Read more|Learn more|Click here|More info|Continue reading)[\s\.:]*/, '')
-        .replace(/^(Home|About|Contact|News|Blog)[\s\|>-]*/, '')
-        .replace(/^(Skip to|Jump to|Go to)[\s\w]*/, '');
+        .replace(/^(Read more|Learn more|Click here|More info|Continue reading|View details|See more)[\s\.:]*\s*/i, '')
+        .replace(/^(Home|About|Contact|News|Blog|Menu|Navigation)[\s\|>-]*\s*/i, '')
+        .replace(/^(Skip to|Jump to|Go to|Navigate to)[\s\w]*\s*/i, '')
+        .replace(/^(Cookie|Privacy|Terms|Legal)[\s\w]*\s*/i, '');
+      
+      // Fifth pass: Handle edge cases and final cleanup
+      // Remove any remaining leading punctuation or symbols
+      cleaned = cleaned.replace(/^[^\w\s]*\s*/, '');
       
       // If the description is too short after cleaning, return empty
-      if (cleaned.length < 10) {
+      if (cleaned.length < 15) {
         return '';
       }
       
@@ -339,11 +357,11 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
     getHardcodedMetadata(url, fallbackTitle, fallbackDescription, hardcodedImage) {
       const domain = this.getDomainName(url);
       
-      // Domain-specific metadata
+      // Domain-specific metadata with better descriptions
       const domainData = {
         'll.mit.edu': {
           title: 'MIT Lincoln Laboratory',
-          description: 'MIT Lincoln Laboratory develops advanced technology solutions for national security.',
+          description: 'MIT Lincoln Laboratory develops advanced technology solutions for national security challenges.',
           image: hardcodedImage || null
         },
         'upm.es': {
@@ -364,6 +382,11 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
         'etsisi.upm.es': {
           title: 'ETSISI - UPM',
           description: 'School of Computer Systems Engineering at Universidad Politécnica de Madrid.',
+          image: hardcodedImage || null
+        },
+        'defensa.gob.es': {
+          title: 'Centro Superior de Estudios de la Defensa Nacional',
+          description: 'Spanish national defense education and research center.',
           image: hardcodedImage || null
         }
       };
