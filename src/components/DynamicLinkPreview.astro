@@ -296,17 +296,23 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
       } catch (e) {
         // Fallback manual entity decoding
         cleaned = cleaned
-          .replace(/&quot;/g, '"')
+          .replace(/"/g, '"')
           .replace(/&#39;/g, "'")
-          .replace(/&lt;/g, '<')
-          .replace(/&gt;/g, '>')
-          .replace(/&amp;/g, '&');
+          .replace(/</g, '<')
+          .replace(/>/g, '>')
+          .replace(/&/g, '&');
       }
       
-      // Third pass: Aggressive cleanup of problematic patterns
-      // This is the key fix - more comprehensive pattern matching
+      // Third pass: AGGRESSIVE cleanup of the specific problematic patterns
+      // This targets the exact '" /> pattern you're seeing
       cleaned = cleaned
-        // Remove the specific "> pattern that keeps appearing
+        // Remove the EXACT pattern '" />
+        .replace(/['"]\s*\/>\s*/g, '')
+        // Remove variations of this pattern
+        .replace(/['"]\s*\/\s*>\s*/g, '')
+        .replace(/['"]\s*>\s*/g, '')
+        .replace(/['"]\s*\/\s*/g, '')
+        // Remove other HTML-like artifacts
         .replace(/^["\s]*["']?\s*>\s*/g, '')
         .replace(/^["\s]*["']?\s*\/>\s*/g, '')
         .replace(/^["\s]*["']?\s*\]\s*/g, '')
@@ -334,6 +340,10 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
       // Fifth pass: Handle edge cases and final cleanup
       // Remove any remaining leading punctuation or symbols
       cleaned = cleaned.replace(/^[^\w\s]*\s*/, '');
+      
+      // FINAL SAFETY CHECK: Remove any remaining '" /> patterns anywhere in the text
+      cleaned = cleaned.replace(/['"]\s*\/>\s*/g, '');
+      cleaned = cleaned.replace(/['"]\s*\/\s*>\s*/g, '');
       
       // If the description is too short after cleaning, return empty
       if (cleaned.length < 15) {
