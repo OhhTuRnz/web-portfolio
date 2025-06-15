@@ -1,0 +1,313 @@
+---
+export interface Props {
+  url: string;
+  fallbackTitle?: string;
+  fallbackDescription?: string;
+}
+
+const { url, fallbackTitle, fallbackDescription } = Astro.props;
+---
+
+<div class="dynamic-link-preview-container">
+  <a 
+    href={url} 
+    target="_blank" 
+    rel="noopener noreferrer"
+    class="link-preview-trigger"
+    data-url={url}
+  >
+    <slot />
+  </a>
+  
+  <div class="dynamic-link-preview-popup">
+    <div class="preview-loading">
+      <div class="loading-spinner"></div>
+      <span>Loading preview...</span>
+    </div>
+    <div class="preview-content" style="display: none;">
+      <!-- Content will be populated by JavaScript -->
+    </div>
+  </div>
+</div>
+
+<style>
+  .dynamic-link-preview-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .link-preview-trigger {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .dynamic-link-preview-popup {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 8px;
+    width: 350px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    pointer-events: none;
+  }
+  
+  .dynamic-link-preview-container:hover .dynamic-link-preview-popup {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-4px);
+  }
+  
+  .preview-loading {
+    padding: 20px;
+    text-align: center;
+    color: var(--arclab-gray-300);
+    font-size: 0.875rem;
+  }
+  
+  .loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 8px;
+  }
+  
+  .preview-content {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .preview-image {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(168, 85, 247, 0.1));
+  }
+  
+  .preview-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .preview-text {
+    padding: 16px;
+  }
+  
+  .preview-domain {
+    font-size: 0.75rem;
+    color: var(--arclab-gray-400);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  
+  .preview-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .preview-description {
+    font-size: 0.75rem;
+    color: var(--arclab-gray-300);
+    margin: 0;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .preview-error {
+    padding: 20px;
+    text-align: center;
+    color: var(--arclab-gray-400);
+    font-size: 0.875rem;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Arrow */
+  .dynamic-link-preview-popup::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(15, 23, 42, 0.95);
+  }
+  
+  @media (max-width: 768px) {
+    .dynamic-link-preview-popup {
+      width: 300px;
+      left: 0;
+      transform: none;
+    }
+    
+    .dynamic-link-preview-container:hover .dynamic-link-preview-popup {
+      transform: translateY(-4px);
+    }
+    
+    .dynamic-link-preview-popup::after {
+      left: 20px;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  class DynamicLinkPreview {
+    constructor() {
+      this.cache = new Map();
+      this.init();
+    }
+    
+    init() {
+      const containers = document.querySelectorAll('.dynamic-link-preview-container');
+      containers.forEach(container => {
+        const trigger = container.querySelector('.link-preview-trigger');
+        const popup = container.querySelector('.dynamic-link-preview-popup');
+        
+        if (trigger && popup) {
+          let hoverTimeout;
+          
+          trigger.addEventListener('mouseenter', () => {
+            hoverTimeout = setTimeout(() => {
+              this.loadPreview(trigger.dataset.url, popup);
+            }, 300); // Delay to avoid unnecessary requests
+          });
+          
+          trigger.addEventListener('mouseleave', () => {
+            clearTimeout(hoverTimeout);
+          });
+        }
+      });
+    }
+    
+    async loadPreview(url, popup) {
+      if (!url) return;
+      
+      // Check cache first
+      if (this.cache.has(url)) {
+        this.renderPreview(this.cache.get(url), popup);
+        return;
+      }
+      
+      try {
+        // Using LinkPreview.net API (free tier available)
+        const apiUrl = `https://api.linkpreview.net/?key=YOUR_API_KEY&q=${encodeURIComponent(url)}`;
+        
+        // For demo purposes, we'll simulate the API response
+        // In production, you'd use a real API key
+        const mockData = await this.getMockPreviewData(url);
+        
+        this.cache.set(url, mockData);
+        this.renderPreview(mockData, popup);
+        
+      } catch (error) {
+        console.error('Failed to load preview:', error);
+        this.renderError(popup);
+      }
+    }
+    
+    async getMockPreviewData(url) {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Mock data based on URL patterns
+      if (url.includes('upm.es')) {
+        return {
+          title: 'La Cátedra UPM-CESEDEN premia los mejores trabajos e investigaciones sobre defensa y seguridad',
+          description: 'La Universidad Politécnica de Madrid y el Centro Superior de Estudios de la Defensa Nacional reconocen la excelencia en investigación aplicada a la defensa nacional.',
+          image: 'https://images.pexels.com/photos/8828597/pexels-photo-8828597.jpeg?auto=compress&cs=tinysrgb&w=800',
+          domain: 'upm.es'
+        };
+      } else if (url.includes('kspdg.com')) {
+        return {
+          title: 'Kerbal Space Program Differential Games Challenge',
+          description: 'International competition for autonomous spacecraft control using AI agents in the Kerbal Space Program environment.',
+          image: 'https://images.pexels.com/photos/586063/pexels-photo-586063.jpeg?auto=compress&cs=tinysrgb&w=800',
+          domain: 'kspdg.com'
+        };
+      } else if (url.includes('aeroastro.mit.edu')) {
+        return {
+          title: 'MIT Department of Aeronautics and Astronautics',
+          description: 'Leading aerospace engineering education and research at MIT, advancing the frontiers of flight and space exploration.',
+          image: 'https://images.pexels.com/photos/2159/flight-sky-earth-space.jpg?auto=compress&cs=tinysrgb&w=800',
+          domain: 'aeroastro.mit.edu'
+        };
+      }
+      
+      // Default fallback
+      return {
+        title: 'External Link',
+        description: 'Click to visit this external website.',
+        image: null,
+        domain: new URL(url).hostname.replace('www.', '')
+      };
+    }
+    
+    renderPreview(data, popup) {
+      const loadingEl = popup.querySelector('.preview-loading');
+      const contentEl = popup.querySelector('.preview-content');
+      
+      if (loadingEl) loadingEl.style.display = 'none';
+      
+      const html = `
+        ${data.image ? `
+          <div class="preview-image">
+            <img src="${data.image}" alt="${data.title}" />
+          </div>
+        ` : ''}
+        <div class="preview-text">
+          <div class="preview-domain">${data.domain}</div>
+          <h4 class="preview-title">${data.title}</h4>
+          ${data.description ? `<p class="preview-description">${data.description}</p>` : ''}
+        </div>
+      `;
+      
+      contentEl.innerHTML = html;
+      contentEl.style.display = 'block';
+    }
+    
+    renderError(popup) {
+      const loadingEl = popup.querySelector('.preview-loading');
+      const contentEl = popup.querySelector('.preview-content');
+      
+      if (loadingEl) loadingEl.style.display = 'none';
+      
+      contentEl.innerHTML = `
+        <div class="preview-error">
+          <p>Unable to load preview</p>
+        </div>
+      `;
+      contentEl.style.display = 'block';
+    }
+  }
+  
+  // Initialize when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    new DynamicLinkPreview();
+  });
+</script>

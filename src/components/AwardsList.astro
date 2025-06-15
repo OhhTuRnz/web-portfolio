@@ -1,6 +1,6 @@
 ---
 import { awards, getAwardsByYear } from '../data/awards.js';
-import LinkPreview from './LinkPreview.astro';
+import DynamicLinkPreview from './DynamicLinkPreview.astro';
 
 const awardsByYear = getAwardsByYear();
 const years = Object.keys(awardsByYear).sort((a, b) => b - a);
@@ -38,12 +38,10 @@ const categoryColors = {
               <div class={`award-item flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'} arclab-slide-up`} style={`animation-delay: ${(yearIndex * awardsByYear[year].length + index) * 0.2}s;`}>
                 <!-- Content -->
                 <div class={`w-5/12 ${index % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
-                  <LinkPreview 
+                  <DynamicLinkPreview 
                     url={award.link}
-                    title={award.preview?.title}
-                    description={award.preview?.description}
-                    image={award.preview?.image}
-                    domain={award.preview?.domain}
+                    fallbackTitle={award.title}
+                    fallbackDescription={award.description}
                   >
                     <div class="block arclab-card hover:scale-105 transition-all duration-300 group cursor-pointer">
                       <div class={`flex items-center space-x-3 mb-3 ${index % 2 === 0 ? 'flex-row-reverse space-x-reverse' : ''}`}>
@@ -64,7 +62,7 @@ const categoryColors = {
                         <span class="text-xs arclab-text-accent">View Details →</span>
                       </div>
                     </div>
-                  </LinkPreview>
+                  </DynamicLinkPreview>
                 </div>
                 
                 <!-- Timeline dot -->
