@@ -80,24 +80,19 @@ const getYouTubeVideoId = (url) => {
   return videoId;
 };
 
-// Helper function to get YouTube thumbnail with multiple quality options
+// Helper function to get YouTube thumbnail
 const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
   const videoId = getYouTubeVideoId(url);
   if (!videoId) return null;
   
-  // Try different thumbnail qualities as fallback
-  const qualities = ['maxresdefault', 'hqdefault', 'mqdefault', 'default'];
-  const selectedQuality = qualities.includes(quality) ? quality : 'maxresdefault';
-  
-  return `https://img.youtube.com/vi/${videoId}/${selectedQuality}.jpg`;
+  return `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
 };
 
-// Helper function to check if video allows embedding (basic check)
+// Helper function to get embed URL
 const getEmbedUrl = (url) => {
   const videoId = getYouTubeVideoId(url);
   if (!videoId) return null;
   
-  // Use youtube-nocookie.com for better privacy and embedding compatibility
   return `https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1`;
 };
 ---
@@ -115,14 +110,13 @@ const getEmbedUrl = (url) => {
     {project.media ? (
       project.media.type === 'video' ? (
         isYouTubeUrl(project.media.url) ? (
-          <!-- YouTube Video with Enhanced Compatibility -->
-          <div class="youtube-video-container relative w-full h-full" 
+          <!-- YouTube Video with Simple Click-to-Play -->
+          <div class="youtube-video-container relative w-full h-full cursor-pointer" 
                data-video-url={project.media.url} 
-               data-video-id={getYouTubeVideoId(project.media.url)}
-               data-embed-url={getEmbedUrl(project.media.url)}>
+               data-video-id={getYouTubeVideoId(project.media.url)}>
             
-            <!-- High-Quality Thumbnail Preview -->
-            <div class="youtube-thumbnail-preview relative w-full h-full cursor-pointer">
+            <!-- Thumbnail Preview -->
+            <div class="youtube-thumbnail-preview relative w-full h-full">
               <img 
                 src={getYouTubeThumbnail(project.media.url, 'maxresdefault')}
                 alt={`${project.title} - YouTube Video Thumbnail`}
@@ -133,16 +127,12 @@ const getEmbedUrl = (url) => {
                   this.src='${getYouTubeThumbnail(project.media.url, 'hqdefault')}';
                   this.onerror=function(){
                     this.onerror=null;
-                    this.src='${getYouTubeThumbnail(project.media.url, 'mqdefault')}';
-                    this.onerror=function(){
-                      this.onerror=null;
-                      this.src='https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800';
-                    };
+                    this.src='https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800';
                   };
                 `}
               />
               
-              <!-- Enhanced Play Button with Pulse Animation -->
+              <!-- Play Button Overlay -->
               <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/20 transition-all duration-300">
                 <div class="play-button relative">
                   <!-- Pulsing ring animation -->
@@ -165,58 +155,9 @@ const getEmbedUrl = (url) => {
                 </svg>
                 YouTube
               </div>
-              
-              <!-- Mobile-Friendly Preview Indicator -->
-              <div class="absolute bottom-4 left-4 bg-black/80 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 shadow-lg">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
-                <span class="hidden sm:inline">Click to preview</span>
-                <span class="sm:hidden">Tap to play</span>
-              </div>
             </div>
             
-            <!-- Hover Preview Container (Desktop Only) -->
-            <div class="youtube-hover-preview absolute inset-0 bg-black opacity-0 pointer-events-none transition-all duration-500 hidden md:block">
-              <div class="relative w-full h-full">
-                <!-- Loading indicator for hover preview -->
-                <div class="hover-loading-indicator absolute inset-0 flex items-center justify-center">
-                  <div class="flex flex-col items-center gap-2">
-                    <div class="w-8 h-8 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-white text-xs">Loading preview...</p>
-                  </div>
-                </div>
-                
-                <!-- Hover video container -->
-                <div class="hover-video-container w-full h-full">
-                  <!-- Iframe will be inserted here on hover -->
-                </div>
-                
-                <!-- Hover overlay with controls -->
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 opacity-0 hover:opacity-100 transition-opacity duration-300">
-                  <div class="absolute top-4 right-4 flex gap-2">
-                    <button class="expand-video bg-black/70 text-white p-2 rounded-full hover:bg-black/90 transition-colors">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
-                      </svg>
-                    </button>
-                    <a class="open-youtube-hover bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors" 
-                       target="_blank" 
-                       rel="noopener noreferrer">
-                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                      </svg>
-                    </a>
-                  </div>
-                  
-                  <div class="absolute bottom-4 left-4 text-white text-sm">
-                    <span class="bg-black/70 px-2 py-1 rounded">Hover Preview • Click to expand</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Full-Screen Modal for Video (Mobile + Desktop Expand) -->
+            <!-- Full-Screen Modal for Video -->
             <div class="youtube-modal-overlay fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
               <div class="relative w-full max-w-6xl aspect-video bg-black rounded-lg overflow-hidden">
                 <!-- Close Button -->
@@ -249,36 +190,8 @@ const getEmbedUrl = (url) => {
                 <div class="video-container w-full h-full">
                   <!-- Iframe will be inserted here -->
                 </div>
-                
-                <!-- Enhanced Fallback Message -->
-                <div class="fallback-message hidden absolute inset-0 flex items-center justify-center bg-slate-900 text-center p-8">
-                  <div class="max-w-md">
-                    <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                    </svg>
-                    <h3 class="text-white text-lg font-semibold mb-2">Video Preview Unavailable</h3>
-                    <p class="text-gray-300 text-sm mb-4">This video cannot be embedded due to YouTube's restrictions. This usually happens when:</p>
-                    <ul class="text-gray-400 text-xs mb-4 text-left space-y-1">
-                      <li>• Embedding is disabled by the video owner</li>
-                      <li>• The video has copyright restrictions</li>
-                      <li>• Age restrictions are applied</li>
-                      <li>• Regional blocking is enabled</li>
-                    </ul>
-                    <a class="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors" 
-                       target="_blank" 
-                       rel="noopener noreferrer">
-                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                      </svg>
-                      Watch on YouTube
-                    </a>
-                  </div>
-                </div>
               </div>
             </div>
-            
-            <!-- Gradient overlay -->
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
           </div>
         ) : (
           <!-- Regular Video -->
@@ -480,26 +393,7 @@ const getEmbedUrl = (url) => {
     box-shadow: 0 0 30px rgba(220, 38, 38, 0.6);
   }
   
-  /* Hover Preview Styling (Desktop Only) */
-  .youtube-hover-preview {
-    z-index: 15;
-  }
-  
-  .youtube-video-container:hover .youtube-hover-preview {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  
-  .hover-loading-indicator {
-    transition: opacity 0.3s ease;
-  }
-  
-  .hover-loading-indicator.hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
-  
-  /* Modal styling for mobile-friendly video preview */
+  /* Modal styling for video preview */
   .youtube-modal-overlay {
     backdrop-filter: blur(10px);
     z-index: 9999;
@@ -509,7 +403,7 @@ const getEmbedUrl = (url) => {
     display: flex !important;
   }
   
-  /* Loading and error states */
+  /* Loading states */
   .loading-indicator {
     transition: opacity 0.3s ease;
   }
@@ -517,10 +411,6 @@ const getEmbedUrl = (url) => {
   .loading-indicator.hidden {
     opacity: 0;
     pointer-events: none;
-  }
-  
-  .fallback-message.visible {
-    display: flex !important;
   }
   
   /* Responsive adjustments */
@@ -541,11 +431,6 @@ const getEmbedUrl = (url) => {
     .open-youtube {
       left: 1rem;
     }
-    
-    /* Hide hover preview on mobile */
-    .youtube-hover-preview {
-      display: none !important;
-    }
   }
   
   /* Smooth transitions */
@@ -558,12 +443,12 @@ const getEmbedUrl = (url) => {
   }
   
   /* Button styling */
-  .close-video, .open-youtube, .expand-video, .open-youtube-hover {
+  .close-video, .open-youtube {
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
   }
   
-  .close-video:hover, .expand-video:hover {
+  .close-video:hover {
     transform: scale(1.1);
   }
   
@@ -614,153 +499,15 @@ const getEmbedUrl = (url) => {
       if (youtubeContainer) {
         const videoUrl = youtubeContainer.dataset.videoUrl;
         const videoId = youtubeContainer.dataset.videoId;
-        const embedUrl = youtubeContainer.dataset.embedUrl;
         const thumbnailPreview = youtubeContainer.querySelector('.youtube-thumbnail-preview');
-        const hoverPreview = youtubeContainer.querySelector('.youtube-hover-preview');
         const modalOverlay = youtubeContainer.querySelector('.youtube-modal-overlay');
         const closeButton = modalOverlay?.querySelector('.close-video');
         const openYouTubeButton = modalOverlay?.querySelector('.open-youtube');
-        const openYouTubeHoverButton = hoverPreview?.querySelector('.open-youtube-hover');
-        const expandButton = hoverPreview?.querySelector('.expand-video');
         const playButton = youtubeContainer.querySelector('.play-button');
         
-        if (videoId && embedUrl) {
+        if (videoId && videoUrl) {
           // Set up YouTube links
           if (openYouTubeButton) openYouTubeButton.href = videoUrl;
-          if (openYouTubeHoverButton) openYouTubeHoverButton.href = videoUrl;
-          
-          let hoverTimeout;
-          let isHoverPreviewLoaded = false;
-          
-          // Desktop hover preview functionality
-          if (hoverPreview && window.innerWidth >= 768) {
-            const hoverLoadingIndicator = hoverPreview.querySelector('.hover-loading-indicator');
-            const hoverVideoContainer = hoverPreview.querySelector('.hover-video-container');
-            
-            // Mouse enter - start hover preview
-            youtubeContainer.addEventListener('mouseenter', () => {
-              hoverTimeout = setTimeout(() => {
-                if (!isHoverPreviewLoaded) {
-                  loadHoverPreview();
-                }
-              }, 1000); // Increased delay to 1 second
-            });
-            
-            // Mouse leave - clear timeout and reset
-            youtubeContainer.addEventListener('mouseleave', () => {
-              clearTimeout(hoverTimeout);
-              if (isHoverPreviewLoaded) {
-                // Clear hover preview after a short delay
-                setTimeout(() => {
-                  if (hoverVideoContainer) {
-                    hoverVideoContainer.innerHTML = '';
-                  }
-                  if (hoverLoadingIndicator) {
-                    hoverLoadingIndicator.classList.remove('hidden');
-                  }
-                  isHoverPreviewLoaded = false;
-                }, 500);
-              }
-            });
-            
-            // Load hover preview with enhanced error handling
-            const loadHoverPreview = () => {
-              if (!hoverVideoContainer || !videoId) return;
-              
-              // Show loading indicator
-              if (hoverLoadingIndicator) {
-                hoverLoadingIndicator.classList.remove('hidden');
-              }
-              
-              // Test if embedding is allowed by trying to load the iframe
-              const testEmbedding = () => {
-                const iframe = document.createElement('iframe');
-                iframe.src = `${embedUrl}&autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`;
-                iframe.className = 'w-full h-full';
-                iframe.setAttribute('frameborder', '0');
-                iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-                iframe.setAttribute('allowfullscreen', '');
-                iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
-                iframe.setAttribute('title', `${card.querySelector('h3')?.textContent || 'Video'} - Hover Preview`);
-                
-                let loaded = false;
-                let errorOccurred = false;
-                
-                iframe.onload = () => {
-                  if (!loaded && !errorOccurred) {
-                    loaded = true;
-                    isHoverPreviewLoaded = true;
-                    
-                    // Hide loading indicator
-                    if (hoverLoadingIndicator) {
-                      hoverLoadingIndicator.classList.add('hidden');
-                    }
-                    
-                    // Show video
-                    hoverVideoContainer.innerHTML = '';
-                    hoverVideoContainer.appendChild(iframe);
-                  }
-                };
-                
-                iframe.onerror = () => {
-                  if (!loaded && !errorOccurred) {
-                    errorOccurred = true;
-                    handleEmbedError();
-                  }
-                };
-                
-                // Enhanced error detection - check for blocked content
-                setTimeout(() => {
-                  if (!loaded && !errorOccurred) {
-                    try {
-                      // Try to access iframe content to detect blocking
-                      const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                      if (!iframeDoc) {
-                        errorOccurred = true;
-                        handleEmbedError();
-                      }
-                    } catch (e) {
-                      // Cross-origin error is expected, but if iframe is completely blocked, we'll know
-                      if (!loaded) {
-                        errorOccurred = true;
-                        handleEmbedError();
-                      }
-                    }
-                  }
-                }, 3000);
-                
-                const handleEmbedError = () => {
-                  if (hoverLoadingIndicator) {
-                    hoverLoadingIndicator.classList.add('hidden');
-                  }
-                  
-                  // Show a message that hover preview is not available
-                  hoverVideoContainer.innerHTML = `
-                    <div class="flex items-center justify-center h-full bg-slate-800/50 text-center p-4">
-                      <div>
-                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                        </svg>
-                        <p class="text-white text-sm mb-2">Preview Unavailable</p>
-                        <p class="text-gray-400 text-xs">Click to watch on YouTube</p>
-                      </div>
-                    </div>
-                  `;
-                };
-              };
-              
-              testEmbedding();
-            };
-            
-            // Expand button functionality
-            if (expandButton) {
-              expandButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                showVideoModal();
-              });
-            }
-          }
           
           // Function to show full-screen video modal
           const showVideoModal = () => {
@@ -768,7 +515,7 @@ const getEmbedUrl = (url) => {
             modalOverlay.classList.add('visible');
             document.body.style.overflow = 'hidden';
             
-            // Load video with enhanced error handling
+            // Load video
             loadYouTubeVideo();
           };
           
@@ -784,23 +531,17 @@ const getEmbedUrl = (url) => {
               videoContainer.innerHTML = '';
             }
             
-            // Reset states
+            // Reset loading state
             const loadingIndicator = modalOverlay.querySelector('.loading-indicator');
-            const fallbackMessage = modalOverlay.querySelector('.fallback-message');
             if (loadingIndicator) {
               loadingIndicator.classList.remove('hidden');
             }
-            if (fallbackMessage) {
-              fallbackMessage.classList.remove('visible');
-              fallbackMessage.classList.add('hidden');
-            }
           };
           
-          // Enhanced function to load YouTube video with better error detection
+          // Function to load YouTube video
           const loadYouTubeVideo = () => {
             const videoContainer = modalOverlay.querySelector('.video-container');
             const loadingIndicator = modalOverlay.querySelector('.loading-indicator');
-            const fallbackMessage = modalOverlay.querySelector('.fallback-message');
             
             if (!videoContainer || !videoId) return;
             
@@ -809,105 +550,44 @@ const getEmbedUrl = (url) => {
               loadingIndicator.classList.remove('hidden');
             }
             
-            // Enhanced embed strategies with better error detection
-            const embedStrategies = [
-              {
-                url: `https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1`,
-                timeout: 5000,
-                name: 'YouTube NoCoookie'
-              },
-              {
-                url: `https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1`,
-                timeout: 5000,
-                name: 'YouTube Standard'
-              },
-              {
-                url: `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&enablejsapi=1&rel=0&modestbranding=1&playsinline=1`,
-                timeout: 3000,
-                name: 'YouTube NoCoookie Autoplay'
-              }
-            ];
+            // Create iframe
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+            iframe.className = 'w-full h-full';
+            iframe.setAttribute('frameborder', '0');
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+            iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+            iframe.setAttribute('title', `${card.querySelector('h3')?.textContent || 'Video'} - YouTube Video`);
             
-            let currentStrategy = 0;
-            
-            const tryNextStrategy = () => {
-              if (currentStrategy >= embedStrategies.length) {
-                showFallbackMessage();
-                return;
-              }
-              
-              const strategy = embedStrategies[currentStrategy];
-              console.log(`Trying embedding strategy: ${strategy.name}`);
-              
-              const iframe = document.createElement('iframe');
-              
-              iframe.src = strategy.url;
-              iframe.className = 'w-full h-full';
-              iframe.setAttribute('frameborder', '0');
-              iframe.setAttribute('allowfullscreen', '');
-              iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-              iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
-              iframe.setAttribute('title', `${card.querySelector('h3')?.textContent || 'Video'} - YouTube Video`);
-              
-              let loaded = false;
-              let errorTimeout;
-              
-              iframe.onload = () => {
-                if (!loaded) {
-                  loaded = true;
-                  clearTimeout(errorTimeout);
-                  
-                  console.log(`Successfully loaded with strategy: ${strategy.name}`);
-                  
-                  if (loadingIndicator) {
-                    loadingIndicator.classList.add('hidden');
-                  }
-                  
-                  videoContainer.innerHTML = '';
-                  videoContainer.appendChild(iframe);
-                }
-              };
-              
-              iframe.onerror = () => {
-                if (!loaded) {
-                  loaded = true;
-                  clearTimeout(errorTimeout);
-                  console.log(`Failed with strategy: ${strategy.name}`);
-                  currentStrategy++;
-                  tryNextStrategy();
-                }
-              };
-              
-              errorTimeout = setTimeout(() => {
-                if (!loaded) {
-                  loaded = true;
-                  console.log(`Timeout with strategy: ${strategy.name}`);
-                  currentStrategy++;
-                  tryNextStrategy();
-                }
-              }, strategy.timeout);
-              
-              currentStrategy++;
-            };
-            
-            const showFallbackMessage = () => {
-              console.log('All embedding strategies failed, showing fallback message');
-              
+            iframe.onload = () => {
               if (loadingIndicator) {
                 loadingIndicator.classList.add('hidden');
               }
-              if (fallbackMessage) {
-                fallbackMessage.classList.remove('hidden');
-                fallbackMessage.classList.add('visible');
-                
-                const fallbackLink = fallbackMessage.querySelector('a');
-                if (fallbackLink) {
-                  fallbackLink.href = videoUrl;
-                }
-              }
+              videoContainer.innerHTML = '';
+              videoContainer.appendChild(iframe);
             };
             
-            tryNextStrategy();
+            iframe.onerror = () => {
+              console.error('Failed to load YouTube video');
+              if (loadingIndicator) {
+                loadingIndicator.classList.add('hidden');
+              }
+              videoContainer.innerHTML = `
+                <div class="flex items-center justify-center h-full bg-slate-800/50 text-center p-4">
+                  <div>
+                    <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    <p class="text-white text-sm mb-2">Video Unavailable</p>
+                    <p class="text-gray-400 text-xs">Click to watch on YouTube</p>
+                    <a href="${videoUrl}" target="_blank" class="inline-block mt-2 bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700">
+                      Watch on YouTube
+                    </a>
+                  </div>
+                </div>
+              `;
+            };
           };
           
           // Event listeners for modal
@@ -947,21 +627,6 @@ const getEmbedUrl = (url) => {
           
           document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && modalOverlay.classList.contains('visible')) {
-              hideVideoModal();
-            }
-          });
-          
-          // Handle mobile touch events
-          let touchStartY = 0;
-          modalOverlay.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-          });
-          
-          modalOverlay.addEventListener('touchend', (e) => {
-            const touchEndY = e.changedTouches[0].clientY;
-            const deltaY = touchStartY - touchEndY;
-            
-            if (deltaY < -50 && e.target === modalOverlay) {
               hideVideoModal();
             }
           });
