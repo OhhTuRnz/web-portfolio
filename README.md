@@ -197,7 +197,7 @@ The site is fully responsive with breakpoints:
 ## 📄 License
 
 This project is for portfolio purposes. Please respect the academic content and research citations.
-
+[] checkbox
 ## 👤 About
 
 **Alejandro Carrasco**  
