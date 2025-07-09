@@ -198,8 +198,6 @@ The site is fully responsive with breakpoints:
 
 This project is for portfolio purposes. Please respect the academic content and research citations.
 
-- [ ] checkbox
-
 ## 👤 About
 
 **Alejandro Carrasco**  
