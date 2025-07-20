@@ -15,12 +15,12 @@ export const publications = [
     id: "pub-2025-002",
     title: "Large Language Models as Autonomous Spacecraft Operators in Kerbal Space Program",
     authors: ["Alejandro Carrasco", "Victor Rodriguez-Fernandez", "Richard Linares"],
-    venue: "Advances in Space Research (In Progress)",
+    venue: "Advances in Space Research",
     year: 2025,
     type: "journal",
     citations: 0,
-    doi: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:9yKSN-GCB0IC",
-    pdfUrl: "/papers/carrasco-2024-llm-spacecraft-operators.pdf",
+    doi: "https://doi.org/10.1016/j.asr.2025.06.034",
+    pdfUrl: "https://arxiv.org/pdf/2505.19896",
     abstract: "Recent trends are emerging in the use of Large Language Models (LLMs) as autonomous agents that take actions based on the content of the user text prompts. We intend to apply these concepts to the field of Control in space, enabling LLMs to play a significant role in the decision-making process for autonomous satellite operations. As a first step towards this goal, we have developed a pure LLM-based solution for the Kerbal Space Program Differential Games (KSPDG) challenge, a public software design competition where participants create autonomous agents for maneuvering satellites involved in non-cooperative space operations, running on the KSP game engine. Our approach leverages prompt engineering, few-shot prompting, and fine-tuning techniques to create an effective LLM-based agent that ranked 2nd in the competition. To the best of our knowledge, this work pioneers the integration of LLM agents into space research. The project comprises several open repositories to facilitate replication and further research. The codebase is accessible on \href{https://github.com/ARCLab-MIT/kspdg}{GitHub}, while the trained models and datasets are available on \href{https://huggingface.co/OhhTuRnz}{Hugging Face}. Additionally, experiment tracking and detailed results can be reviewed on \href{https://wandb.ai/carrusk/huggingface}{Weights \& Biases}",
     keywords: ["Large Language Models", "Autonomous Agents", "Kerbal Space Program",
 "Prompt Engineering", "Fine-tuning, Spacecraft Control"]
@@ -34,7 +34,7 @@ export const publications = [
     type: "conference",
     citations: 1,
     doi: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:u-x6o8ySG0sC",
-    pdfUrl: "/papers/carrasco-2024-fine-tuning-llms.pdf",
+    pdfUrl: "https://arxiv.org/pdf/2408.08676?",
     abstract: "Recent trends are emerging in the use of Large Language Models (LLMs) as autonomous agents that take actions based on the content of the user text prompt. This study explores the use of fine-tuned Large Language Models (LLMs) for autonomous spacecraft control, using the Kerbal Space Program Differential Games suite (KSPDG) as a testing environment. Traditional Reinforcement Learning (RL) approaches face limitations in this domain due to insufficient simulation capabilities and data. By leveraging LLMs, specifically fine-tuning models like GPT-3.5 and LLaMA, we demonstrate how these models can effectively control spacecraft using language-based inputs and outputs. Our approach integrates real-time mission telemetry into textual prompts processed by the LLM, which then generate control actions via an agent. The results open a discussion about the potential of LLMs for space operations beyond their nominal use for text-related tasks. Future work aims to expand this methodology to other space control tasks and evaluate the performance of different LLM families. The code is available at this URL: \texttt{this https URL}.",
     keywords: ["Fine-tuning", "LLM", "Spacecraft Control", "Autonomous Systems", "Kerbal Space Program"]
   },
@@ -47,7 +47,7 @@ export const publications = [
     type: "conference",
     citations: 1,
     doi: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:d1gkVwhDpl0C",
-    pdfUrl: "/papers/carrasco-2025-visual-language-models.pdf",
+    pdfUrl: "https://arxiv.org/pdf/2505.19896",
     abstract: "This paper explores the application of Vision-Language Models (VLMs) as operator agents in the space domain, focusing on both software and hardware operational paradigms. Building on advances in Large Language Models (LLMs) and their multimodal extensions, we investigate how VLMs can enhance autonomous control and decision-making in space missions. In the software context, we employ VLMs within the Kerbal Space Program Differential Games (KSPDG) simulation environment, enabling the agent to interpret visual screenshots of the graphical user interface to perform complex orbital maneuvers. In the hardware context, we integrate VLMs with robotic systems equipped with cameras to inspect and diagnose physical space objects, such as satellites. Our results demonstrate that VLMs can effectively process visual and textual data to generate contextually appropriate actions, competing with traditional methods and non-multimodal LLMs in simulation tasks, and showing promise in real-world applications.",
     keywords: ["Visual Language Models", "Space Operations", "Multimodal AI", "Operator Agents"]
   },
@@ -60,7 +60,7 @@ export const publications = [
     type: "preprint",
     citations: 6,
     doi: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:u5HHmVD_uO8C",
-    pdfUrl: "/papers/carrasco-2024-language-models-operators.pdf",
+    pdfUrl: "https://arxiv.org/pdf/2404.00413?",
     abstract: "Recent trends are emerging in the use of Large Language Models (LLMs) as autonomous agents that take actions based on the content of the user text prompts. We intend to apply these concepts to the field of Guidance, Navigation, and Control in space, enabling LLMs to have a significant role in the decision-making process for autonomous satellite operations. As a first step towards this goal, we have developed a pure LLM-based solution for the Kerbal Space Program Differential Games (KSPDG) challenge, a public software design competition where participants create autonomous agents for maneuvering satellites involved in non-cooperative space operations, running on the KSP game engine. Our approach leverages prompt engineering, few-shot prompting, and fine-tuning techniques to create an effective LLM-based agent that ranked 2nd in the competition. To the best of our knowledge, this work pioneers the integration of LLM agents into space research. Code is available at this https URL.",
     keywords: ["Language Models", "Spacecraft Operations", "Autonomous Decision Making", "Space AI"]
   }

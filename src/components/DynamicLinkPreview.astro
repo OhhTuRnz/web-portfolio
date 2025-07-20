@@ -3,10 +3,21 @@ export interface Props {
   url: string;
   fallbackTitle?: string;
   fallbackDescription?: string;
-  hardcodedImage?: string; // New prop for hardcoded images
+  hardcodedImage?: string;
 }
 
 const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
+
+// Helper to get domain name for display
+const getDomainName = (urlString: string) => {
+  try {
+    return new URL(urlString).hostname.replace('www.', '');
+  } catch (e) {
+    return urlString;
+  }
+};
+
+const domain = getDomainName(url);
 ---
 
 <div class="dynamic-link-preview-container">
@@ -15,21 +26,23 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
     target="_blank" 
     rel="noopener noreferrer"
     class="link-preview-trigger"
-    data-url={url}
-    data-fallback-title={fallbackTitle}
-    data-fallback-description={fallbackDescription}
-    data-hardcoded-image={hardcodedImage}
   >
     <slot />
   </a>
   
-  <div class="dynamic-link-preview-popup">
-    <div class="preview-loading">
-      <div class="loading-spinner"></div>
-      <span>Loading preview...</span>
-    </div>
-    <div class="preview-content" style="display: none;">
-      <!-- Content will be populated by JavaScript -->
+  <div class="dynamic-link-preview-popup" data-url={url} data-hardcoded-image={hardcodedImage}>
+    <div class="preview-content">
+      <div class="preview-image">
+        <div class="image-placeholder">
+          <div class="loading-spinner"></div>
+        </div>
+        <img src="" alt="Link preview" class="preview-image-tag" style="display: none;" />
+      </div>
+      <div class="preview-text">
+        <div class="preview-domain">{domain}</div>
+        <h4 class="preview-title">{fallbackTitle || domain}</h4>
+        <p class="preview-description">{fallbackDescription || 'Click to visit this website'}</p>
+      </div>
     </div>
   </div>
 </div>
@@ -62,29 +75,13 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
     transition: all 0.3s ease;
     z-index: 1000;
     pointer-events: none;
+    overflow: hidden;
   }
   
   .dynamic-link-preview-container:hover .dynamic-link-preview-popup {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(-4px);
-  }
-  
-  .preview-loading {
-    padding: 20px;
-    text-align: center;
-    color: var(--arclab-gray-300);
-    font-size: 0.875rem;
-  }
-  
-  .loading-spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(59, 130, 246, 0.3);
-    border-top: 2px solid #3b82f6;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 8px;
   }
   
   .preview-content {
@@ -95,22 +92,37 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
   .preview-image {
     width: 100%;
     height: 180px;
-    overflow: hidden;
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(168, 85, 247, 0.1));
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
   }
   
-  .preview-image img {
+  .image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  .preview-image-tag {
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
-  
-  .preview-image-placeholder {
-    color: rgba(255, 255, 255, 0.3);
-    font-size: 3rem;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
   
   .preview-text {
@@ -148,13 +160,6 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
     overflow: hidden;
   }
   
-  .preview-error {
-    padding: 20px;
-    text-align: center;
-    color: var(--arclab-gray-400);
-    font-size: 0.875rem;
-  }
-  
   @keyframes spin {
     to { transform: rotate(360deg); }
   }
@@ -189,245 +194,89 @@ const { url, fallbackTitle, fallbackDescription, hardcodedImage } = Astro.props;
 </style>
 
 <script>
-  class DynamicLinkPreview {
+  class DynamicLinkPreviewManager {
     constructor() {
       this.cache = new Map();
-      this.init();
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => this.init());
+      } else {
+        this.init();
+      }
     }
     
     init() {
-      const containers = document.querySelectorAll('.dynamic-link-preview-container');
-      containers.forEach(container => {
-        const trigger = container.querySelector('.link-preview-trigger');
-        const popup = container.querySelector('.dynamic-link-preview-popup');
-        
-        if (trigger && popup) {
-          let hoverTimeout;
-          let isLoaded = false;
-          
-          trigger.addEventListener('mouseenter', () => {
-            if (!isLoaded) {
-              hoverTimeout = setTimeout(() => {
-                this.loadPreview(trigger, popup);
-                isLoaded = true;
-              }, 500);
-            }
-          });
-          
-          trigger.addEventListener('mouseleave', () => {
-            clearTimeout(hoverTimeout);
-          });
-        }
+      const popups = document.querySelectorAll('.dynamic-link-preview-popup');
+      popups.forEach(popup => {
+        this.loadPreview(popup);
       });
     }
     
-    async loadPreview(trigger, popup) {
-      const url = trigger.dataset.url;
-      const fallbackTitle = trigger.dataset.fallbackTitle;
-      const fallbackDescription = trigger.dataset.fallbackDescription;
-      const hardcodedImage = trigger.dataset.hardcodedImage;
+    async loadPreview(popup) {
+      const url = popup.dataset.url;
+      const hardcodedImage = popup.dataset.hardcodedImage;
       
       if (!url) return;
       
+      if (hardcodedImage && hardcodedImage !== 'undefined') {
+        this.renderImage(popup, hardcodedImage);
+        return;
+      }
+      
       if (this.cache.has(url)) {
-        this.renderPreview(this.cache.get(url), popup);
+        this.renderImage(popup, this.cache.get(url));
         return;
       }
       
       try {
-        // Try to fetch metadata using a CORS proxy or direct fetch
-        const metadata = await this.fetchMetadata(url, fallbackTitle, fallbackDescription, hardcodedImage);
-        this.cache.set(url, metadata);
-        this.renderPreview(metadata, popup);
-      } catch (error) {
-        console.error('Failed to load preview:', error);
-        // Use fallback data
-        const fallbackData = {
-          title: fallbackTitle || this.getDomainName(url),
-          description: fallbackDescription || 'Click to visit this website',
-          domain: this.getDomainName(url),
-          image: hardcodedImage || null
-        };
-        this.renderPreview(fallbackData, popup);
-      }
-    }
-    
-    async fetchMetadata(url, fallbackTitle, fallbackDescription, hardcodedImage) {
-      // If hardcoded image is provided, use it and try to get other metadata
-      
-      // Method 1: Use a public metadata API service
-      try {
-        const apiUrl = `https://api.microlink.io/?url=${encodeURIComponent(url)}`;
-        const response = await fetch(apiUrl);
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
+        const html = data.contents;
         
-        if (response.ok) {
-          const data = await response.json();
-          if (data.status === 'success') {
-            return {
-              title: data.data.title || fallbackTitle || this.getDomainName(url),
-              description: this.cleanDescription(data.data.description) || fallbackDescription || '',
-              domain: this.getDomainName(url),
-              image: hardcodedImage || data.data.image?.url || null // Prioritize hardcoded image
-            };
-          }
+        if (!html) {
+          throw new Error('No HTML content found');
         }
-      } catch (e) {
-        console.log('API fetch failed, using fallback');
-      }
-      
-      // Method 2: Fallback to domain-specific hardcoded data
-      return this.getHardcodedMetadata(url, fallbackTitle, fallbackDescription, hardcodedImage);
-    }
-    
-    cleanDescription(description) {
-      if (!description) return '';
-      
-      // Convert to string and handle various input types
-      let cleaned = String(description);
-      
-      // Remove HTML tags completely
-      cleaned = cleaned.replace(/<[^>]*>/g, '');
-      
-      // Decode HTML entities
-      try {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(`<!DOCTYPE html><html><body>${cleaned}</body></html>`, 'text/html');
-        cleaned = doc.body.textContent || cleaned;
-      } catch (e) {
-        // Fallback manual entity decoding
-        cleaned = cleaned
-          .replace(/&quot;/g, '"')
-          .replace(/&#39;/g, "'")
-          .replace(/&lt;/g, '<')
-          .replace(/&gt;/g, '>')
-          .replace(/&amp;/g, '&');
-      }
-      
-      // Clean up common web artifacts and normalize whitespace
-      cleaned = cleaned
-        .replace(/^(Read more|Learn more|Click here|More info|Continue reading|View details|See more)[\s\.:]*\s*/i, '')
-        .replace(/^(Home|About|Contact|News|Blog|Menu|Navigation)[\s\|>-]*\s*/i, '')
-        .replace(/^(Skip to|Jump to|Go to|Navigate to)[\s\w]*\s*/i, '')
-        .replace(/^(Cookie|Privacy|Terms|Legal)[\s\w]*\s*/i, '')
-        .replace(/^[^\w\s]*\s*/, '') // Remove leading punctuation
-        .replace(/\s+/g, ' ')
-        .trim();
-      
-      // If too short after cleaning, return empty
-      if (cleaned.length < 15) {
-        return '';
-      }
-      
-      // Limit length and add ellipsis
-      if (cleaned.length > 200) {
-        cleaned = cleaned.substring(0, 200);
-        const lastSpace = cleaned.lastIndexOf(' ');
-        if (lastSpace > 150) {
-          cleaned = cleaned.substring(0, lastSpace);
+        
+        const imageUrl = this.extractMetaTag(html, 'og:image') || this.extractMetaTag(html, 'twitter:image');
+        
+        if (imageUrl) {
+          this.cache.set(url, imageUrl);
+          this.renderImage(popup, imageUrl);
+        } else {
+          this.renderImage(popup, null); // No image found
         }
-        cleaned += '...';
-      }
-      
-      return cleaned;
-    }
-    
-    getHardcodedMetadata(url, fallbackTitle, fallbackDescription, hardcodedImage) {
-      const domain = this.getDomainName(url);
-      
-      // Domain-specific metadata with better descriptions
-      const domainData = {
-        'll.mit.edu': {
-          title: 'MIT Lincoln Laboratory',
-          description: 'MIT Lincoln Laboratory develops advanced technology solutions for national security challenges.',
-          image: hardcodedImage || null
-        },
-        'upm.es': {
-          title: 'Universidad Politécnica de Madrid',
-          description: 'Leading technical university in Spain, excellence in engineering and technology education.',
-          image: hardcodedImage || null
-        },
-        'kspdg.com': {
-          title: 'Kerbal Space Program Differential Games Challenge',
-          description: 'International AI competition for autonomous spacecraft control algorithms.',
-          image: hardcodedImage || null
-        },
-        'aeroastro.mit.edu': {
-          title: 'MIT Aeronautics and Astronautics',
-          description: 'Leading aerospace engineering education and research at MIT.',
-          image: hardcodedImage || null
-        },
-        'etsisi.upm.es': {
-          title: 'ETSISI - UPM',
-          description: 'School of Computer Systems Engineering at Universidad Politécnica de Madrid.',
-          image: hardcodedImage || null
-        },
-        'defensa.gob.es': {
-          title: 'Centro Superior de Estudios de la Defensa Nacional',
-          description: 'Spanish national defense education and research center.',
-          image: hardcodedImage || null
-        }
-      };
-      
-      const data = domainData[domain] || {
-        title: fallbackTitle || domain,
-        description: fallbackDescription || 'Visit this website for more information.',
-        image: hardcodedImage || null
-      };
-      
-      return {
-        ...data,
-        domain: domain
-      };
-    }
-    
-    getDomainName(url) {
-      try {
-        return new URL(url).hostname.replace('www.', '');
-      } catch {
-        return 'External Link';
+      } catch (error) {
+        console.warn(`Failed to fetch preview for ${url}:`, error);
+        this.renderImage(popup, null); // Fallback on error
       }
     }
     
-    renderPreview(data, popup) {
-      const loadingEl = popup.querySelector('.preview-loading');
-      const contentEl = popup.querySelector('.preview-content');
+    renderImage(popup, imageUrl) {
+      const imageTag = popup.querySelector('.preview-image-tag');
+      const placeholder = popup.querySelector('.image-placeholder');
       
-      if (loadingEl) loadingEl.style.display = 'none';
-      
-      const imageSection = data.image ? 
-        `<div class="preview-image">
-           <img src="${this.escapeHtml(data.image)}" alt="${this.escapeHtml(data.title)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\"preview-image-placeholder\\">🔗</div>'" />
-         </div>` :
-        `<div class="preview-image">
-           <div class="preview-image-placeholder">🔗</div>
-         </div>`;
-      
-      const html = `
-        ${imageSection}
-        <div class="preview-text">
-          <div class="preview-domain">${this.escapeHtml(data.domain)}</div>
-          <h4 class="preview-title">${this.escapeHtml(data.title)}</h4>
-          ${data.description ? `<p class="preview-description">${this.escapeHtml(data.description)}</p>` : ''}
-        </div>
-      `;
-      
-      contentEl.innerHTML = html;
-      contentEl.style.display = 'block';
+      if (imageUrl && imageTag && placeholder) {
+        imageTag.src = imageUrl;
+        imageTag.style.display = 'block';
+        imageTag.onload = () => {
+          placeholder.style.display = 'none';
+        };
+        imageTag.onerror = () => {
+          placeholder.style.display = 'flex'; // Keep placeholder if image fails
+          imageTag.style.display = 'none';
+        };
+      } else if (placeholder) {
+        placeholder.innerHTML = '<span style="font-size: 2rem; color: rgba(255,255,255,0.3);">📄</span>';
+      }
     }
-    
-    escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
+
+    extractMetaTag(html, property) {
+      const el = document.createElement('html');
+      el.innerHTML = html;
+      const meta = el.querySelector(`meta[property="${property}"], meta[name="${property}"]`);
+      return meta ? meta.getAttribute('content') : null;
     }
   }
-  
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      new DynamicLinkPreview();
-    });
-  } else {
-    new DynamicLinkPreview();
-  }
+
+  new DynamicLinkPreviewManager();
 </script>

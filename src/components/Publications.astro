@@ -17,35 +17,35 @@ const typeColors = {
   'workshop': 'bg-green-600',
   'preprint': 'bg-orange-600'
 };
-
-// Helper function to truncate abstract to word limit
-function truncateAbstract(text, wordLimit = 60) {
-  if (!text) return '';
-  
-  const words = text.split(' ');
-  if (words.length <= wordLimit) {
-    return text;
-  }
-  
-  return words.slice(0, wordLimit).join(' ') + '...';
-}
 ---
 
-<section id="publications" class="arclab-section bg-gradient-to-b from-slate-900 to-slate-800">
+<section id="publications" class="arclab-section">
   <div class="arclab-container">
     <div class="text-center mb-16 arclab-fade-in">
-      <h2 class="arclab-heading-2">Publications</h2>
+      <h2 class="arclab-heading-2 mb-4">Publications</h2>
       <p class="arclab-text text-lg max-w-3xl mx-auto">
-        Peer-reviewed research contributions in artificial intelligence and robotics
+        Research publications and academic contributions
       </p>
     </div>
     
     <!-- Filter buttons -->
-    <div class="flex flex-wrap justify-center gap-3 mb-12 arclab-fade-in" style="animation-delay: 0.2s;">
-      <button class="filter-button active" data-filter="all">All Publications</button>
-      <button class="filter-button" data-filter="journal">Journal Articles</button>
-      <button class="filter-button" data-filter="conference">Conference Papers</button>
-      <button class="filter-button" data-filter="workshop">Workshop Papers</button>
+    <div class="flex flex-wrap justify-center gap-4 mb-12 arclab-fade-in" style="animation-delay: 0.2s;">
+      <button class="filter-btn active" data-filter="all">
+        <i class="fas fa-th-large mr-2"></i>
+        All Publications
+      </button>
+      <button class="filter-btn" data-filter="journal">
+        <i class="fas fa-book mr-2"></i>
+        Journal Articles
+      </button>
+      <button class="filter-btn" data-filter="conference">
+        <i class="fas fa-users mr-2"></i>
+        Conference Papers
+      </button>
+      <button class="filter-btn" data-filter="featured">
+        <i class="fas fa-star mr-2"></i>
+        Featured
+      </button>
     </div>
     
     <!-- Publications by year -->
@@ -54,20 +54,25 @@ function truncateAbstract(text, wordLimit = 60) {
         <div class="year-section">
           <h3 class="text-xl font-semibold text-white mb-6 border-b border-gray-700 pb-2">{year}</h3>
           <div class="space-y-6">
-            {publicationsByYear[year].map((pub, index) => (
-              <article class={`publication-item ${pub.type} arclab-card publication-entry arclab-slide-up`} style={`animation-delay: ${index * 0.1}s;`}>
+            {publicationsByYear[year].map(pub => (
+              <article class={`publication-item ${pub.type} ${pub.featured ? 'featured' : ''} arclab-card publication-entry`}>
                 <div class="flex items-start justify-between mb-4">
                   <div class="flex-1">
                     <div class="flex items-center gap-3 mb-2">
                       <span class={`px-3 py-1 text-xs font-medium text-white rounded-full ${typeColors[pub.type]}`}>
                         {typeLabels[pub.type]}
                       </span>
+                      {pub.featured && (
+                        <span class="px-2 py-1 text-xs font-medium text-yellow-300 bg-yellow-600/20 rounded-full border border-yellow-500/30">
+                          Featured
+                        </span>
+                      )}
                       <span class="citation-count">{pub.citations} citations</span>
                     </div>
                     
                     <h4 class="text-lg font-medium text-white mb-2 leading-tight">
                       {pub.doi ? (
-                        <a href={pub.doi} target="_blank" class="hover:arclab-text-accent transition-colors hover:underline">
+                        <a href={pub.doi} target="_blank" class="hover:text-blue-400 transition-colors hover:underline">
                           {pub.title}
                         </a>
                       ) : (
@@ -84,13 +89,13 @@ function truncateAbstract(text, wordLimit = 60) {
                     </p>
                     
                     <p class="arclab-text text-sm leading-relaxed mb-4">
-                      {truncateAbstract(pub.abstract, 60)}
+                      {pub.abstract.length > 250 ? pub.abstract.slice(0, 250) + '...' : pub.abstract}
                     </p>
                     
                     <!-- Keywords -->
                     <div class="flex flex-wrap gap-2 mb-4">
                       {pub.keywords.map(keyword => (
-                        <span class="venue-tag text-xs">{keyword}</span>
+                        <span class="venue-tag">{keyword}</span>
                       ))}
                     </div>
                   </div>
@@ -99,15 +104,21 @@ function truncateAbstract(text, wordLimit = 60) {
                 <!-- Action buttons -->
                 <div class="flex flex-wrap gap-3">
                   {pub.doi && (
-                    <a href={pub.doi} target="_blank" class="arclab-button arclab-button-small">
+                    <a href={pub.doi} target="_blank" class="arclab-button text-sm">
                       <i class="fas fa-external-link-alt"></i>
                       DOI
                     </a>
                   )}
                   {pub.pdfUrl && (
-                    <a href={pub.pdfUrl} target="_blank" class="arclab-button-secondary arclab-button-small">
+                    <a href={pub.pdfUrl} target="_blank" class="arclab-button-secondary text-sm">
                       <i class="fas fa-file-pdf"></i>
                       PDF
+                    </a>
+                  )}
+                  {pub.projectPage && (
+                    <a href={pub.projectPage} class="arclab-button-secondary text-sm">
+                      <i class="fas fa-project-diagram"></i>
+                      Project
                     </a>
                   )}
                 </div>
@@ -117,24 +128,12 @@ function truncateAbstract(text, wordLimit = 60) {
         </div>
       ))}
     </div>
-    
-    <!-- Google Scholar Link -->
-    <div class="text-center mt-12 arclab-fade-in" style="animation-delay: 0.6s;">
-      <a 
-        href="https://scholar.google.com/citations?user=6KamS70AAAAJ&hl=en" 
-        target="_blank"
-        class="arclab-button-secondary"
-      >
-        <i class="fas fa-graduation-cap"></i>
-        View Complete Publication List on Google Scholar
-      </a>
-    </div>
   </div>
 </section>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const filterButtons = document.querySelectorAll('.filter-button');
+    const filterButtons = document.querySelectorAll('.filter-btn');
     const publications = document.querySelectorAll('.publication-item');
     
     filterButtons.forEach(button => {
@@ -142,14 +141,15 @@ function truncateAbstract(text, wordLimit = 60) {
         const filter = button.getAttribute('data-filter');
         
         // Update active button
-        filterButtons.forEach(btn => btn.classList.remove('active'));
+        filterButtons.forEach(btn => {
+          btn.classList.remove('active');
+        });
         button.classList.add('active');
         
         // Filter publications
         publications.forEach(pub => {
           if (filter === 'all' || pub.classList.contains(filter)) {
             pub.style.display = 'block';
-            pub.style.animation = 'fadeIn 0.5s ease-out forwards';
           } else {
             pub.style.display = 'none';
           }
@@ -160,13 +160,92 @@ function truncateAbstract(text, wordLimit = 60) {
 </script>
 
 <style>
-  .publication-entry {
-    border-left: 3px solid var(--arclab-accent);
-    padding-left: var(--arclab-spacing-md);
+  /* Filter button styling matching ProjectShowcase */
+  .filter-btn {
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    background: rgba(15, 23, 42, 0.8);
+    color: var(--arclab-gray-300);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+  .filter-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(168, 85, 247, 0.1));
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
-</style>
+  
+  .filter-btn.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(168, 85, 247, 0.2));
+    color: white;
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 
+      0 4px 12px rgba(59, 130, 246, 0.2),
+      0 0 0 1px rgba(59, 130, 246, 0.1);
+  }
+  
+  .filter-btn.active::before {
+    opacity: 1;
+  }
+  
+  .filter-btn:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: white;
+    transform: translateY(-2px);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+  }
+  
+  .filter-btn.active:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 8px 25px rgba(59, 130, 246, 0.3),
+      0 0 0 1px rgba(59, 130, 246, 0.2);
+  }
+  
+  .filter-btn i {
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+  
+  .filter-btn.active i {
+    opacity: 1;
+  }
+  
+  /* Responsive improvements */
+  @media (max-width: 768px) {
+    .filter-btn {
+      padding: 10px 18px;
+      font-size: 0.8rem;
+      border-radius: 10px;
+    }
+    
+    .filter-btn i {
+      margin-right: 0.4rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .flex {
+      gap: 0.5rem;
+    }
+    
+    .filter-btn {
+      padding: 8px 14px;
+      font-size: 0.75rem;
+    }
+  }
+</style> 

@@ -32,8 +32,8 @@
               </div>
               <div>
                 <h4 class="text-white font-medium">Email</h4>
-                <a href="mailto:acarrasco@mit.edu" class="text-blue-400 hover:text-blue-300 transition-colors">
-                  acarrasco@mit.edu
+                <a href="mailto:acarra@mit.edu" class="text-blue-400 hover:text-blue-300 transition-colors">
+                  acarra@mit.edu
                 </a>
               </div>
             </div>
@@ -62,10 +62,10 @@
         
         <!-- Contact Form -->
         <div class="bg-slate-800/30 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/30 animate-slide-up" style="animation-delay: 0.4s;">
-          <form class="space-y-6" action="#" method="POST">
+          <form class="space-y-6" id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
             <div>
               <label for="name" class="block text-sm font-medium text-gray-300 mb-2">
-                Full Name
+                Full Name <span class="text-red-400">*</span>
               </label>
               <input 
                 type="text" 
@@ -75,11 +75,12 @@
                 class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
                 placeholder="Your full name"
               />
+              <div class="error-message hidden text-red-400 text-sm mt-1" id="name-error">Please enter your full name</div>
             </div>
             
             <div>
               <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
-                Email Address
+                Email Address <span class="text-red-400">*</span>
               </label>
               <input 
                 type="email" 
@@ -89,57 +90,278 @@
                 class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
                 placeholder="your.email@example.com"
               />
+              <div class="error-message hidden text-red-400 text-sm mt-1" id="email-error">Please enter a valid email address</div>
             </div>
             
             <div>
               <label for="subject" class="block text-sm font-medium text-gray-300 mb-2">
-                Subject
+                Subject <span class="text-red-400">*</span>
               </label>
-              <select 
-                id="subject" 
-                name="subject" 
-                required
-                class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
-              >
-                <option value="">Select a subject</option>
-                <option value="research">Research Collaboration</option>
-                <option value="speaking">Speaking Opportunity</option>
-                <option value="consulting">Consulting Inquiry</option>
-                <option value="llm">LLM Agents Discussion</option>
-                <option value="robotics">Robotics Project</option>
-                <option value="general">General Question</option>
-                <option value="other">Other</option>
-              </select>
+              <div class="relative" id="custom-select-wrapper">
+                <select 
+                  id="subject" 
+                  name="subject" 
+                  required
+                  class="hidden"
+                >
+                  <option value="">Select a subject</option>
+                  <option value="research">Research Collaboration</option>
+                  <option value="speaking">Speaking Opportunity</option>
+                  <option value="consulting">Consulting Inquiry</option>
+                  <option value="llm">LLM Agents Discussion</option>
+                  <option value="robotics">Robotics Project</option>
+                  <option value="general">General Question</option>
+                  <option value="other">Other</option>
+                </select>
+
+                <div id="custom-select-trigger" class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-transparent transition-all cursor-pointer flex justify-between items-center">
+                  <span id="custom-select-selected-text" class="text-gray-400">Select a subject</span>
+                  <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" id="custom-select-arrow" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+
+                <div id="custom-select-options" class="absolute z-10 w-full mt-1 bg-slate-800/95 backdrop-blur-md border border-slate-700 rounded-lg shadow-lg hidden max-h-60 overflow-auto">
+                  <ul class="py-1">
+                    <li class="px-4 py-2 text-gray-300 hover:bg-blue-600/50 hover:text-white transition-colors duration-150 cursor-pointer" data-value="research">Research Collaboration</li>
+                    <li class="px-4 py-2 text-gray-300 hover:bg-blue-600/50 hover:text-white transition-colors duration-150 cursor-pointer" data-value="speaking">Speaking Opportunity</li>
+                    <li class="px-4 py-2 text-gray-300 hover:bg-blue-600/50 hover:text-white transition-colors duration-150 cursor-pointer" data-value="consulting">Consulting Inquiry</li>
+                    <li class="px-4 py-2 text-gray-300 hover:bg-blue-600/50 hover:text-white transition-colors duration-150 cursor-pointer" data-value="llm">LLM Agents Discussion</li>
+                    <li class="px-4 py-2 text-gray-300 hover:bg-blue-600/50 hover:text-white transition-colors duration-150 cursor-pointer" data-value="robotics">Robotics Project</li>
+                    <li class="px-4 py-2 text-gray-300 hover:bg-blue-600/50 hover:text-white transition-colors duration-150 cursor-pointer" data-value="general">General Question</li>
+                    <li class="px-4 py-2 text-gray-300 hover:bg-blue-600/50 hover:text-white transition-colors duration-150 cursor-pointer" data-value="other">Other</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="error-message hidden text-red-400 text-sm mt-1" id="subject-error">Please select a subject</div>
             </div>
             
             <div>
               <label for="message" class="block text-sm font-medium text-gray-300 mb-2">
-                Message
+                Message <span class="text-red-400">*</span>
               </label>
               <textarea 
                 id="message" 
                 name="message" 
                 rows="5" 
                 required
+                minlength="10"
                 class="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all resize-none"
                 placeholder="Tell me about your project or inquiry..."
               ></textarea>
+              <div class="error-message hidden text-red-400 text-sm mt-1" id="message-error">Please enter a message (at least 10 characters)</div>
             </div>
             
             <button 
               type="submit"
-              class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-medium py-4 px-6 rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-slate-800 shadow-lg"
+              id="submit-button"
+              disabled
+              class="w-full font-medium py-4 px-6 rounded-lg transition-all transform focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-slate-800 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              <span class="flex items-center justify-center space-x-2">
+              <span class="flex items-center justify-center space-x-2" id="button-content">
                 <span>Send Message</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                 </svg>
               </span>
             </button>
+            
+            <!-- Success/Error Messages -->
+            <div id="form-success" class="hidden bg-green-600/20 border border-green-500/30 text-green-300 px-4 py-3 rounded-lg">
+              <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Message sent successfully! I'll get back to you soon.</span>
+              </div>
+            </div>
+            
+            <div id="form-error" class="hidden bg-red-600/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-lg">
+              <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                <span>Failed to send message. Please try again or email me directly.</span>
+              </div>
+            </div>
           </form>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Custom select functionality
+    const wrapper = document.getElementById('custom-select-wrapper');
+    if (!wrapper) return;
+
+    const trigger = document.getElementById('custom-select-trigger');
+    const selectedText = document.getElementById('custom-select-selected-text');
+    const arrow = document.getElementById('custom-select-arrow');
+    const optionsContainer = document.getElementById('custom-select-options');
+    const options = optionsContainer.querySelectorAll('li');
+    const nativeSelect = document.getElementById('subject');
+
+    // Form validation elements
+    const form = document.getElementById('contact-form');
+    const submitButton = document.getElementById('submit-button');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const messageInput = document.getElementById('message');
+    const successMessage = document.getElementById('form-success');
+    const errorMessage = document.getElementById('form-error');
+
+    // Validation functions
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function validateField(field, errorId, validationFn = null) {
+      const errorEl = document.getElementById(errorId);
+      const isValid = validationFn ? validationFn(field.value.trim()) : field.value.trim().length > 0;
+      
+      if (!isValid) {
+        field.classList.add('border-red-500');
+        errorEl.classList.remove('hidden');
+        return false;
+      } else {
+        field.classList.remove('border-red-500');
+        errorEl.classList.add('hidden');
+        return true;
+      }
+    }
+
+    function validateForm() {
+      const nameValid = validateField(nameInput, 'name-error');
+      const emailValid = validateField(emailInput, 'email-error', validateEmail);
+      const subjectValid = nativeSelect.value !== '';
+      const messageValid = validateField(messageInput, 'message-error', (value) => value.length >= 10);
+
+      // Handle subject validation
+      const subjectError = document.getElementById('subject-error');
+      if (!subjectValid) {
+        trigger.classList.add('border-red-500');
+        subjectError.classList.remove('hidden');
+      } else {
+        trigger.classList.remove('border-red-500');
+        subjectError.classList.add('hidden');
+      }
+
+      const allValid = nameValid && emailValid && subjectValid && messageValid;
+      
+      // Update button state
+      if (allValid) {
+        submitButton.disabled = false;
+        submitButton.className = submitButton.className.replace('disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none', '') + ' bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:from-blue-700 hover:to-cyan-700 hover:scale-105';
+      } else {
+        submitButton.disabled = true;
+        submitButton.className = 'w-full font-medium py-4 px-6 rounded-lg transition-all transform focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-slate-800 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-gray-600 text-gray-400';
+      }
+
+      return allValid;
+    }
+
+    // Custom select functionality
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      optionsContainer.classList.toggle('hidden');
+      arrow.classList.toggle('rotate-180');
+    });
+
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        const selectedValue = option.getAttribute('data-value');
+        const selectedLabel = option.textContent;
+
+        selectedText.textContent = selectedLabel;
+        selectedText.classList.remove('text-gray-400');
+        selectedText.classList.add('text-white');
+        
+        nativeSelect.value = selectedValue;
+        nativeSelect.dispatchEvent(new Event('change'));
+
+        optionsContainer.classList.add('hidden');
+        arrow.classList.remove('rotate-180');
+
+        // Update active style
+        options.forEach(opt => opt.classList.remove('bg-blue-600', 'text-white'));
+        option.classList.add('bg-blue-600', 'text-white');
+        
+        validateForm();
+      });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+      if (!optionsContainer.classList.contains('hidden')) {
+        optionsContainer.classList.add('hidden');
+        arrow.classList.remove('rotate-180');
+      }
+    });
+
+    // Add validation listeners
+    [nameInput, emailInput, messageInput].forEach(input => {
+      input.addEventListener('input', validateForm);
+      input.addEventListener('blur', validateForm);
+    });
+
+    nativeSelect.addEventListener('change', validateForm);
+
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (!validateForm()) return;
+
+      // Update button to loading state
+      const buttonContent = document.getElementById('button-content');
+      const originalContent = buttonContent.innerHTML;
+      buttonContent.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Sending...
+      `;
+      submitButton.disabled = true;
+
+      try {
+        // Replace with your actual form endpoint
+        // For now, this will show success after 2 seconds (demo)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Uncomment this for real form submission:
+        // const response = await fetch(form.action, {
+        //   method: 'POST',
+        //   body: new FormData(form),
+        //   headers: { 'Accept': 'application/json' }
+        // });
+        // 
+        // if (!response.ok) throw new Error('Network response was not ok');
+
+        // Show success message
+        successMessage.classList.remove('hidden');
+        errorMessage.classList.add('hidden');
+        form.reset();
+        selectedText.textContent = 'Select a subject';
+        selectedText.classList.remove('text-white');
+        selectedText.classList.add('text-gray-400');
+        nativeSelect.value = '';
+        
+      } catch (error) {
+        console.error('Form submission error:', error);
+        errorMessage.classList.remove('hidden');
+        successMessage.classList.add('hidden');
+      } finally {
+        // Reset button
+        buttonContent.innerHTML = originalContent;
+        validateForm();
+      }
+    });
+
+    // Initial validation
+    validateForm();
+  });
+</script>

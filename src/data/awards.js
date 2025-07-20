@@ -19,21 +19,21 @@ export const awards = [
   },
   {
     id: "award-2024-001",
-    title: "92nd Percentile - Bachelor's Degree",
-    organization: "ETSISI - Universidad Politécnica de Madrid",
-    year: 2024,
-    link: "https://www.etsisi.upm.es/",
-    category: "academic",
-    icon: "🎓"
-  },
-  {
-    id: "award-2024-002",
     title: "Best Bachelor Thesis for National Defense Award",
     organization: "Centro Superior de Estudios de la Defensa Nacional (CESEDEN)",
     year: 2024,
     link: "https://www.upm.es/UPM?id=CON16695&prefmt=articulo&fmt=detail",
     category: "academic",
     icon: "🏅"
+  },
+  {
+    id: "award-2024-002",
+    title: "92nd Percentile - Bachelor's Degree",
+    organization: "ETSISI - Universidad Politécnica de Madrid",
+    year: 2024,
+    link: "https://www.etsisi.upm.es/",
+    category: "academic",
+    icon: "🎓"
   },
   {
     id: "award-2024-003",

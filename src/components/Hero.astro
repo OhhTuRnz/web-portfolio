@@ -42,26 +42,27 @@ import StarParticleBackground from './StarParticleBackground.astro';
           </div>
           
           <p class="text-lg arclab-text max-w-3xl leading-relaxed hero-description">
-            Developing intelligent systems that bridge artificial intelligence and robotics, 
-            with focus on <span class="arclab-text-accent">Large Language Models</span>, 
-            <span class="text-purple-400">autonomous agents</span>, and 
-            <span class="text-cyan-400">space robotics</span> for next-generation exploration missions.
+            Developing intelligent systems at the intersection of artificial intelligence and robotics, with a focus on
+            <span class="arclab-text-accent">Large Language Models</span>,
+            <span class="text-purple-400">autonomous agents</span>, and
+            <span class="text-cyan-400">multi-embodiment robotics</span>
+            for cutting-edge advancements in space exploration and technology.
           </p>
           
           <!-- Social Links -->
           <div class="flex space-x-6 hero-social">
-            <a href="https://github.com/yourusername" target="_blank" class="social-link">
+            <a href="https://github.com/OhhTuRnz" target="_blank" class="social-link">
               <i class="fab fa-github text-lg"></i>
             </a>
-            <a href="https://linkedin.com/in/yourusername" target="_blank" class="social-link">
+            <a href="https://linkedin.com/in/carrusk" target="_blank" class="social-link">
               <i class="fab fa-linkedin text-lg"></i>
             </a>
-            <a href="https://x.com/yourusername" target="_blank" class="social-link">
+            <a href="https://x.com/OhhTuRnz123" target="_blank" class="social-link">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
               </svg>
             </a>
-            <a href="mailto:acarrasco@mit.edu" class="social-link">
+            <a href="#contact" class="social-link">
               <i class="fas fa-envelope text-lg"></i>
             </a>
           </div>
@@ -559,12 +560,14 @@ import StarParticleBackground from './StarParticleBackground.astro';
       }
     }
     
-    // Enhanced scroll behavior
-    const scrollLink = document.querySelector('.scroll-link');
-    if (scrollLink) {
-      scrollLink.addEventListener('click', function(e) {
+    // Enhanced scroll behavior for all anchor links
+    const scrollLinks = document.querySelectorAll('a[href^="#"]');
+    scrollLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
         e.preventDefault();
-        const target = document.querySelector('#publications');
+        const targetId = this.getAttribute('href');
+        const target = document.querySelector(targetId);
+        
         if (target) {
           const headerOffset = 80;
           const elementPosition = target.getBoundingClientRect().top;
@@ -576,6 +579,6 @@ import StarParticleBackground from './StarParticleBackground.astro';
           });
         }
       });
-    }
+    });
   });
 </script>

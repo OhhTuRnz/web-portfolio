@@ -11,15 +11,20 @@ const categoryColors = {
   'funding': 'from-green-500 to-teal-500',
   'academic': 'from-indigo-500 to-purple-500'
 };
+
+const hardcodedImages = {
+  'award-2025-001': 'https://www.mit.edu/files/images/202505/MIT-This-is-MIT-SLsub_0_0.jpg',
+  'award-2025-002': 'https://raw.githubusercontent.com/mit-ll/spacegym-kspdg/refs/heads/main/docs/20230309_logo.png',
+  'award-2024-003': 'https://raw.githubusercontent.com/mit-ll/spacegym-kspdg/refs/heads/main/docs/20230309_logo.png',
+  'award-2024-001': 'https://www.upm.es/gsfs/SFS24014',
+  'award-2024-002': 'https://upload.wikimedia.org/wikipedia/commons/f/f2/Escuela_T%C3%A9cnica_Superior_de_Ingenier%C3%ADa_de_Sistemas_Inform%C3%A1ticos_%28Universidad_Polit%C3%A9cnica_de_Madrid%29.JPG'
+};
 ---
 
 <section id="achievements" class="arclab-section bg-slate-800/30">
   <div class="arclab-container">
     <div class="text-center mb-16 arclab-fade-in">
       <h2 class="arclab-heading-2">Awards & Recognition</h2>
-      <p class="arclab-text text-lg max-w-3xl mx-auto">
-        Honors and achievements recognizing contributions to AI and robotics research
-      </p>
     </div>
     
     <!-- Timeline -->
@@ -42,7 +47,7 @@ const categoryColors = {
                     url={award.link}
                     fallbackTitle={award.title}
                     fallbackDescription={`Award from ${award.organization} in ${award.year}`}
-                    hardcodedImage={award.id === 'award-2024-002' ? 'https://www.upm.es/gsfs/SFS24014' : undefined}
+                    hardcodedImage={hardcodedImages[award.id]}
                   >
                     <div class="block arclab-card hover:scale-105 transition-all duration-300 group cursor-pointer">
                       <div class={`flex items-center space-x-3 mb-3 ${index % 2 === 0 ? 'flex-row-reverse space-x-reverse' : ''}`}>
