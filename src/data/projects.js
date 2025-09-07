@@ -2,23 +2,27 @@
 export const projects = [
   {
     id: "beavr-teleoperation",
-    title: "BeaVR - VR Teleoperation System",
-    description: "Advanced virtual reality teleoperation system for robotic control with immersive haptic feedback and intuitive gesture-based interfaces.",
-    shortDescription: "VR-based teleoperation system with haptic feedback for robotic control",
-    technologies: ["Unity", "C#", "VR", "Haptic Devices", "ROS", "Real-time Systems"],
+    title: "BEAVR - Bimanual VR Teleoperation System",
+    description: "Open-source, Bimanual, Multi-embodiment Virtual Reality (VR) Teleoperation system for Robots, designed to unify real-time control, data recording, and policy learning across heterogeneous robotic platforms. Features zero-copy streaming architecture achieving ≤35 ms latency and supports modular integration from 7-DoF manipulators to full-body humanoids.",
+    shortDescription: "Bimanual, multi-Embodiment, Accessible VR Teleoperation for diverse robotic platforms",
+    technologies: ["Python", "VR", "Meta Quest 3", "ROS", "Real-time Systems", "Computer Vision", "LeRobot", "PyTorch"],
     category: "research",
     status: "active",
-    startDate: "2023-03",
-    team: ["Alejandro Carrasco", "VR Research Team"],
+    startDate: "2024-01",
+    team: ["Alejandro Carrasco", "Alex Posadas-Nava", "Victor Rodriguez-Fernandez", "Richard Linares"],
     funding: "MIT ARC Lab",
+    venue: "ICCR 2025, Kyoto",
     media: {
-      type: "image", // Keep as image for now since no BeaVR GIF yet
-      url: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800",
-      fallback: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=800"
+      type: "gif", // 🎉 Now using the actual BEAVR GIF!
+      url: "/src/assets/gifs/BeaVR_intro_v1-ezgif.com-speed.gif",
+      fallback: "/src/assets/images/BEAVR_figure.png" // BEAVR branded fallback image
     },
     links: {
-      github: "https://github.com/mit-arclab/beavr-teleoperation",
-      demo: "https://demo.arclab.mit.edu/beavr"
+      github: "https://github.com/ARCLab-MIT/BEAVR-Bot",
+      website: "https://arclab-mit.github.io/beavr-landing/",
+      paper: "https://arxiv.org/abs/2508.09606",
+      datasets: "https://huggingface.co/collections/ARCLab-MIT/beavr-datasets",
+      demo: "https://arclab-mit.github.io/beavr-landing/"
     },
     featured: true
   },
@@ -67,25 +71,28 @@ export const projects = [
     featured: true
   },
   {
-    id: "mobile-robotics-app",
-    title: "Mobile Robotics Control App",
-    description: "Cross-platform mobile application for controlling and monitoring robotic systems remotely. Features real-time telemetry, video streaming, and intuitive touch-based control interfaces.",
-    shortDescription: "Mobile app for remote robotics control and monitoring",
-    technologies: ["React Native", "JavaScript", "WebRTC", "ROS Bridge", "Mobile Development"],
+    id: "copfinder-mobile-app",
+    title: "CopFinder - Mobile Donut Shop Locator",
+    description: "Real-time location tracking mobile application that shows the nearest donut shops around you as you move. Features interactive maps, shop ratings, favorite management, Firebase authentication, and Google Maps integration. Built with modern Android development practices including Room database, shared preferences, and dark mode support.",
+    shortDescription: "Real-time donut shop locator with interactive maps and user favorites",
+    technologies: ["Kotlin", "Android", "Firebase", "Google Maps", "Room Database", "OpenStreetMaps", "Glide"],
     category: "personal",
-    status: "active",
-    startDate: "2023-08",
-    team: ["Alejandro Carrasco"],
+    status: "completed",
+    startDate: "2024-01",
+    endDate: "2024-04",
+    team: ["Alejandro Carrasco", "Alvaro Tajuelo Gomez"],
+    funding: "Universidad Politécnica de Madrid - Mobile App Development Course",
     media: {
-      type: "image", // Keep as image for now since no mobile app GIF yet
-      url: "https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=800",
+      type: "image",
+      url: "/src/assets/images/CopFinder_map.jpeg",
       fallback: "https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {
-      github: "https://github.com/acarrasco/mobile-robotics-app",
-      demo: "https://play.google.com/store/apps/details?id=com.carrasco.robotics"
-    }
-  }
+      github: "https://github.com/OhhTuRnz/MAD_2024",
+      demo: "https://github.com/OhhTuRnz/MAD_2024/releases"
+    },
+    featured: false
+  },
 ];
 
 // Helper functions for project management

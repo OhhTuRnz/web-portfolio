@@ -19,6 +19,8 @@ export interface Props {
       github?: string;
       demo?: string;
       paper?: string;
+      website?: string;
+      datasets?: string;
     };
     featured?: boolean;
   };
@@ -46,6 +48,18 @@ const techColors = {
   'Neural Networks': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
   'Autonomous Systems': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
   'Game AI': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+  'VR': 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',
+  'Meta Quest 3': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+  'Real-time Systems': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+  'Computer Vision': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
+  'LeRobot': 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300',
+  'Kotlin': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+  'Android': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+  'Firebase': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+  'Google Maps': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+  'Room Database': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300',
+  'OpenStreetMaps': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
+  'Glide': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
   'default': 'bg-gray-100 text-gray-800 dark:bg-gray-700/30 dark:text-gray-300'
 };
 
@@ -406,6 +420,32 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
           <span class="text-sm">Paper</span>
         </a>
       )}
+      
+      {project.links.website && (
+        <a 
+          href={project.links.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex items-center space-x-2 text-cyan-400 hover:text-cyan-300 transition-colors hover:bg-cyan-900/20 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+          aria-label={`Visit ${project.title} website`}
+        >
+          <i class="fas fa-globe" aria-hidden="true"></i>
+          <span class="text-sm">Website</span>
+        </a>
+      )}
+      
+      {project.links.datasets && (
+        <a 
+          href={project.links.datasets}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex items-center space-x-2 text-orange-400 hover:text-orange-300 transition-colors hover:bg-orange-900/20 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+          aria-label={`Access ${project.title} datasets`}
+        >
+          <i class="fas fa-database" aria-hidden="true"></i>
+          <span class="text-sm">Datasets</span>
+        </a>
+      )}
     </div>
   </div>
 </article>
@@ -530,6 +570,13 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
     box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
   }
   
+  /* Mobile image handling for vertical screenshots */
+  .project-card[data-project*="copfinder"] .relative img {
+    object-fit: cover;
+    object-position: center;
+    transform: scale(1.2); /* Zoom in to show the important middle part */
+  }
+  
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .play-button-container .relative {
@@ -540,6 +587,11 @@ const getYouTubeThumbnail = (url, quality = 'maxresdefault') => {
     .play-button-container svg {
       width: 8px;
       height: 8px;
+    }
+    
+    /* Better mobile image handling for vertical screenshots */
+    .project-card[data-project*="copfinder"] .relative img {
+      transform: scale(1.5); /* More zoom on mobile */
     }
   }
 </style>

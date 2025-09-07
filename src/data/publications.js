@@ -12,6 +12,22 @@ export const scholarProfile = {
 
 export const publications = [
   {
+    id: "pub-2025-003",
+    title: "BEAVR: Bimanual, multi-Embodiment, Accessible, Virtual Reality Teleoperation System for Robots",
+    authors: ["Alejandro Posadas-Nava", "Alejandro Carrasco", "Richard Linares"],
+    venue: "ICCR 2025",
+    year: 2025,
+    type: "conference",
+    citations: 0,
+    doi: "https://arxiv.org/abs/2508.09606",
+    pdfUrl: "https://arxiv.org/pdf/2508.09606",
+    abstract: "BEAVR is an open-source, Bimanual, Multi-embodiment Virtual Reality (VR) Teleoperation system for Robots, designed to unify real-time control, data recording, and policy learning across heterogeneous robotic platforms. BEAVR enables real-time, dexterous teleoperation using commodity VR hardware, supports modular integration with robots ranging from 7-DoF manipulators to full-body humanoids, and records synchronized multi-modal demonstrations directly in the LeRobot dataset schema. Our system features a zero-copy streaming architecture achieving ≤35 ms latency, an asynchronous \"think–act\" control loop for scalable inference, and a flexible network API optimized for real-time, multi-robot operation. We benchmark BEAVR across diverse manipulation tasks and demonstrate its compatibility with leading visuomotor policies such as ACT, DiffusionPolicy, and SmolVLA.",
+    keywords: ["VR Teleoperation", "Robotics", "Bimanual Control", "Real-time Systems", "Policy Learning", "Meta Quest 3"],
+    website: "https://arclab-mit.github.io/beavr-landing/",
+    code: "https://github.com/ARCLab-MIT/BEAVR-Bot",
+    datasets: "https://huggingface.co/collections/ARCLab-MIT/beavr-datasets"
+  },
+  {
     id: "pub-2025-002",
     title: "Large Language Models as Autonomous Spacecraft Operators in Kerbal Space Program",
     authors: ["Alejandro Carrasco", "Victor Rodriguez-Fernandez", "Richard Linares"],
