@@ -14,8 +14,8 @@ export const projects = [
     venue: "ICCR 2025, Kyoto",
     media: {
       type: "gif", // 🎉 Now using the actual BEAVR GIF!
-      url: "/src/assets/gifs/BeaVR_intro_v1-ezgif.com-speed.gif",
-      fallback: "/src/assets/images/BEAVR_figure.png" // BEAVR branded fallback image
+      url: "/assets/gifs/BeaVR_intro_v1-ezgif.com-speed.gif",
+      fallback: "/assets/images/BEAVR_figure.png" // BEAVR branded fallback image
     },
     links: {
       github: "https://github.com/ARCLab-MIT/BEAVR-Bot",
@@ -39,7 +39,7 @@ export const projects = [
     team: ["Alejandro Carrasco"],
     media: {
       type: "gif", // 🎉 Hover-to-play GIF with YouTube thumbnail!
-      url: "/src/assets/gifs/KSPDG-2024-Embed.gif", // Your actual GIF file
+      url: "/assets/gifs/KSPDG-2024-Embed.gif", // Your actual GIF file
       fallback: "https://img.youtube.com/vi/ioy0TIyqa8w/maxresdefault.jpg" // YouTube thumbnail as static image
     },
     links: {
@@ -61,7 +61,7 @@ export const projects = [
     team: ["Alejandro Carrasco"],
     media: {
       type: "gif", // 🎉 Hover-to-play GIF with YouTube thumbnail!
-      url: "/src/assets/gifs/KSPDG 2025 - Demo.gif", // Your actual GIF file (with space in name)
+      url: "/assets/gifs/KSPDG 2025 - Demo.gif", // Your actual GIF file (with space in name)
       fallback: "https://img.youtube.com/vi/UNhrkZW-eJc/maxresdefault.jpg" // YouTube thumbnail as static image
     },
     links: {
@@ -84,7 +84,7 @@ export const projects = [
     funding: "Universidad Politécnica de Madrid - Mobile App Development Course",
     media: {
       type: "image",
-      url: "/src/assets/images/CopFinder_map.jpeg",
+      url: "/assets/images/CopFinder_map.jpeg",
       fallback: "https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=800"
     },
     links: {

@@ -3,7 +3,7 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://carrusk-portfolio.pages.dev', // Carrusk branded domain
+  site: 'https://e1193dbe.carrusk-web-portfolio.pages.dev/', // Update with real URL
   output: 'static',
   integrations: [
     tailwind(),
