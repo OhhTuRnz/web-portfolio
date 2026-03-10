@@ -2,7 +2,7 @@
 import StarParticleBackground from './StarParticleBackground.astro';
 ---
 
-<section id="hero" class="min-h-screen flex items-center justify-center relative overflow-hidden pt-16">
+<section id="hero" class="min-h-screen flex items-center justify-center relative overflow-hidden pt-28 md:pt-16">
   <StarParticleBackground />
   
   <!-- Gradient overlay -->
@@ -12,7 +12,7 @@ import StarParticleBackground from './StarParticleBackground.astro';
     <div class="max-w-7xl mx-auto">
       <!-- Professional links header -->
       <div class="text-center mb-20 hero-header">
-        <div class="flex justify-center items-center space-x-8 mb-12">
+        <div class="flex justify-center items-center gap-3 md:gap-8 mb-12">
           <a href="/assets/CarruskCV.pdf" target="_blank" class="arclab-button-secondary hero-button">
             <i class="fas fa-file-pdf"></i>CV
           </a>
@@ -33,24 +33,21 @@ import StarParticleBackground from './StarParticleBackground.astro';
             <h1 class="hero-title">
               <span class="block hero-name">Alejandro Carrasco</span>
               <span class="block text-xl lg:text-2xl arclab-text font-light mt-6 hero-subtitle">
-                AI Researcher & Robotics Engineer
-              </span>
-              <span class="block text-lg arclab-text-accent font-medium mt-4 hero-affiliation">
-                MIT ARC Lab • Master's Student
+                Agentic AI & Autonomous Robotics
               </span>
             </h1>
           </div>
           
-          <p class="text-lg arclab-text max-w-3xl leading-relaxed hero-description">
+          <p class="text-white max-w-3xl leading-relaxed hero-description" style="font-family: 'Electrolize', monospace; font-size: 1.2rem;">
             Developing intelligent systems at the intersection of artificial intelligence and robotics, with a focus on
-            <span class="arclab-text-accent">Large Language Models</span>,
-            <span class="text-purple-400">autonomous agents</span>, and
-            <span class="text-cyan-400">multi-embodiment robotics</span>
+            <span class="text-green-400">Large Language Models</span>,
+            <span class="text-green-400">autonomous agents</span>, and
+            <span class="text-green-400">multi-embodiment robotics</span>
             for cutting-edge advancements in space exploration and technology.
           </p>
           
           <!-- Social Links -->
-          <div class="flex space-x-6 hero-social">
+          <div class="flex justify-center space-x-6 hero-social">
             <a href="https://github.com/OhhTuRnz" target="_blank" class="social-link">
               <i class="fab fa-github text-lg"></i>
             </a>
@@ -108,6 +105,50 @@ import StarParticleBackground from './StarParticleBackground.astro';
 </section>
 
 <style>
+  /* ── Custom Fonts ── */
+  @font-face {
+    font-family: 'Roinert';
+    src: url('/fonts/RoinertOneRoundSqV2-9MpLy.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Roinert';
+    src: url('/fonts/RoinertOneRoundSqV2Italic-yYAvm.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'PixelatedElegance';
+    src: url('/fonts/PixelatedEleganceRegular-ovawB.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'SimpanseX';
+    src: url('/fonts/SimpanseXItalic-DY533.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Iconoplastic';
+    src: url('/fonts/Iconoplastic-BLlZx.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Iconoplastic';
+    src: url('/fonts/IconoplasticItalic-8Omlg.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+  }
+
   /* Hero Section Animations */
   .hero-header {
     animation: fadeInDown 0.8s ease-out forwards;
@@ -145,18 +186,8 @@ import StarParticleBackground from './StarParticleBackground.astro';
     animation-delay: 0.8s;
   }
   
-  .hero-affiliation {
-    animation: fadeInUp 0.8s ease-out forwards;
-    opacity: 0;
-    transform: translateY(30px);
-    animation-delay: 1s;
-  }
-  
   .hero-description {
-    animation: fadeInUp 0.8s ease-out forwards;
     opacity: 0;
-    transform: translateY(30px);
-    animation-delay: 1.2s;
   }
   
   .hero-social {
@@ -194,36 +225,41 @@ import StarParticleBackground from './StarParticleBackground.astro';
     border-radius: 50%;
     background: conic-gradient(
       from 0deg,
-      rgba(139, 92, 246, 0.8),   /* violet-500 */
-      rgba(168, 85, 247, 0.6),   /* purple-500 */
-      rgba(59, 130, 246, 0.4),   /* blue-500 */
-      rgba(6, 182, 212, 0.3),    /* cyan-500 */
-      rgba(139, 92, 246, 0.8)    /* back to violet */
+      rgba(139, 92, 246, 0.9),
+      rgba(168, 85, 247, 0.7),
+      rgba(59, 130, 246, 0.5),
+      rgba(6, 182, 212, 0.4),
+      rgba(139, 92, 246, 0.9)
     );
-    z-index: 5;
+    /* Mask out the center so only the outer ring is visible above the photo */
+    -webkit-mask: radial-gradient(circle, transparent 97%, black 98%);
+    mask: radial-gradient(circle, transparent 97%, black 98%);
+    z-index: 15;
     opacity: 0;
-    animation: 
+    animation:
       fadeInContour 1s ease-out forwards,
       rotateContour 8s linear infinite;
     animation-delay: 1.2s, 1.2s;
   }
-  
+
   .rotating-contour-secondary.startup-animation {
     position: absolute;
-    inset: -8px;
+    inset: -10px;
     border-radius: 50%;
     background: conic-gradient(
       from 180deg,
-      rgba(139, 92, 246, 0.4),   /* violet-500 */
-      rgba(168, 85, 247, 0.3),   /* purple-500 */
-      rgba(59, 130, 246, 0.2),   /* blue-500 */
-      rgba(6, 182, 212, 0.1),    /* cyan-500 */
-      rgba(139, 92, 246, 0.4)    /* back to violet */
+      rgba(139, 92, 246, 0.5),
+      rgba(168, 85, 247, 0.4),
+      rgba(59, 130, 246, 0.3),
+      rgba(6, 182, 212, 0.2),
+      rgba(139, 92, 246, 0.5)
     );
-    z-index: 4;
+    -webkit-mask: radial-gradient(circle, transparent 94%, black 95%);
+    mask: radial-gradient(circle, transparent 94%, black 95%);
+    z-index: 14;
     opacity: 0;
-    filter: blur(2px);
-    animation: 
+    filter: blur(3px);
+    animation:
       fadeInContour 1s ease-out forwards,
       rotateContour 12s linear infinite reverse;
     animation-delay: 1.4s, 1.4s;
@@ -243,30 +279,24 @@ import StarParticleBackground from './StarParticleBackground.astro';
     opacity: 0;
     filter: blur(8px);
     transition: all 0.4s ease;
-    box-shadow: 
-      0 0 20px rgba(139, 92, 246, 0.3),
-      0 0 40px rgba(168, 85, 247, 0.2),
-      0 0 60px rgba(139, 92, 246, 0.1);
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.25);
   }
-  
+
   /* Enhanced hover effects */
   .profile-image-wrapper:hover .hover-glow-effect {
     opacity: 1;
     inset: -16px;
     filter: blur(12px);
-    box-shadow: 
-      0 0 30px rgba(139, 92, 246, 0.5),
-      0 0 60px rgba(168, 85, 247, 0.3),
-      0 0 90px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 35px rgba(139, 92, 246, 0.45);
   }
   
   .profile-image-wrapper:hover .rotating-contour.startup-animation {
-    animation-duration: 4s;
+    animation-duration: 4s, 4s;
     opacity: 1;
   }
-  
+
   .profile-image-wrapper:hover .rotating-contour-secondary.startup-animation {
-    animation-duration: 6s;
+    animation-duration: 6s, 6s;
     opacity: 0.8;
   }
   
@@ -319,9 +349,10 @@ import StarParticleBackground from './StarParticleBackground.astro';
     justify-content: center;
     color: var(--arclab-gray-300);
     transition: all 0.3s ease;
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
   }
-  
+
   .social-link:hover {
     color: white;
     background: rgba(139, 92, 246, 0.2);
@@ -483,14 +514,9 @@ import StarParticleBackground from './StarParticleBackground.astro';
   
   @media (max-width: 768px) {
     .hero-header {
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
     }
-    
-    .hero-header .flex {
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    
+
     .profile-image {
       width: 240px !important;
       height: 240px !important;
@@ -506,11 +532,21 @@ import StarParticleBackground from './StarParticleBackground.astro';
   }
   
   @media (max-width: 480px) {
+    .hero-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-header .flex a {
+      padding: 7px 11px;
+      font-size: 0.75rem;
+      gap: 6px;
+    }
+
     .profile-image {
       width: 200px !important;
       height: 200px !important;
     }
-    
+
     .social-link {
       width: 44px;
       height: 44px;
@@ -560,6 +596,80 @@ import StarParticleBackground from './StarParticleBackground.astro';
       }
     }
     
+    // Diffusion-style glitch reveal — operates on text nodes only so span colors stay visible
+    const descEl = document.querySelector('.hero-description') as HTMLElement | null;
+    if (descEl) {
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reducedMotion) {
+        descEl.style.opacity = '1';
+      } else {
+        // Collect all text nodes inside the paragraph
+        const walker = document.createTreeWalker(descEl, NodeFilter.SHOW_TEXT);
+        const textNodes: Text[] = [];
+        let n: Text | null;
+        while ((n = walker.nextNode() as Text | null)) textNodes.push(n);
+
+        // Snapshot original text per node
+        const origTexts = textNodes.map(tn => tn.textContent || '');
+
+        // Build flat char map: {nodeIdx, charIdx} for every non-whitespace char
+        type CharEntry = { nodeIdx: number; charIdx: number };
+        const charMap: CharEntry[] = [];
+        const nodeCharLookup: Record<number, Record<number, number>> = {};
+        origTexts.forEach((text, nodeIdx) => {
+          nodeCharLookup[nodeIdx] = {};
+          text.split('').forEach((char, charIdx) => {
+            if (char.trim().length > 0) {
+              nodeCharLookup[nodeIdx][charIdx] = charMap.length;
+              charMap.push({ nodeIdx, charIdx });
+            }
+          });
+        });
+
+        // Shuffle for diffusion schedule
+        const order = charMap.map((_, i) => i);
+        for (let k = order.length - 1; k > 0; k--) {
+          const j = Math.floor(Math.random() * (k + 1));
+          [order[k], order[j]] = [order[j], order[k]];
+        }
+
+        const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*<>[]{}|/\\';
+        const locked = new Set<number>();
+        let tick = 0;
+        const lockPerTick = Math.max(1, Math.floor(order.length / 60));
+
+        setTimeout(() => {
+          descEl.style.opacity = '1';
+
+          const interval = setInterval(() => {
+            // Lock next batch of positions
+            const start = tick * lockPerTick;
+            for (let i = start; i < Math.min(start + lockPerTick, order.length); i++) {
+              locked.add(order[i]);
+            }
+            tick++;
+
+            // Update each text node independently — spans are untouched
+            textNodes.forEach((tn, nodeIdx) => {
+              const rebuilt = origTexts[nodeIdx].split('').map((char, charIdx) => {
+                if (char.trim().length === 0) return char;
+                const flatIdx = nodeCharLookup[nodeIdx][charIdx];
+                return locked.has(flatIdx) ? char : glyphs[Math.floor(Math.random() * glyphs.length)];
+              }).join('');
+              tn.textContent = rebuilt;
+            });
+
+            if (locked.size >= order.length) {
+              clearInterval(interval);
+              // Restore exact originals
+              textNodes.forEach((tn, i) => { tn.textContent = origTexts[i]; });
+            }
+          }, 40);
+        }, 1200);
+      }
+    }
+
     // Enhanced scroll behavior for all anchor links
     const scrollLinks = document.querySelectorAll('a[href^="#"]');
     scrollLinks.forEach(link => {

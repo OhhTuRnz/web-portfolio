@@ -1,251 +1,372 @@
 ---
-import { publications, getPublicationsByYear } from '../data/publications.js';
+import { publications, scholarProfile } from '../data/publications.js';
 
-const publicationsByYear = getPublicationsByYear();
-const years = Object.keys(publicationsByYear).sort((a, b) => b - a);
+// Sort by citations descending, then group by year (newest first)
+const sorted = [...publications].sort((a, b) => b.citations - a.citations);
 
-const typeLabels = {
-  'journal': 'Journal Article',
-  'conference': 'Conference Paper',
-  'workshop': 'Workshop Paper',
-  'preprint': 'Preprint'
+const byYear: Record<number, typeof publications> = {};
+for (const pub of sorted) {
+  if (!byYear[pub.year]) byYear[pub.year] = [];
+  byYear[pub.year].push(pub);
+}
+const years = Object.keys(byYear).map(Number).sort((a, b) => b - a);
+
+const typeLabel: Record<string, string> = {
+  journal: 'Journal',
+  conference: 'Conference',
+  workshop: 'Workshop',
+  preprint: 'Preprint',
 };
 
-const typeColors = {
-  'journal': 'bg-blue-600',
-  'conference': 'bg-purple-600',
-  'workshop': 'bg-green-600',
-  'preprint': 'bg-orange-600'
+const typeColor: Record<string, string> = {
+  journal: '#2563eb',
+  conference: '#7c3aed',
+  workshop: '#16a34a',
+  preprint: '#ea580c',
+};
+
+// Title link priority:
+//  1. Published journal DOI (doi.org)
+//  2. Specific Scholar citation page (has view_op=view_citation)
+//  3. arXiv abstract page (fallback)
+//  4. Generic Scholar profile (last resort)
+const pubLink = (pub: any) => {
+  if (pub.scholar_url?.includes('view_op=view_citation')) return pub.scholar_url;
+  if (pub.doi?.includes('doi.org')) return pub.doi;
+  return pub.scholar_url || null;
 };
 ---
 
 <section id="publications" class="arclab-section">
   <div class="arclab-container">
-    <div class="text-center mb-16 arclab-fade-in">
+
+    <!-- Header -->
+    <div class="text-center mb-10 arclab-fade-in">
       <h2 class="arclab-heading-2 mb-4">Publications</h2>
-      <p class="arclab-text text-lg max-w-3xl mx-auto">
+      <p class="arclab-text text-lg max-w-2xl mx-auto">
         Research publications and academic contributions
       </p>
     </div>
-    
-    <!-- Filter buttons -->
-    <div class="flex flex-wrap justify-center gap-4 mb-12 arclab-fade-in" style="animation-delay: 0.2s;">
-      <button class="filter-btn active" data-filter="all">
-        <i class="fas fa-th-large mr-2"></i>
-        All Publications
-      </button>
-      <button class="filter-btn" data-filter="journal">
-        <i class="fas fa-book mr-2"></i>
-        Journal Articles
-      </button>
-      <button class="filter-btn" data-filter="conference">
-        <i class="fas fa-users mr-2"></i>
-        Conference Papers
-      </button>
-      <button class="filter-btn" data-filter="featured">
-        <i class="fas fa-star mr-2"></i>
-        Featured
-      </button>
+
+    <!-- Scholar stats -->
+    <div class="stats-row arclab-fade-in" style="animation-delay: 0.1s;">
+      <div class="stat">
+        <span class="stat-num">{scholarProfile.totalCitations}</span>
+        <span class="stat-lbl">Citations</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <span class="stat-num">{scholarProfile.hIndex}</span>
+        <span class="stat-lbl">h-index</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <span class="stat-num">{scholarProfile.i10Index}</span>
+        <span class="stat-lbl">i10-index</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <span class="stat-num">{publications.length}</span>
+        <span class="stat-lbl">Publications</span>
+      </div>
     </div>
-    
+
     <!-- Publications by year -->
-    <div class="space-y-12">
-      {years.map(year => (
-        <div class="year-section">
-          <h3 class="text-xl font-semibold text-white mb-6 border-b border-gray-700 pb-2">{year}</h3>
-          <div class="space-y-6">
-            {publicationsByYear[year].map(pub => (
-              <article class={`publication-item ${pub.type} ${pub.featured ? 'featured' : ''} arclab-card publication-entry`}>
-                <div class="flex items-start justify-between mb-4">
-                  <div class="flex-1">
-                    <div class="flex items-center gap-3 mb-2">
-                      <span class={`px-3 py-1 text-xs font-medium text-white rounded-full ${typeColors[pub.type]}`}>
-                        {typeLabels[pub.type]}
-                      </span>
-                      {pub.featured && (
-                        <span class="px-2 py-1 text-xs font-medium text-yellow-300 bg-yellow-600/20 rounded-full border border-yellow-500/30">
-                          Featured
-                        </span>
-                      )}
-                      <span class="citation-count">{pub.citations} citations</span>
-                    </div>
-                    
-                    <h4 class="text-lg font-medium text-white mb-2 leading-tight">
-                      {pub.doi ? (
-                        <a href={pub.doi} target="_blank" class="hover:text-blue-400 transition-colors hover:underline">
-                          {pub.title}
-                        </a>
-                      ) : (
-                        pub.title
-                      )}
-                    </h4>
-                    
-                    <p class="arclab-text text-sm mb-2">
-                      {pub.authors.join(', ')}
-                    </p>
-                    
-                    <p class="arclab-text-accent text-sm font-medium mb-3">
-                      {pub.venue} • {pub.year}
-                    </p>
-                    
-                    <p class="arclab-text text-sm leading-relaxed mb-4">
-                      {pub.abstract.length > 250 ? pub.abstract.slice(0, 250) + '...' : pub.abstract}
-                    </p>
-                    
-                    <!-- Keywords -->
-                    <div class="flex flex-wrap gap-2 mb-4">
-                      {pub.keywords.map(keyword => (
-                        <span class="venue-tag">{keyword}</span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Action buttons -->
-                <div class="flex flex-wrap gap-3">
-                  {pub.doi && (
-                    <a href={pub.doi} target="_blank" class="arclab-button text-sm">
-                      <i class="fas fa-external-link-alt"></i>
-                      DOI
-                    </a>
-                  )}
-                  {pub.pdfUrl && (
-                    <a href={pub.pdfUrl} target="_blank" class="arclab-button-secondary text-sm">
-                      <i class="fas fa-file-pdf"></i>
-                      PDF
-                    </a>
-                  )}
-                  {pub.projectPage && (
-                    <a href={pub.projectPage} class="arclab-button-secondary text-sm">
-                      <i class="fas fa-project-diagram"></i>
-                      Project
-                    </a>
+    <div class="pub-list arclab-fade-in" style="animation-delay: 0.2s;">
+      {years.map((year) => {
+        const pubs = byYear[year];
+        const top  = pubs[0];
+        const rest = pubs.slice(1);
+        return (
+          <div class="year-section">
+
+            <!-- Year divider -->
+            <div class="year-divider">
+              <span class="year-label">{year}</span>
+              <div class="year-rule"></div>
+            </div>
+
+            <!-- Top pub — always visible -->
+            <div class="pub-card">
+              <div class="pub-body">
+                <div class="pub-meta">
+                  <span class="type-badge" style={`background:${typeColor[top.type] ?? '#475569'}`}>
+                    {typeLabel[top.type] ?? top.type}
+                  </span>
+                  {top.citations > 0 && (
+                    <span class="cite-badge">
+                      {top.citations} {top.citations === 1 ? 'citation' : 'citations'}
+                    </span>
                   )}
                 </div>
-              </article>
-            ))}
+                <h4 class="pub-title">
+                  {pubLink(top) ? (
+                    <a href={pubLink(top)} target="_blank" rel="noopener noreferrer">
+                      {top.title}
+                    </a>
+                  ) : top.title}
+                </h4>
+                <p class="pub-authors">{top.authors.join(', ')}</p>
+                <p class="pub-venue">{top.venue}</p>
+                {top.abstract && (
+                  <p class="pub-abstract">
+                    {top.abstract.length > 220 ? top.abstract.slice(0, 220) + '…' : top.abstract}
+                  </p>
+                )}
+              </div>
+              <div class="pub-links">
+                {top.pdfUrl && (
+                  <a href={top.pdfUrl} target="_blank" rel="noopener noreferrer" class="pub-link">PDF</a>
+                )}
+              </div>
+            </div>
+
+            <!-- Extra pubs — collapsed -->
+            {rest.length > 0 && (
+              <details class="more-block">
+                <summary class="more-summary">
+                  <svg class="more-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                  </svg>
+                  {rest.length} more {rest.length === 1 ? 'publication' : 'publications'}
+                </summary>
+                <div class="more-inner">
+                  {rest.map(pub => (
+                    <div class="pub-card">
+                      <div class="pub-body">
+                        <div class="pub-meta">
+                          <span class="type-badge" style={`background:${typeColor[pub.type] ?? '#475569'}`}>
+                            {typeLabel[pub.type] ?? pub.type}
+                          </span>
+                          {pub.citations > 0 && (
+                            <span class="cite-badge">
+                              {pub.citations} {pub.citations === 1 ? 'citation' : 'citations'}
+                            </span>
+                          )}
+                        </div>
+                        <h4 class="pub-title">
+                          {pubLink(pub) ? (
+                            <a href={pubLink(pub)} target="_blank" rel="noopener noreferrer">
+                              {pub.title}
+                            </a>
+                          ) : pub.title}
+                        </h4>
+                        <p class="pub-authors">{pub.authors.join(', ')}</p>
+                        <p class="pub-venue">{pub.venue}</p>
+                        {pub.abstract && (
+                          <p class="pub-abstract">
+                            {pub.abstract.length > 220 ? pub.abstract.slice(0, 220) + '…' : pub.abstract}
+                          </p>
+                        )}
+                      </div>
+                      <div class="pub-links">
+                        {pub.pdfUrl && (
+                          <a href={pub.pdfUrl} target="_blank" rel="noopener noreferrer" class="pub-link">PDF</a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            )}
+
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
+
+    <!-- Scholar link -->
+    <div class="text-center mt-10">
+      <a
+        href={scholarProfile.profileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="arclab-button-secondary text-sm inline-flex items-center gap-2"
+      >
+        <i class="fas fa-graduation-cap"></i>
+        View full profile on Google Scholar
+      </a>
+    </div>
+
   </div>
 </section>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const publications = document.querySelectorAll('.publication-item');
-    
-    filterButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        const filter = button.getAttribute('data-filter');
-        
-        // Update active button
-        filterButtons.forEach(btn => {
-          btn.classList.remove('active');
-        });
-        button.classList.add('active');
-        
-        // Filter publications
-        publications.forEach(pub => {
-          if (filter === 'all' || pub.classList.contains(filter)) {
-            pub.style.display = 'block';
-          } else {
-            pub.style.display = 'none';
-          }
-        });
-      });
-    });
-  });
-</script>
-
 <style>
-  /* Filter button styling matching ProjectShowcase */
-  .filter-btn {
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    background: rgba(15, 23, 42, 0.8);
-    color: var(--arclab-gray-300);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(12px);
+  /* ── Stats ── */
+  .stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+  .stat { text-align: center; }
+  .stat-num { display: block; font-size: 2rem; font-weight: 700; color: #fff; line-height: 1; }
+  .stat-lbl { display: block; font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem; }
+  .stat-sep { width: 1px; height: 2.5rem; background: rgba(255,255,255,0.1); }
+  @media (max-width: 480px) {
+    .stat-sep { display: none; }
+    .stats-row { gap: 1.5rem; }
+  }
+
+  /* ── Year sections ── */
+  .pub-list { display: flex; flex-direction: column; gap: 2rem; }
+
+  .year-section { display: flex; flex-direction: column; gap: 0.75rem; }
+
+  .year-divider {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 0.25rem;
   }
-  
-  .filter-btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(168, 85, 247, 0.1));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  .filter-btn.active {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(168, 85, 247, 0.2));
-    color: white;
-    border-color: rgba(59, 130, 246, 0.5);
-    box-shadow: 
-      0 4px 12px rgba(59, 130, 246, 0.2),
-      0 0 0 1px rgba(59, 130, 246, 0.1);
-  }
-  
-  .filter-btn.active::before {
-    opacity: 1;
-  }
-  
-  .filter-btn:hover {
-    background: rgba(59, 130, 246, 0.1);
-    color: white;
-    transform: translateY(-2px);
-    border-color: rgba(59, 130, 246, 0.4);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
-  }
-  
-  .filter-btn.active:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-      0 8px 25px rgba(59, 130, 246, 0.3),
-      0 0 0 1px rgba(59, 130, 246, 0.2);
-  }
-  
-  .filter-btn i {
+  .year-label {
     font-size: 0.8rem;
-    opacity: 0.8;
+    font-weight: 600;
+    color: #64748b;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    flex-shrink: 0;
   }
-  
-  .filter-btn.active i {
-    opacity: 1;
+  .year-rule {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.07);
   }
-  
-  /* Responsive improvements */
-  @media (max-width: 768px) {
-    .filter-btn {
-      padding: 10px 18px;
-      font-size: 0.8rem;
-      border-radius: 10px;
-    }
-    
-    .filter-btn i {
-      margin-right: 0.4rem;
-    }
+
+  /* ── Publication card ── */
+  .pub-card {
+    display: flex;
+    gap: 1.25rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.02);
+    align-items: flex-start;
+    transition: background 0.15s ease, border-color 0.15s ease;
   }
-  
-  @media (max-width: 480px) {
-    .flex {
-      gap: 0.5rem;
-    }
-    
-    .filter-btn {
-      padding: 8px 14px;
-      font-size: 0.75rem;
-    }
+  .pub-card:hover {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.11);
   }
-</style> 
+
+  .pub-body { flex: 1; min-width: 0; }
+
+  .pub-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .type-badge {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .cite-badge {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    background: rgba(255,255,255,0.05);
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .pub-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #e2e8f0;
+    line-height: 1.45;
+    margin-bottom: 0.3rem;
+  }
+  .pub-title a { color: inherit; text-decoration: none; transition: color 0.15s; }
+  .pub-title a:hover { color: #60a5fa; }
+
+  .pub-authors { font-size: 0.77rem; color: #64748b; margin-bottom: 0.15rem; }
+  .pub-venue   { font-size: 0.77rem; color: #7c9bc0; font-style: italic; }
+
+  .pub-abstract {
+    font-size: 0.77rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin-top: 0.45rem;
+  }
+
+  /* ── Links ── */
+  .pub-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+
+  .pub-link {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    text-align: center;
+    letter-spacing: 0.04em;
+    transition: all 0.15s ease;
+    background: #2563eb;
+    color: #fff;
+    border: 1px solid #2563eb;
+  }
+  .pub-link:hover { background: #1d4ed8; }
+
+  .pub-link-ghost {
+    background: transparent;
+    color: #94a3b8;
+    border-color: rgba(255,255,255,0.12);
+  }
+  .pub-link-ghost:hover { background: rgba(255,255,255,0.06); color: #e2e8f0; }
+
+  /* ── "N more" expander ── */
+  .more-block { margin-top: 0.25rem; }
+
+  .more-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: #3b82f6;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+  .more-summary::-webkit-details-marker { display: none; }
+  .more-summary:hover { background: rgba(59,130,246,0.08); }
+
+  .more-chevron {
+    width: 0.9rem;
+    height: 0.9rem;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+  .more-block[open] .more-chevron { transform: rotate(180deg); }
+
+  .more-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    .pub-card { flex-direction: column; gap: 0.75rem; }
+    .pub-links { flex-direction: row; }
+  }
+</style>

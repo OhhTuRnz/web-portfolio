@@ -1,23 +1,35 @@
 ---
 import { awards, getAwardsByYear } from '../data/awards.js';
-import DynamicLinkPreview from './DynamicLinkPreview.astro';
 
 const awardsByYear = getAwardsByYear();
-const years = Object.keys(awardsByYear).sort((a, b) => b - a);
+const years = Object.keys(awardsByYear).sort((a, b) => Number(b) - Number(a));
 
-const categoryColors = {
-  'research': 'from-yellow-500 to-orange-500',
-  'fellowship': 'from-blue-500 to-purple-500',
-  'funding': 'from-green-500 to-teal-500',
-  'academic': 'from-indigo-500 to-purple-500'
+const categoryGradient = {
+  research:   'from-yellow-500 to-orange-500',
+  fellowship: 'from-blue-500 to-purple-500',
+  funding:    'from-green-500 to-teal-500',
+  academic:   'from-indigo-500 to-purple-500'
 };
 
-const hardcodedImages = {
-  'award-2025-001': 'https://www.mit.edu/files/images/202505/MIT-This-is-MIT-SLsub_0_0.jpg',
-  'award-2025-002': 'https://raw.githubusercontent.com/mit-ll/spacegym-kspdg/refs/heads/main/docs/20230309_logo.png',
-  'award-2024-003': 'https://raw.githubusercontent.com/mit-ll/spacegym-kspdg/refs/heads/main/docs/20230309_logo.png',
-  'award-2024-001': 'https://www.upm.es/gsfs/SFS24014',
-  'award-2024-002': 'https://upload.wikimedia.org/wikipedia/commons/f/f2/Escuela_T%C3%A9cnica_Superior_de_Ingenier%C3%ADa_de_Sistemas_Inform%C3%A1ticos_%28Universidad_Polit%C3%A9cnica_de_Madrid%29.JPG'
+const categoryBadge = {
+  research:   'bg-yellow-500/15 text-yellow-300 border border-yellow-500/30',
+  fellowship: 'bg-blue-500/15 text-blue-300 border border-blue-500/30',
+  funding:    'bg-green-500/15 text-green-300 border border-green-500/30',
+  academic:   'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30'
+};
+
+const dotColor = {
+  research:   'bg-yellow-500',
+  fellowship: 'bg-blue-500',
+  funding:    'bg-green-500',
+  academic:   'bg-indigo-500'
+};
+
+const dotRing = {
+  research:   'bg-yellow-500/40',
+  fellowship: 'bg-blue-500/40',
+  funding:    'bg-green-500/40',
+  academic:   'bg-indigo-500/40'
 };
 ---
 
@@ -26,61 +38,87 @@ const hardcodedImages = {
     <div class="text-center mb-16 arclab-fade-in">
       <h2 class="arclab-heading-2">Awards & Recognition</h2>
     </div>
-    
+
     <!-- Timeline -->
     <div class="relative max-w-4xl mx-auto">
-      <!-- Timeline line -->
-      <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-blue-500 via-purple-500 to-cyan-500 rounded-full"></div>
-      
-      <div class="space-y-12">
-        {years.map((year, yearIndex) => (
+      <!-- Vertical line -->
+      <div class="timeline-line absolute left-1/2 -translate-x-1/2 w-0.5 h-full bg-gradient-to-b from-blue-500 via-purple-500 to-cyan-500 rounded-full z-0"></div>
+
+      <div class="space-y-10">
+        {years.map((year) => (
           <div class="year-group">
-            <h3 class="text-center text-2xl font-bold text-white mb-8 relative">
-              <span class="bg-slate-900 px-4">{year}</span>
-            </h3>
-            
+            <!-- Year header with flanking rules -->
+            <div class="flex items-center justify-center mb-8 relative z-20">
+              <div class="flex-1 h-px bg-gradient-to-r from-transparent to-white/10"></div>
+              <span class="mx-4 px-5 py-1.5 rounded-full bg-slate-800 border border-white/10 text-white font-bold text-lg tracking-wide shadow-lg">
+                {year}
+              </span>
+              <div class="flex-1 h-px bg-gradient-to-l from-transparent to-white/10"></div>
+            </div>
+
             {awardsByYear[year].map((award, index) => (
-              <div class={`award-item flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'} arclab-slide-up`} style={`animation-delay: ${(yearIndex * awardsByYear[year].length + index) * 0.2}s;`}>
-                <!-- Content -->
-                <div class={`w-5/12 ${index % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
-                  <DynamicLinkPreview 
-                    url={award.link}
-                    fallbackTitle={award.title}
-                    fallbackDescription={`Award from ${award.organization} in ${award.year}`}
-                    hardcodedImage={hardcodedImages[award.id]}
+              <div class={`award-item flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'} mb-8`}>
+
+                <!-- Card -->
+                <div class={`w-5/12 ${index % 2 === 0 ? 'pr-10' : 'pl-10'}`}>
+                  <a
+                    href={award.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="award-card group block rounded-2xl p-5 border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-300 hover:border-blue-500/40 hover:shadow-[0_0_28px_rgba(59,130,246,0.1)]"
                   >
-                    <div class="block arclab-card hover:scale-105 transition-all duration-300 group cursor-pointer">
-                      <div class={`flex items-center space-x-3 mb-3 ${index % 2 === 0 ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                        <div class={`w-12 h-12 bg-gradient-to-br ${categoryColors[award.category]} rounded-full flex items-center justify-center text-white text-xl shadow-lg`}>
-                          {award.icon}
-                        </div>
-                        <div>
-                          <h4 class="text-lg font-medium text-white group-hover:arclab-text-accent transition-colors">
-                            {award.title}
-                          </h4>
-                          <p class="text-sm arclab-text">{award.organization}</p>
-                        </div>
+                    <div class="flex items-start gap-4">
+                      <!-- Icon circle -->
+                      <div class={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-lg bg-gradient-to-br ${categoryGradient[award.category] || categoryGradient.academic}`}>
+                        {award.icon}
                       </div>
-                      
-                      <!-- External link indicator -->
-                      <div class="mt-3 flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span class="text-xs arclab-text-accent">View Details →</span>
+
+                      <div class="flex-1 min-w-0">
+                        <!-- Category badge -->
+                        <span class={`inline-block mb-2 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${categoryBadge[award.category] || categoryBadge.academic}`}>
+                          {award.category}
+                        </span>
+                        <h4 class="text-base font-semibold text-white leading-snug mb-1 group-hover:text-blue-300 transition-colors">
+                          {award.title}
+                        </h4>
+                        <p class="text-sm text-slate-400">{award.organization}</p>
                       </div>
+
+                      <!-- External link arrow — always visible -->
+                      <svg
+                        class="w-4 h-4 text-slate-600 group-hover:text-blue-400 flex-shrink-0 transition-colors mt-1"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      >
+                        <line x1="7" y1="17" x2="17" y2="7"></line>
+                        <polyline points="7 7 17 7 17 17"></polyline>
+                      </svg>
                     </div>
-                  </DynamicLinkPreview>
+                  </a>
                 </div>
-                
+
                 <!-- Timeline dot -->
                 <div class="w-2/12 flex justify-center">
-                  <div class="w-6 h-6 bg-white rounded-full border-4 border-slate-800 shadow-lg z-10 relative">
-                    <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap">
-                      {award.year}
-                    </div>
+                  <div class="relative flex items-center justify-center w-10 h-10 z-10">
+                    <div class={`absolute inset-0 rounded-full animate-ping opacity-20 ${dotRing[award.category] || dotRing.academic}`}></div>
+                    <div class={`w-5 h-5 rounded-full border-4 border-slate-900 shadow-lg ${dotColor[award.category] || dotColor.academic}`}></div>
                   </div>
                 </div>
-                
-                <!-- Spacer -->
-                <div class="w-5/12"></div>
+
+                <!-- Spacer / hover image preview (opposite side) -->
+                <div class="w-5/12 flex items-center justify-center">
+                  {award.image && (
+                    <div class="award-preview-wrap">
+                      <img
+                        src={award.image}
+                        alt={award.title}
+                        class="award-preview-img"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -90,34 +128,95 @@ const hardcodedImages = {
   </div>
 </section>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          (e.target as HTMLElement).classList.add('award-visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.award-item').forEach(el => observer.observe(el));
+  });
+</script>
+
 <style>
   .award-item {
-    animation: fadeInUp 0.6s ease-out forwards;
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
   }
-  
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+
+  .award-item.award-visible {
+    opacity: 1;
+    transform: none;
   }
-  
+
+  .timeline-line {
+    pointer-events: none;
+  }
+
   @media (max-width: 768px) {
+    .timeline-line {
+      display: none;
+    }
+
     .award-item {
       flex-direction: column !important;
+      align-items: stretch;
+      position: relative;
+      z-index: 1;
     }
-    
+
     .award-item > div:first-child {
       width: 100% !important;
-      text-align: center !important;
-      padding: 0 !important;
-      margin-bottom: 1rem;
+      padding-right: 0 !important;
+      padding-left: 0 !important;
     }
-    
+
+    /* Hide dot column and spacer on mobile */
+    .award-item > div:nth-child(2),
     .award-item > div:last-child {
       display: none;
+    }
+  }
+
+  /* ── Award hover image preview ── */
+  .award-preview-wrap {
+    width: 100%;
+    max-width: 260px;
+    border-radius: 12px;
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    pointer-events: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .award-preview-img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+
+  .award-item:has(.award-card:hover) .award-preview-wrap {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .award-item {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    [class*="animate-ping"] {
+      animation: none;
     }
   }
 </style>

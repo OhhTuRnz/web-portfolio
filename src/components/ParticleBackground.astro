@@ -9,34 +9,91 @@
       this.canvas = document.createElement('canvas');
       this.ctx = this.canvas.getContext('2d');
       this.particles = [];
-      this.mouse = { x: 0, y: 0 };
-      
+      this.mouse = { x: -9999, y: -9999 };
+      this.animationId = null;
+      this._onResize = () => this.resize();
+      this._onMouseMove = (e) => { this.mouse.x = e.clientX; this.mouse.y = e.clientY; };
+      this._lastFrame = 0;
+
       this.init();
     }
-    
+
+    hasGPU() {
+      try {
+        const c = document.createElement('canvas');
+        return !!(c.getContext('webgl') || c.getContext('experimental-webgl'));
+      } catch { return false; }
+    }
+
+    // CSS-only fallback: pulsing static dots, zero rAF
+    renderStatic(container) {
+      if (!document.getElementById('static-particle-style')) {
+        const style = document.createElement('style');
+        style.id = 'static-particle-style';
+        style.textContent = `
+          @keyframes dotPulse {
+            0%, 100% { opacity: 0.05; transform: scale(0.85); }
+            50% { opacity: var(--max-op, 0.35); transform: scale(1); }
+          }
+          .static-dot {
+            position: absolute; border-radius: 50%;
+            animation: dotPulse var(--dur) ease-in-out infinite var(--delay);
+          }
+        `;
+        document.head.appendChild(style);
+      }
+      container.style.cssText = 'position:fixed;inset:0;overflow:hidden;pointer-events:none;';
+      for (let i = 0; i < 30; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'static-dot';
+        const size = 1 + Math.random() * 2.5;
+        const hue  = 200 + Math.random() * 60;
+        dot.style.cssText = `
+          left:${Math.random()*100}%; top:${Math.random()*100}%;
+          width:${size}px; height:${size}px;
+          background:hsl(${hue},70%,65%);
+          --dur:${3 + Math.random()*4}s;
+          --delay:${-(Math.random()*5)}s;
+          --max-op:${0.2 + Math.random()*0.3};
+        `;
+        container.appendChild(dot);
+      }
+    }
+
     init() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
       const container = document.getElementById('particle-canvas');
+      if (!container) return;
+
+      if (!this.hasGPU()) {
+        this.renderStatic(container);
+        return;
+      }
+
       container.appendChild(this.canvas);
-      
       this.resize();
       this.createParticles();
-      this.animate();
-      
-      window.addEventListener('resize', () => this.resize());
-      window.addEventListener('mousemove', (e) => {
-        this.mouse.x = e.clientX;
-        this.mouse.y = e.clientY;
-      });
+      this.animationId = requestAnimationFrame((ts) => this.animate(ts));
+
+      window.addEventListener('resize', this._onResize);
+      window.addEventListener('mousemove', this._onMouseMove, { passive: true });
     }
-    
+
     resize() {
       this.canvas.width = window.innerWidth;
       this.canvas.height = window.innerHeight;
+      this.particles = [];
+      this.createParticles();
     }
-    
+
     createParticles() {
-      const particleCount = Math.floor((this.canvas.width * this.canvas.height) / 12000);
-      
+      const MAX_PARTICLES = 60;
+      const particleCount = Math.min(
+        Math.floor((this.canvas.width * this.canvas.height) / 12000),
+        MAX_PARTICLES
+      );
+
       for (let i = 0; i < particleCount; i++) {
         this.particles.push({
           x: Math.random() * this.canvas.width,
@@ -45,100 +102,66 @@
           vy: (Math.random() - 0.5) * 0.8,
           size: Math.random() * 3 + 1,
           opacity: Math.random() * 0.8 + 0.2,
-          hue: Math.random() * 60 + 200, // Blue to cyan range
+          hue: Math.random() * 60 + 200,
           saturation: 70 + Math.random() * 30,
           lightness: 50 + Math.random() * 30,
           pulseSpeed: 0.02 + Math.random() * 0.03
         });
       }
     }
-    
-    animate() {
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      
-      const time = Date.now() * 0.001;
-      
-      // Update and draw particles
-      this.particles.forEach((particle, i) => {
-        // Update position
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        
-        // Bounce off edges
-        if (particle.x < 0 || particle.x > this.canvas.width) particle.vx *= -1;
-        if (particle.y < 0 || particle.y > this.canvas.height) particle.vy *= -1;
-        
-        // Mouse interaction
-        const dx = this.mouse.x - particle.x;
-        const dy = this.mouse.y - particle.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance < 150) {
-          const force = (150 - distance) / 150;
-          particle.x -= dx * force * 0.02;
-          particle.y -= dy * force * 0.02;
+
+    animate(ts = 0) {
+      this.animationId = requestAnimationFrame((t) => this.animate(t));
+
+      if (ts - this._lastFrame < 16.67) return;
+      this._lastFrame = ts;
+
+      const ctx = this.ctx;
+      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      const time = ts * 0.001;
+
+      this.particles.forEach((p, i) => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > this.canvas.width)  p.vx *= -1;
+        if (p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
+
+        const dx = this.mouse.x - p.x;
+        const dy = this.mouse.y - p.y;
+        const dist2 = dx * dx + dy * dy;
+        if (dist2 < 22500) {
+          const force = (150 - Math.sqrt(dist2)) / 150;
+          p.x -= dx * force * 0.02;
+          p.y -= dy * force * 0.02;
         }
-        
-        // Pulsing effect
-        const pulse = Math.sin(time * particle.pulseSpeed + i) * 0.3 + 0.7;
-        const currentOpacity = particle.opacity * pulse;
-        
-        // Create gradient for particle
-        const gradient = this.ctx.createRadialGradient(
-          particle.x, particle.y, 0,
-          particle.x, particle.y, particle.size * 2
-        );
-        
-        const color = `hsl(${particle.hue}, ${particle.saturation}%, ${particle.lightness}%)`;
-        gradient.addColorStop(0, color);
-        gradient.addColorStop(1, 'transparent');
-        
-        // Draw particle
-        this.ctx.beginPath();
-        this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        this.ctx.fillStyle = gradient;
-        this.ctx.globalAlpha = currentOpacity;
-        this.ctx.fill();
-        
-        // Draw connections
-        for (let j = i + 1; j < this.particles.length; j++) {
-          const other = this.particles[j];
-          const dx = particle.x - other.x;
-          const dy = particle.y - other.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          
-          if (distance < 120) {
-            const connectionOpacity = (1 - distance / 120) * 0.3;
-            
-            // Create gradient for connection
-            const connectionGradient = this.ctx.createLinearGradient(
-              particle.x, particle.y, other.x, other.y
-            );
-            
-            const color1 = `hsl(${particle.hue}, ${particle.saturation}%, ${particle.lightness}%)`;
-            const color2 = `hsl(${other.hue}, ${other.saturation}%, ${other.lightness}%)`;
-            
-            connectionGradient.addColorStop(0, color1);
-            connectionGradient.addColorStop(1, color2);
-            
-            this.ctx.beginPath();
-            this.ctx.moveTo(particle.x, particle.y);
-            this.ctx.lineTo(other.x, other.y);
-            this.ctx.strokeStyle = connectionGradient;
-            this.ctx.globalAlpha = connectionOpacity;
-            this.ctx.lineWidth = 1;
-            this.ctx.stroke();
-          }
-        }
+
+        const pulse = Math.sin(time * p.pulseSpeed * 100 + i) * 0.3 + 0.7;
+        const alpha = p.opacity * pulse;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, ${p.saturation}%, ${p.lightness}%, ${alpha})`;
+        ctx.fill();
       });
-      
-      this.ctx.globalAlpha = 1;
-      requestAnimationFrame(() => this.animate());
+    }
+
+    destroy() {
+      if (this.animationId) cancelAnimationFrame(this.animationId);
+      window.removeEventListener('resize', this._onResize);
+      window.removeEventListener('mousemove', this._onMouseMove);
+      if (this.canvas.parentNode) this.canvas.parentNode.removeChild(this.canvas);
     }
   }
-  
-  // Initialize particle system when DOM is loaded
+
+  let particleSystem = null;
+
   document.addEventListener('DOMContentLoaded', () => {
-    new GradientParticleSystem();
+    particleSystem = new GradientParticleSystem();
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if (particleSystem) particleSystem.destroy();
   });
 </script>

@@ -44,6 +44,7 @@ export const projects = [
     },
     links: {
       github: "https://github.com/acarrasco/kspdg-2024",
+      website: "https://github.com/mit-ll/spacegym-kspdg",
       paper: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:9yKSN-GCB0IC",
       demo: "https://www.youtube.com/watch?v=ioy0TIyqa8w"
     },
@@ -66,32 +67,10 @@ export const projects = [
     },
     links: {
       github: "https://github.com/acarrasco/kspdg-2025",
+      website: "https://github.com/mit-ll/spacegym-kspdg",
       demo: "https://www.youtube.com/watch?v=UNhrkZW-eJc"
     },
     featured: true
-  },
-  {
-    id: "copfinder-mobile-app",
-    title: "CopFinder - Mobile Donut Shop Locator",
-    description: "Real-time location tracking mobile application that shows the nearest donut shops around you as you move. Features interactive maps, shop ratings, favorite management, Firebase authentication, and Google Maps integration. Built with modern Android development practices including Room database, shared preferences, and dark mode support.",
-    shortDescription: "Real-time donut shop locator with interactive maps and user favorites",
-    technologies: ["Kotlin", "Android", "Firebase", "Google Maps", "Room Database", "OpenStreetMaps", "Glide"],
-    category: "personal",
-    status: "completed",
-    startDate: "2024-01",
-    endDate: "2024-04",
-    team: ["Alejandro Carrasco", "Alvaro Tajuelo Gomez"],
-    funding: "Universidad Politécnica de Madrid - Mobile App Development Course",
-    media: {
-      type: "image",
-      url: "/assets/images/CopFinder_map.jpeg",
-      fallback: "https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=800"
-    },
-    links: {
-      github: "https://github.com/OhhTuRnz/MAD_2024",
-      demo: "https://github.com/OhhTuRnz/MAD_2024/releases"
-    },
-    featured: false
   },
 ];
 

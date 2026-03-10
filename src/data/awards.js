@@ -15,7 +15,8 @@ export const awards = [
     year: 2025,
     link: "https://www.ll.mit.edu/conferences-events/2025/01/ksp-software-design-challenge-2025",
     category: "research",
-    icon: "🚀"
+    icon: "🥈",
+    image: "https://img.youtube.com/vi/UNhrkZW-eJc/maxresdefault.jpg"
   },
   {
     id: "award-2024-001",
@@ -42,7 +43,8 @@ export const awards = [
     year: 2024,
     link: "https://www.ll.mit.edu/conferences-events/2024/01/kerbal-space-program-differential-game-challenge",
     category: "research",
-    icon: "🤖"
+    icon: "🥈",
+    image: "https://img.youtube.com/vi/ioy0TIyqa8w/maxresdefault.jpg"
   }
 ];
 
