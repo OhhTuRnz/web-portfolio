@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """
-Fetch Google Scholar data entirely via SerpAPI.
-- 1 call  : author profile + publications list
-- N calls : one per publication to get abstract + PDF + DOI
+Fetch Google Scholar data via SerpAPI + arXiv API.
+- SerpAPI : author profile + citation counts  (1 credit/week)
+- arXiv   : abstracts + PDF URLs              (free, unlimited)
 
-Credits used: 1 + N per run (N = number of publications).
-Triggered weekly → well within the 250 free credits/month.
+Credits used: 1 per run. Triggered weekly → ~4 credits/month.
 
 Requirements:
   pip install requests
@@ -16,7 +15,7 @@ import json
 import os
 import re
 import sys
-import time
+import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -28,31 +27,39 @@ except ImportError:
 
 SCHOLAR_ID  = "6KamS70AAAAJ"
 OUTPUT_PATH = Path(__file__).parent.parent / "src" / "data" / "scholar-cache.json"
-BASE_URL    = "https://serpapi.com/search"
+ARXIV_NS    = {
+    "atom":  "http://www.w3.org/2005/Atom",
+    "arxiv": "http://arxiv.org/schemas/atom",
+}
+
+# Add new arXiv IDs here when you publish a new paper
+ARXIV_ID_TABLE = {
+    "language models are spacecraft operators":                          "2404.00413",
+    "fine-tuning llms for autonomous spacecraft control":                "2408.08676",
+    "visual language models as operator agents in the space domain":     "2501.07802",
+    "large language models as autonomous spacecraft operators in kerbal": "2505.19896",
+    "beavr":                                                             "2508.09606",
+}
 
 
-def serpapi(params: dict, api_key: str) -> dict:
-    r = requests.get(BASE_URL, params={**params, "api_key": api_key}, timeout=30)
-    r.raise_for_status()
-    data = r.json()
-    if "error" in data:
-        raise RuntimeError(f"SerpAPI error: {data['error']}")
-    return data
-
-
-# ── Step 1: Author profile ────────────────────────────────────────────────────
+# ── SerpAPI: author profile + citation counts ─────────────────────────────────
 
 def fetch_profile(api_key: str) -> dict:
-    print(f"Fetching author profile (id={SCHOLAR_ID})...")
-    data = serpapi({
+    print(f"Fetching Scholar profile via SerpAPI (id={SCHOLAR_ID})...")
+    r = requests.get("https://serpapi.com/search", params={
         "engine":    "google_scholar_author",
         "author_id": SCHOLAR_ID,
         "num":       100,
         "sort":      "pubdate",
-    }, api_key)
+        "api_key":   api_key,
+    }, timeout=30)
+    r.raise_for_status()
+    data = r.json()
+    if "error" in data:
+        raise RuntimeError(f"SerpAPI error: {data['error']}")
 
-    author   = data.get("author", {})
-    table    = data.get("cited_by", {}).get("table", [])
+    author = data.get("author", {})
+    table  = data.get("cited_by", {}).get("table", [])
 
     def stat(idx):
         try:
@@ -63,23 +70,22 @@ def fetch_profile(api_key: str) -> dict:
     total_citations = stat(0)
     h_index         = stat(1)
     i10_index       = stat(2)
-    print(f"  {author.get('name', '?')} | citations={total_citations} h={h_index} i10={i10_index}")
+    print(f"  {author.get('name','?')} | citations={total_citations} h={h_index} i10={i10_index}")
 
     publications = []
     for article in data.get("articles", []):
-        citation_id = article.get("citation_id", "")
         publications.append({
-            "scholar_id":   citation_id,
-            "title":        article.get("title", ""),
-            "authors":      [a.strip() for a in article.get("authors", "").split(",") if a.strip()],
-            "venue":        article.get("publication", ""),
-            "year":         int(article.get("year") or 0),
-            "citations":    article.get("cited_by", {}).get("value", 0) or 0,
-            "scholar_url":  article.get("link", ""),
-            "eprint_url":   "",
-            "abstract":     "",
-            "pdf_url":      "",
-            "doi":          "",
+            "scholar_id":  article.get("citation_id", ""),
+            "title":       article.get("title", ""),
+            "authors":     [a.strip() for a in article.get("authors", "").split(",") if a.strip()],
+            "venue":       article.get("publication", ""),
+            "year":        int(article.get("year") or 0),
+            "citations":   article.get("cited_by", {}).get("value", 0) or 0,
+            "scholar_url": article.get("link", ""),
+            "eprint_url":  "",
+            "abstract":    "",
+            "pdf_url":     "",
+            "doi":         "",
         })
 
     publications.sort(key=lambda p: p["year"], reverse=True)
@@ -98,42 +104,46 @@ def fetch_profile(api_key: str) -> dict:
     }
 
 
-# ── Step 2: Per-paper details ─────────────────────────────────────────────────
+# ── arXiv: abstracts + PDF URLs ───────────────────────────────────────────────
 
-def fetch_citation_detail(citation_id: str, api_key: str) -> dict:
-    """Fetch abstract, PDF URL, and DOI for a single paper."""
-    data = serpapi({
-        "engine":              "google_scholar_author",
-        "view_op":             "view_citation",
-        "citation_for_view":   citation_id,
-    }, api_key)
+def get_arxiv_id(title: str) -> str | None:
+    key = title.lower().strip()
+    for fragment, arxiv_id in ARXIV_ID_TABLE.items():
+        if fragment in key:
+            return arxiv_id
+    return None
 
-    citation = data.get("citation", {})
-    links    = data.get("links", [])
 
-    pdf_url = ""
-    for link in links:
-        if "pdf" in link.get("name", "").lower() or "pdf" in link.get("link", "").lower():
-            pdf_url = link.get("link", "")
-            break
+def fetch_arxiv_metadata(arxiv_ids: list) -> dict:
+    if not arxiv_ids:
+        return {}
+    url = f"https://export.arxiv.org/api/query?id_list={','.join(arxiv_ids)}&max_results={len(arxiv_ids)}"
+    print(f"Fetching arXiv metadata for {len(arxiv_ids)} papers...")
+    r = requests.get(url, timeout=30)
+    r.raise_for_status()
 
-    doi = citation.get("doi", "")
-    if doi and not doi.startswith("http"):
-        doi = f"https://doi.org/{doi}"
+    result = {}
+    for entry in ET.fromstring(r.text).findall("atom:entry", ARXIV_NS):
+        id_el      = entry.find("atom:id", ARXIV_NS)
+        summary_el = entry.find("atom:summary", ARXIV_NS)
+        if id_el is None:
+            continue
+        arxiv_id = re.sub(r"v\d+$", "", id_el.text.split("/abs/")[-1])
+        abstract  = re.sub(r"\s+", " ", summary_el.text).strip() if summary_el is not None else ""
 
-    # eprint (arXiv) link
-    eprint_url = ""
-    for link in links:
-        if "arxiv" in link.get("link", "").lower():
-            eprint_url = link.get("link", "")
-            break
+        pdf_url = ""
+        for link in entry.findall("atom:link", ARXIV_NS):
+            if link.get("title") == "pdf":
+                pdf_url = link.get("href", "")
+                break
 
-    return {
-        "abstract":    citation.get("abstract", ""),
-        "pdf_url":     pdf_url,
-        "doi":         doi,
-        "eprint_url":  eprint_url,
-    }
+        doi_el = entry.find("arxiv:doi", ARXIV_NS)
+        doi    = f"https://doi.org/{doi_el.text.strip()}" if doi_el is not None else ""
+
+        result[arxiv_id] = {"abstract": abstract, "pdf_url": pdf_url, "doi": doi}
+        print(f"  [{arxiv_id}] {len(abstract)} chars abstract")
+
+    return result
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -146,20 +156,41 @@ def main():
 
     data = fetch_profile(api_key)
 
-    print(f"\nFetching details for {len(data['publications'])} publications...")
+    # Match publications to arXiv IDs
+    arxiv_ids = []
+    seen = set()
     for pub in data["publications"]:
-        time.sleep(1)
+        arxiv_id = get_arxiv_id(pub["title"])
+        if arxiv_id and arxiv_id not in seen:
+            seen.add(arxiv_id)
+            arxiv_ids.append(arxiv_id)
+            pub["eprint_url"] = f"https://arxiv.org/abs/{arxiv_id}"
+            print(f"  [{arxiv_id}] {pub['title'][:60]}")
+        else:
+            print(f"  [no arXiv] {pub['title'][:60]}")
+
+    # Enrich with arXiv metadata
+    existing_arxiv = {}
+    if OUTPUT_PATH.exists():
         try:
-            details = fetch_citation_detail(pub["scholar_id"], api_key)
-            pub["abstract"]   = details["abstract"]
-            pub["pdf_url"]    = details["pdf_url"]
-            pub["doi"]        = details["doi"]
-            if details["eprint_url"]:
-                pub["eprint_url"] = details["eprint_url"]
-            abstract_len = len(pub["abstract"])
-            print(f"  ✓ {pub['title'][:55]} ({abstract_len} chars abstract)")
-        except Exception as e:
-            print(f"  ✗ {pub['title'][:55]} — {e}", file=sys.stderr)
+            existing_arxiv = json.loads(OUTPUT_PATH.read_text()).get("arxiv_cache", {})
+        except Exception:
+            pass
+
+    try:
+        arxiv_data = fetch_arxiv_metadata(arxiv_ids)
+        data["arxiv_cache"] = {**existing_arxiv, **arxiv_data}
+        # Copy abstract/pdf_url onto each publication
+        for pub in data["publications"]:
+            arxiv_id = get_arxiv_id(pub["title"])
+            if arxiv_id and arxiv_id in data["arxiv_cache"]:
+                ax = data["arxiv_cache"][arxiv_id]
+                pub["abstract"] = ax.get("abstract", "")
+                pub["pdf_url"]  = ax.get("pdf_url", "")
+                pub["doi"]      = pub["doi"] or ax.get("doi", "")
+    except Exception as e:
+        print(f"Warning (arXiv): {e}", file=sys.stderr)
+        data["arxiv_cache"] = existing_arxiv
 
     OUTPUT_PATH.write_text(json.dumps(data, indent=2, ensure_ascii=False))
     print(f"\nWrote {OUTPUT_PATH}")
