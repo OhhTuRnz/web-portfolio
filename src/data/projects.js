@@ -27,6 +27,28 @@ export const projects = [
     featured: true
   },
   {
+    id: "kspdg-2026",
+    title: "KSPDG 2026 Challenge - 2nd Place",
+    description: "Enhanced autonomous spacecraft control system for the 2026 Kerbal Space Program Differential Games Challenge, incorporating improved AI algorithms and mission planning capabilities.",
+    shortDescription: "2nd place solution for KSPDG 2026 with enhanced AI algorithms",
+    technologies: ["Python", "Advanced RL", "Kerbal", "Mission Planning", "Neural Networks"],
+    category: "research",
+    status: "active",
+    startDate: "2026-01",
+    team: ["Alejandro Carrasco"],
+    media: {
+      type: "webm",
+      url: "/assets/videos/KSPDG 2026.webm",
+      fallback: "https://img.youtube.com/vi/UNhrkZW-eJc/maxresdefault.jpg"
+    },
+    links: {
+      github: "https://github.com/acarrasco/kspdg-2025",
+      website: "https://github.com/mit-ll/spacegym-kspdg",
+      demo: "https://www.youtube.com/watch?v=UNhrkZW-eJc"
+    },
+    featured: true
+  },
+  {
     id: "kspdg-2024",
     title: "KSPDG 2024 Challenge - 2nd Place",
     description: "Autonomous spacecraft control system that achieved 2nd place in the Kerbal Space Program Differential Games Challenge 2024, featuring advanced AI decision-making for space missions.",
@@ -47,28 +69,6 @@ export const projects = [
       website: "https://github.com/mit-ll/spacegym-kspdg",
       paper: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:9yKSN-GCB0IC",
       demo: "https://www.youtube.com/watch?v=ioy0TIyqa8w"
-    },
-    featured: true
-  },
-  {
-    id: "kspdg-2026",
-    title: "KSPDG 2026 Challenge - 2nd Place",
-    description: "Enhanced autonomous spacecraft control system for the 2026 Kerbal Space Program Differential Games Challenge, incorporating improved AI algorithms and mission planning capabilities.",
-    shortDescription: "2nd place solution for KSPDG 2026 with enhanced AI algorithms",
-    technologies: ["Python", "Advanced RL", "Kerbal", "Mission Planning", "Neural Networks"],
-    category: "research",
-    status: "active",
-    startDate: "2026-01",
-    team: ["Alejandro Carrasco"],
-    media: {
-      type: "webm",
-      url: "/assets/videos/KSPDG 2026.webm",
-      fallback: "https://img.youtube.com/vi/UNhrkZW-eJc/maxresdefault.jpg"
-    },
-    links: {
-      github: "https://github.com/acarrasco/kspdg-2025",
-      website: "https://github.com/mit-ll/spacegym-kspdg",
-      demo: "https://www.youtube.com/watch?v=UNhrkZW-eJc"
     },
     featured: true
   },
