@@ -5,10 +5,10 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "pip install requests beautifulsoup4 -q && python scripts/fetch_scholar.py || true && astro build",
+    "build": "pip install requests -q && python scripts/fetch_scholar.py || true && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "fetch-scholar": "python scripts/fetch_scholar.py"
+    "fetch-scholar": "py scripts/fetch_scholar.py"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.0.0",
