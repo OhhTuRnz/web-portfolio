@@ -75,13 +75,16 @@ import StarParticleBackground from './StarParticleBackground.astro';
             <!-- Hover glow effect - only on hover -->
             <div class="hover-glow-effect"></div>
             
-            <img 
-              src="/assets/images/carrusk_zen.png"
-              alt="Alejandro Carrasco" 
-              class="profile-image w-80 h-80 rounded-full object-cover relative z-10
-                     shadow-2xl"
-              loading="eager"
-            />
+            <picture>
+              <source srcset="/assets/images/carrusk_zen.webp" type="image/webp" />
+              <img
+                src="/assets/images/carrusk_zen.png"
+                alt="Alejandro Carrasco"
+                class="profile-image w-80 h-80 rounded-full object-cover relative z-10
+                       shadow-2xl"
+                loading="eager"
+              />
+            </picture>
             
             <!-- Loading animation overlay -->
             <div class="loading-overlay">

@@ -14,7 +14,7 @@ export const projects = [
     venue: "ICCR 2025, Kyoto",
     media: {
       type: "gif", // 🎉 Now using the actual BEAVR GIF!
-      url: "/assets/gifs/BeaVR_intro_v1-ezgif.com-speed.gif",
+      url: "/assets/gifs/BeaVR_intro_v1-ezgif.com-speed.webp",
       fallback: "/assets/images/BEAVR_figure.png" // BEAVR branded fallback image
     },
     links: {
@@ -39,7 +39,7 @@ export const projects = [
     team: ["Alejandro Carrasco"],
     media: {
       type: "gif", // 🎉 Hover-to-play GIF with YouTube thumbnail!
-      url: "/assets/gifs/KSPDG-2024-Embed.gif", // Your actual GIF file
+      url: "/assets/gifs/KSPDG-2024-Embed.webp", // Your actual GIF file
       fallback: "https://img.youtube.com/vi/ioy0TIyqa8w/maxresdefault.jpg" // YouTube thumbnail as static image
     },
     links: {
@@ -62,7 +62,7 @@ export const projects = [
     team: ["Alejandro Carrasco"],
     media: {
       type: "gif", // 🎉 Hover-to-play GIF with YouTube thumbnail!
-      url: "/assets/gifs/KSPDG 2025 - Demo.gif", // Your actual GIF file (with space in name)
+      url: "/assets/gifs/KSPDG 2025 - Demo.webp", // Your actual GIF file (with space in name)
       fallback: "https://img.youtube.com/vi/UNhrkZW-eJc/maxresdefault.jpg" // YouTube thumbnail as static image
     },
     links: {
