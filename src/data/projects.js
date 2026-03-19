@@ -13,9 +13,9 @@ export const projects = [
     funding: "MIT ARC Lab",
     venue: "ICCR 2025, Kyoto",
     media: {
-      type: "gif", // 🎉 Now using the actual BEAVR GIF!
-      url: "/assets/gifs/BeaVR_intro_v1-ezgif.com-speed.webp",
-      fallback: "/assets/images/BEAVR_figure.png" // BEAVR branded fallback image
+      type: "webm",
+      url: "/assets/videos/BeaVR_intro_v1.webm",
+      fallback: "/assets/images/BEAVR_figure.png"
     },
     links: {
       github: "https://github.com/ARCLab-MIT/BEAVR-Bot",
@@ -38,9 +38,9 @@ export const projects = [
     endDate: "2024-12",
     team: ["Alejandro Carrasco"],
     media: {
-      type: "gif", // 🎉 Hover-to-play GIF with YouTube thumbnail!
-      url: "/assets/gifs/KSPDG-2024-Embed.webp", // Your actual GIF file
-      fallback: "https://img.youtube.com/vi/ioy0TIyqa8w/maxresdefault.jpg" // YouTube thumbnail as static image
+      type: "webm",
+      url: "/assets/videos/KSPDG 2024.webm",
+      fallback: "https://img.youtube.com/vi/ioy0TIyqa8w/maxresdefault.jpg"
     },
     links: {
       github: "https://github.com/acarrasco/kspdg-2024",
@@ -51,19 +51,19 @@ export const projects = [
     featured: true
   },
   {
-    id: "kspdg-2025",
-    title: "KSPDG 2025 Challenge - 2nd Place",
-    description: "Enhanced autonomous spacecraft control system for the 2025 Kerbal Space Program Differential Games Challenge, incorporating improved AI algorithms and mission planning capabilities.",
-    shortDescription: "2nd place solution for KSPDG 2025 with enhanced AI algorithms",
+    id: "kspdg-2026",
+    title: "KSPDG 2026 Challenge - 2nd Place",
+    description: "Enhanced autonomous spacecraft control system for the 2026 Kerbal Space Program Differential Games Challenge, incorporating improved AI algorithms and mission planning capabilities.",
+    shortDescription: "2nd place solution for KSPDG 2026 with enhanced AI algorithms",
     technologies: ["Python", "Advanced RL", "Kerbal", "Mission Planning", "Neural Networks"],
     category: "research",
     status: "active",
-    startDate: "2025-01",
+    startDate: "2026-01",
     team: ["Alejandro Carrasco"],
     media: {
-      type: "gif", // 🎉 Hover-to-play GIF with YouTube thumbnail!
-      url: "/assets/gifs/KSPDG 2025 - Demo.webp", // Your actual GIF file (with space in name)
-      fallback: "https://img.youtube.com/vi/UNhrkZW-eJc/maxresdefault.jpg" // YouTube thumbnail as static image
+      type: "webm",
+      url: "/assets/videos/KSPDG 2026.webm",
+      fallback: "https://img.youtube.com/vi/UNhrkZW-eJc/maxresdefault.jpg"
     },
     links: {
       github: "https://github.com/acarrasco/kspdg-2025",

@@ -33,4 +33,8 @@ yarn-error.log*
 *.sw?
 
 # Vite
-.vite 
+.vite
+
+# Large video originals (convert to webm before committing)
+public/assets/**/*.mp4
+public/assets/**/*.mov

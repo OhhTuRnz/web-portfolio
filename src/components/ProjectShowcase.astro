@@ -35,7 +35,7 @@ const allProjects = getAllProjects();
               data-category={project.category}
               data-status={project.status}
             >
-              <div class="relative aspect-video overflow-hidden">
+              <div class="relative aspect-[4/3] md:aspect-video overflow-hidden">
                 <!-- Static image / fallback (always visible) -->
                 <img
                   src={project.media?.fallback || project.media?.url || ''}
@@ -54,18 +54,30 @@ const allProjects = getAllProjects();
                     class="absolute inset-0 w-full h-full object-cover slide-gif"
                   />
                 )}
+                <!-- WebM video layer — loaded only when slide is active -->
+                {project.media?.type === 'webm' && (
+                  <video
+                    data-src={project.media.url}
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    aria-hidden="true"
+                    class="absolute inset-0 w-full h-full object-cover slide-gif"
+                  />
+                )}
                 <!-- Gradient overlay -->
                 <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none"></div>
 
                 <!-- Content overlay -->
-                <div class="absolute bottom-0 left-0 right-0 px-6 py-7 md:px-8 md:py-8">
-                  <h3 class="text-xl md:text-2xl font-semibold text-white mb-2 leading-tight drop-shadow-lg">
+                <div class="absolute bottom-0 left-0 right-0 px-4 py-4 md:px-8 md:py-8">
+                  <h3 class="text-base md:text-2xl font-semibold text-white mb-1 md:mb-2 leading-tight drop-shadow-lg">
                     {project.title}
                   </h3>
-                  <p class="text-slate-300 text-sm leading-relaxed mb-5 line-clamp-2 max-w-xl drop-shadow">
+                  <p class="hidden sm:block text-slate-300 text-sm leading-relaxed mb-3 md:mb-5 line-clamp-2 max-w-xl drop-shadow">
                     {project.shortDescription}
                   </p>
-                  <div class="flex gap-3 flex-wrap">
+                  <div class="flex gap-2 md:gap-3 flex-wrap">
                     {project.links?.github && (
                       <a
                         href={project.links.github}
@@ -93,8 +105,8 @@ const allProjects = getAllProjects();
                 </div>
 
                 <!-- Category badge -->
-                <div class="absolute top-4 right-4 z-10">
-                  <span class={`px-3 py-1 rounded-full text-xs font-medium text-white backdrop-blur-sm ${project.category === 'research' ? 'bg-blue-600/80' : 'bg-purple-600/80'}`}>
+                <div class="absolute top-3 right-3 md:top-4 md:right-4 z-10">
+                  <span class={`px-2 py-0.5 md:px-3 md:py-1 rounded-full text-xs font-medium text-white backdrop-blur-sm ${project.category === 'research' ? 'bg-blue-600/80' : 'bg-purple-600/80'}`}>
                     {project.category === 'research' ? 'Research' : 'Personal'}
                   </span>
                 </div>
@@ -142,12 +154,15 @@ const allProjects = getAllProjects();
     const SWIPE_PX = 50;
 
     function setGif(idx: number, active: boolean) {
-      const img = allSlides[idx]?.querySelector<HTMLImageElement>('img[data-src]');
-      if (!img) return;
+      const el = allSlides[idx]?.querySelector<HTMLImageElement | HTMLVideoElement>('[data-src]');
+      if (!el) return;
       if (active) {
-        if (!img.src || img.src === window.location.href) img.src = img.dataset.src || '';
+        if (!el.src || el.src === window.location.href) {
+          el.src = (el as HTMLElement).dataset.src || '';
+          if (el instanceof HTMLVideoElement) el.load();
+        }
       } else {
-        img.src = '';
+        el.src = '';
       }
     }
 
@@ -330,6 +345,21 @@ const allProjects = getAllProjects();
   .slide-btn-ghost:hover {
     background: rgba(255, 255, 255, 0.16);
     border-color: rgba(255, 255, 255, 0.35);
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 640px) {
+    .carousel-btn {
+      width: 2rem;
+      height: 2rem;
+    }
+    .carousel-btn-prev { left: 0.5rem; }
+    .carousel-btn-next { right: 0.5rem; }
+
+    .slide-btn {
+      padding: 6px 14px;
+      font-size: 0.8rem;
+    }
   }
 
   /* ── Reduced motion ── */
