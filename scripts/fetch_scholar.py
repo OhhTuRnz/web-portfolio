@@ -114,6 +114,25 @@ def extract_arxiv_id(text: str):
     return m.group(1) if m else None
 
 
+def search_arxiv_by_title(title: str):
+    """Search arXiv by title and return the arXiv ID if found."""
+    try:
+        query = re.sub(r"[^\w\s]", " ", title).strip()
+        url = f"https://export.arxiv.org/api/query?search_query=ti:{requests.utils.quote(query)}&max_results=1"
+        r = requests.get(url, timeout=15)
+        r.raise_for_status()
+        root = ET.fromstring(r.text)
+        entry = root.find("atom:entry", ARXIV_NS)
+        if entry is None:
+            return None
+        id_el = entry.find("atom:id", ARXIV_NS)
+        if id_el is None:
+            return None
+        return re.sub(r"v\d+$", "", id_el.text.split("/abs/")[-1])
+    except Exception:
+        return None
+
+
 def fetch_arxiv_metadata(arxiv_ids: list) -> dict:
     if not arxiv_ids:
         return {}
@@ -163,15 +182,20 @@ def main():
         print(f"ERROR (SerpAPI): {e}", file=sys.stderr)
         sys.exit(1)
 
-    # Extract arXiv IDs from scholar URLs and enrich
+    # Discover arXiv IDs by searching arXiv by title (free, no rate limiting)
+    import time
     arxiv_ids = []
     seen = set()
     for pub in data["publications"]:
-        arxiv_id = extract_arxiv_id(pub.get("scholar_url", ""))
+        time.sleep(0.5)
+        arxiv_id = search_arxiv_by_title(pub["title"])
         if arxiv_id and arxiv_id not in seen:
             seen.add(arxiv_id)
             arxiv_ids.append(arxiv_id)
             pub["eprint_url"] = f"https://arxiv.org/abs/{arxiv_id}"
+            print(f"  [{arxiv_id}] {pub['title'][:60]}")
+        else:
+            print(f"  [no arXiv] {pub['title'][:60]}")
 
     existing_arxiv = {}
     if OUTPUT_PATH.exists():
