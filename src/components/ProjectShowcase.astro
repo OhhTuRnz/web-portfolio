@@ -4,7 +4,7 @@ import { getAllProjects } from '../data/projects.js';
 const allProjects = getAllProjects();
 ---
 
-<section id="projects" class="arclab-section bg-slate-800/30">
+<section id="projects" class="arclab-section">
   <div class="arclab-container">
     <!-- Header -->
     <div class="text-center mb-12 arclab-fade-in">
@@ -159,10 +159,16 @@ const allProjects = getAllProjects();
       if (active) {
         if (!el.src || el.src === window.location.href) {
           el.src = (el as HTMLElement).dataset.src || '';
-          if (el instanceof HTMLVideoElement) el.load();
+          if (el instanceof HTMLVideoElement) { el.load(); el.play().catch(() => {}); }
+        } else if (el instanceof HTMLVideoElement && el.paused) {
+          el.play().catch(() => {});
         }
       } else {
-        el.src = '';
+        if (el instanceof HTMLVideoElement) {
+          el.pause();
+        } else {
+          el.src = '';
+        }
       }
     }
 
@@ -231,8 +237,32 @@ const allProjects = getAllProjects();
 
     // Init
     buildDots();
-    setGif(0, true);
     updateArrows();
+
+    // Section visibility — only play media when projects is the active section
+    const projectSection = carousel.closest<HTMLElement>('section');
+    if (projectSection) {
+      // fp-activate fires when fp-mode transitions into this section
+      projectSection.addEventListener('fp-activate', () => {
+        setGif(currentIndex, true);
+      });
+      // fp-section-change fires on every section switch — pause when leaving
+      document.addEventListener('fp-section-change', (e: Event) => {
+        if ((e as CustomEvent<{ id: string }>).detail.id !== projectSection.id) {
+          setGif(currentIndex, false);
+        }
+      });
+      // Fallback: if fp-mode never activates (reduced-motion / static scroll),
+      // use IntersectionObserver to start/stop based on visibility
+      requestAnimationFrame(() => {
+        if (!document.body.classList.contains('fp-mode')) {
+          const io = new IntersectionObserver((entries) => {
+            setGif(currentIndex, entries[0].isIntersecting);
+          }, { threshold: 0.4 });
+          io.observe(projectSection);
+        }
+      });
+    }
   });
 </script>
 

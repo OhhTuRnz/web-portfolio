@@ -1,222 +1,367 @@
 ---
-import { awards, getAwardsByYear } from '../data/awards.js';
+import { getAwardsByYear } from '../data/awards.js';
 
 const awardsByYear = getAwardsByYear();
+// newest → oldest
 const years = Object.keys(awardsByYear).sort((a, b) => Number(b) - Number(a));
 
-const categoryGradient = {
-  research:   'from-yellow-500 to-orange-500',
-  fellowship: 'from-blue-500 to-purple-500',
-  funding:    'from-green-500 to-teal-500',
-  academic:   'from-indigo-500 to-purple-500'
-};
-
-const categoryBadge = {
+const categoryBadge: Record<string, string> = {
   research:   'bg-yellow-500/15 text-yellow-300 border border-yellow-500/30',
   fellowship: 'bg-blue-500/15 text-blue-300 border border-blue-500/30',
   funding:    'bg-green-500/15 text-green-300 border border-green-500/30',
-  academic:   'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30'
+  academic:   'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30',
 };
 
-const dotColor = {
-  research:   'bg-yellow-500',
-  fellowship: 'bg-blue-500',
-  funding:    'bg-green-500',
-  academic:   'bg-indigo-500'
-};
-
-const dotRing = {
-  research:   'bg-yellow-500/40',
-  fellowship: 'bg-blue-500/40',
-  funding:    'bg-green-500/40',
-  academic:   'bg-indigo-500/40'
+const categoryDot: Record<string, string> = {
+  research:   'dot-yellow',
+  fellowship: 'dot-blue',
+  funding:    'dot-green',
+  academic:   'dot-indigo',
 };
 ---
 
-<section id="achievements" class="arclab-section">
-  <div class="arclab-container">
-    <div class="text-center mb-16 arclab-fade-in">
-      <h2 class="arclab-heading-2">Awards & Recognition</h2>
+<section id="achievements" class="arclab-section fp-slide-section">
+  <div class="arclab-container awards-outer">
+
+    <!-- Section header -->
+    <div class="awards-header text-center arclab-fade-in">
+      <h2 class="arclab-heading-2 mb-1">Awards & Recognition</h2>
+      <p class="arclab-text text-sm">Scroll to explore →</p>
     </div>
 
-    <!-- Timeline -->
-    <div class="relative max-w-4xl mx-auto">
-      <!-- Vertical line -->
-      <div class="timeline-line absolute left-1/2 -translate-x-1/2 w-0.5 h-full bg-gradient-to-b from-blue-500 via-purple-500 to-cyan-500 rounded-full z-0"></div>
+    <!-- Horizontal scroll — newest on the left, oldest on the right -->
+    <div class="awards-hscroll fp-scroll-x">
+      {years.map((year) => (
+        <div class="year-frame">
+          <!-- Giant faded year background -->
+          <div class="year-bg" aria-hidden="true">{year}</div>
 
-      <div class="space-y-10">
-        {years.map((year) => (
-          <div class="year-group">
-            <!-- Year header with flanking rules -->
-            <div class="flex items-center justify-center mb-8 relative z-20">
-              <div class="flex-1 h-px bg-gradient-to-r from-transparent to-white/10"></div>
-              <span class="mx-4 px-5 py-1.5 rounded-full bg-slate-800 border border-white/10 text-white font-bold text-lg tracking-wide shadow-lg">
-                {year}
-              </span>
-              <div class="flex-1 h-px bg-gradient-to-l from-transparent to-white/10"></div>
-            </div>
+          <!-- Year label -->
+          <p class="year-label">{year}</p>
 
-            {awardsByYear[year].map((award, index) => (
-              <div class={`award-item flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'} mb-8`}>
+          <!-- Alternating timeline -->
+          <div class="tl-wrap">
+            <div class="tl-line" aria-hidden="true"></div>
 
-                <!-- Card -->
-                <div class={`w-5/12 ${index % 2 === 0 ? 'pr-10' : 'pl-10'}`}>
-                  <a
-                    href={award.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="award-card group block rounded-2xl p-5 border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-300 hover:border-blue-500/40 hover:shadow-[0_0_28px_rgba(59,130,246,0.1)]"
-                  >
-                    <div class="flex items-start gap-4">
-                      <!-- Icon circle -->
-                      <div class={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-lg bg-gradient-to-br ${categoryGradient[award.category] || categoryGradient.academic}`}>
-                        {award.icon}
-                      </div>
+            {awardsByYear[year].map((award: any, i: number) => {
+              const isLeft = i % 2 === 0;
+              const dotClass = categoryDot[award.category] ?? 'dot-indigo';
+              const badgeClass = categoryBadge[award.category] ?? categoryBadge.academic;
+              return (
+                <div class="tl-row">
+                  {/* Left column: card or spacer */}
+                  {isLeft ? (
+                    <a href={award.link} target="_blank" rel="noopener noreferrer"
+                       class="tl-card award-card group">
+                      <span class={`badge ${badgeClass}`}>{award.category}</span>
+                      <h4 class="card-title group-hover:text-blue-300 transition-colors">
+                        {award.title}
+                      </h4>
+                      <p class="card-org">{award.organization}</p>
+                    </a>
+                  ) : <div />}
 
-                      <div class="flex-1 min-w-0">
-                        <!-- Category badge -->
-                        <span class={`inline-block mb-2 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${categoryBadge[award.category] || categoryBadge.academic}`}>
-                          {award.category}
-                        </span>
-                        <h4 class="text-base font-semibold text-white leading-snug mb-1 group-hover:text-blue-300 transition-colors">
-                          {award.title}
-                        </h4>
-                        <p class="text-sm text-slate-400">{award.organization}</p>
-                      </div>
-
-                      <!-- External link arrow — always visible -->
-                      <svg
-                        class="w-4 h-4 text-slate-600 group-hover:text-blue-400 flex-shrink-0 transition-colors mt-1"
-                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      >
-                        <line x1="7" y1="17" x2="17" y2="7"></line>
-                        <polyline points="7 7 17 7 17 17"></polyline>
-                      </svg>
-                    </div>
-                  </a>
-                </div>
-
-                <!-- Timeline dot -->
-                <div class="w-2/12 flex justify-center">
-                  <div class="relative flex items-center justify-center w-10 h-10 z-10">
-                    <div class={`absolute inset-0 rounded-full animate-ping opacity-20 ${dotRing[award.category] || dotRing.academic}`}></div>
-                    <div class={`w-5 h-5 rounded-full border-4 border-slate-900 shadow-lg ${dotColor[award.category] || dotColor.academic}`}></div>
+                  {/* Center: emoji dot on the timeline */}
+                  <div class="tl-dot-wrap">
+                    <div class={`tl-dot ${dotClass}`}>{award.icon}</div>
                   </div>
-                </div>
 
-                <!-- Spacer / hover image preview (opposite side) -->
-                <div class="w-5/12 flex items-center justify-center">
-                  {award.image && (
-                    <div class="award-preview-wrap">
-                      <img
-                        src={award.image}
-                        alt={award.title}
-                        class="award-preview-img"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </div>
-                  )}
+                  {/* Right column: card or spacer */}
+                  {!isLeft ? (
+                    <a href={award.link} target="_blank" rel="noopener noreferrer"
+                       class="tl-card award-card group">
+                      <span class={`badge ${badgeClass}`}>{award.category}</span>
+                      <h4 class="card-title group-hover:text-blue-300 transition-colors">
+                        {award.title}
+                      </h4>
+                      <p class="card-org">{award.organization}</p>
+                    </a>
+                  ) : <div />}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
+
+    <!-- Year indicator -->
+    <div class="year-indicator">
+      {years.map((year, i) => (
+        <button class={`year-btn ${i === 0 ? 'active' : ''}`} data-idx={i}>
+          {year}
+        </button>
+      ))}
+    </div>
+
   </div>
 </section>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          (e.target as HTMLElement).classList.add('award-visible');
-          observer.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.15 });
+    const section = document.querySelector('#achievements') as HTMLElement | null;
+    if (!section) return;
+    const vp = section.querySelector<HTMLElement>('.fp-scroll-x');
+    if (!vp) return;
 
-    document.querySelectorAll('.award-item').forEach(el => observer.observe(el));
+    function revealFrame(idx: number) {
+      const frames = section!.querySelectorAll<HTMLElement>('.year-frame');
+      const frame = frames[idx];
+      if (!frame) return;
+
+      section!.querySelectorAll('.year-btn').forEach((btn, i) =>
+        btn.classList.toggle('active', i === idx));
+
+      const cards = [...frame.querySelectorAll<HTMLElement>('.award-card')];
+      // Don't re-trigger animation if cards are already visible
+      if (cards.length === 0 || cards.every(c => c.classList.contains('card-visible'))) return;
+      cards.forEach(c => c.classList.remove('card-visible'));
+      cards.forEach((c, i) => setTimeout(() => c.classList.add('card-visible'), i * 120));
+    }
+
+    function currentIdx() {
+      return Math.round(vp!.scrollLeft / vp!.clientWidth);
+    }
+
+    section.addEventListener('fp-activate', () => revealFrame(currentIdx()));
+
+    let revealTimer: ReturnType<typeof setTimeout>;
+    vp.addEventListener('scroll', () => {
+      const idx = currentIdx();
+      section!.querySelectorAll('.year-btn').forEach((btn, i) =>
+        btn.classList.toggle('active', i === idx));
+      clearTimeout(revealTimer);
+      revealTimer = setTimeout(() => revealFrame(idx), 120);
+    }, { passive: true });
+
+    section.querySelectorAll<HTMLButtonElement>('.year-btn').forEach((btn, i) => {
+      btn.addEventListener('click', () =>
+        vp!.scrollTo({ left: i * vp!.clientWidth, behavior: 'smooth' }));
+    });
+
+    new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) revealFrame(0);
+    }, { threshold: 0.1 }).observe(section);
   });
 </script>
 
 <style>
-  .award-item {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+  /* ── Outer flex column ── */
+  .awards-outer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 1rem;
+    padding-bottom: 0.75rem;
   }
 
-  .award-item.award-visible {
-    opacity: 1;
-    transform: none;
+  .awards-header {
+    flex-shrink: 0;
+    margin-bottom: 0.5rem;
   }
 
-  .timeline-line {
-    pointer-events: none;
+  /* ── Horizontal scroll viewport ── */
+  .awards-hscroll {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
+  .awards-hscroll::-webkit-scrollbar { display: none; }
 
-  @media (max-width: 768px) {
-    .timeline-line {
-      display: none;
-    }
-
-    .award-item {
-      flex-direction: column !important;
-      align-items: stretch;
-      position: relative;
-      z-index: 1;
-    }
-
-    .award-item > div:first-child {
-      width: 100% !important;
-      padding-right: 0 !important;
-      padding-left: 0 !important;
-    }
-
-    /* Hide dot column and spacer on mobile */
-    .award-item > div:nth-child(2),
-    .award-item > div:last-child {
-      display: none;
-    }
-  }
-
-  /* ── Award hover image preview ── */
-  .award-preview-wrap {
+  /* ── Year frame (one viewport wide) ── */
+  .year-frame {
+    flex-shrink: 0;
     width: 100%;
-    max-width: 260px;
-    border-radius: 12px;
-    overflow: hidden;
-    opacity: 0;
-    transform: scale(0.95);
-    transition: opacity 0.35s ease, transform 0.35s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 0 1.5rem;
+  }
+
+  /* Giant faded year */
+  .year-bg {
+    position: absolute;
+    font-size: min(22vw, 18rem);
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.03);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    user-select: none;
     pointer-events: none;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
   }
 
-  .award-preview-img {
+  /* Year label */
+  .year-label {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Alternating timeline ── */
+  .tl-wrap {
+    position: relative;
     width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    display: block;
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
   }
 
-  .award-item:has(.award-card:hover) .award-preview-wrap {
+  /* Vertical center line */
+  .tl-line {
+    position: absolute;
+    left: 50%;
+    top: 1rem;
+    bottom: 1rem;
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(255, 255, 255, 0.18) 15%,
+      rgba(255, 255, 255, 0.18) 85%,
+      transparent
+    );
+    transform: translateX(-50%);
+  }
+
+  /* Each row: 3 columns — [card/spacer] [dot] [spacer/card] */
+  .tl-row {
+    display: grid;
+    grid-template-columns: 1fr 52px 1fr;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0;
+  }
+
+  /* Dot centred in the middle column */
+  .tl-dot-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .tl-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    border: 2px solid;
+  }
+
+  .dot-yellow { background: rgba(234,179,8,0.12);  border-color: rgba(234,179,8,0.35); }
+  .dot-blue   { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.35); }
+  .dot-green  { background: rgba(34,197,94,0.12);  border-color: rgba(34,197,94,0.35); }
+  .dot-indigo { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.35); }
+
+  /* Award card */
+  .tl-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.35s ease, transform 0.35s ease,
+                background 0.15s ease, border-color 0.15s ease;
+  }
+  .tl-card.card-visible {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
+  }
+  .tl-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: capitalize;
+    margin-bottom: 0.2rem;
+    width: fit-content;
+  }
+
+  .card-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    line-height: 1.4;
+  }
+  .card-org {
+    font-size: 0.73rem;
+    color: #64748b;
+    line-height: 1.3;
+  }
+
+  /* ── Year indicator ── */
+  .year-indicator {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+  }
+
+  .year-btn {
+    padding: 0.2rem 0.875rem;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .year-btn.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+  .year-btn:hover:not(.active) {
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 640px) {
+    .year-label { font-size: 1.75rem; margin-bottom: 1rem; }
+    .tl-row { grid-template-columns: 1fr 44px 1fr; gap: 0.25rem; }
+    .tl-dot { width: 34px; height: 34px; font-size: 0.9rem; }
+    .tl-card { padding: 0.625rem 0.75rem; }
+    .card-title { font-size: 0.75rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .award-item {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-    [class*="animate-ping"] {
-      animation: none;
-    }
+    .tl-card { opacity: 1; transform: none; transition: none; }
   }
 </style>
