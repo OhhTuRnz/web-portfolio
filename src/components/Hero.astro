@@ -1,10 +1,7 @@
 ---
-import StarParticleBackground from './StarParticleBackground.astro';
 ---
 
 <section id="hero" class="min-h-screen flex items-center justify-center relative overflow-hidden pt-28 md:pt-16">
-  <StarParticleBackground />
-  
   <!-- Gradient overlay -->
   <div class="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 z-10"></div>
   
@@ -648,7 +645,7 @@ import StarParticleBackground from './StarParticleBackground.astro';
         const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*<>[]{}|/\\';
         const locked = new Set<number>();
         let tick = 0;
-        const lockPerTick = Math.max(1, Math.floor(order.length / 60));
+        const lockPerTick = Math.max(1, Math.floor(order.length / 45));
 
         setTimeout(() => {
           descEl.style.opacity = '1';
@@ -676,8 +673,8 @@ import StarParticleBackground from './StarParticleBackground.astro';
               // Restore exact originals
               textNodes.forEach((tn, i) => { tn.textContent = origTexts[i]; });
             }
-          }, 40);
-        }, 1200);
+          }, 25);
+        }, 800);
       }
     }
 
