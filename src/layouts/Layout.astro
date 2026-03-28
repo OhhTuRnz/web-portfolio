@@ -76,6 +76,11 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
         const LOCK_DIRECT     = 480; // cooldown after CSS-transition commit (must outlast 0.45s)
         const LOCK_SLIDE_ENTRY = 820; // longer entry lock when landing on h-scroll sections
 
+        // Boundary guard: keep true while h-scroll is actively moving; only allow
+        // section navigation once the horizontal scroll has fully settled.
+        let boundaryHit = false;
+        let boundaryTimer: ReturnType<typeof setTimeout>;
+
         // Side-nav dots
         const nav = document.createElement('nav');
         nav.id = 'fp-nav';
@@ -263,9 +268,23 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
 
           if (hs) {
             if (xDir !== 0) { xTarget = 0; xStart(); return; }
-            if      (d > 0 && !hs.atEnd)   { hs.vp.scrollLeft += Math.abs(d) * 2; }
-            else if (d < 0 && !hs.atStart) { hs.vp.scrollLeft -= Math.abs(d) * 2; }
-            else if (d > 0) goTo(current + 1);
+            if (d > 0 && !hs.atEnd) {
+              hs.vp.scrollLeft += Math.abs(d) * 2;
+              clearTimeout(boundaryTimer);
+              boundaryHit = true;
+              boundaryTimer = setTimeout(() => { boundaryHit = false; }, 400);
+              return;
+            }
+            if (d < 0 && !hs.atStart) {
+              hs.vp.scrollLeft -= Math.abs(d) * 2;
+              clearTimeout(boundaryTimer);
+              boundaryHit = true;
+              boundaryTimer = setTimeout(() => { boundaryHit = false; }, 400);
+              return;
+            }
+            // At boundary — only navigate once horizontal scroll has settled
+            if (boundaryHit) return;
+            if (d > 0) goTo(current + 1);
             else if (d < 0) goTo(current - 1);
             return;
           }

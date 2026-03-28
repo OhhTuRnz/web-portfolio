@@ -1,9 +1,21 @@
 ---
-import { getAwardsByYear } from '../data/awards.js';
+import { awards } from '../data/awards.js';
 
-const awardsByYear = getAwardsByYear();
-// newest → oldest
-const years = Object.keys(awardsByYear).sort((a, b) => Number(b) - Number(a));
+// Newest first
+const sorted = [...awards].sort((a, b) => b.year - a.year);
+const years  = [...new Set(sorted.map((a: any) => a.year))];
+
+// Flat list: year markers interleaved with awards
+const flatItems: Array<{ type: 'year'; year: number } | { type: 'award'; award: any; idx: number }> = [];
+let awardCount = 0;
+let prevYear: number | null = null;
+for (const award of sorted) {
+  if (award.year !== prevYear) {
+    flatItems.push({ type: 'year', year: award.year });
+    prevYear = award.year;
+  }
+  flatItems.push({ type: 'award', award, idx: awardCount++ });
+}
 
 const categoryBadge: Record<string, string> = {
   research:   'bg-yellow-500/15 text-yellow-300 border border-yellow-500/30',
@@ -26,69 +38,74 @@ const categoryDot: Record<string, string> = {
     <!-- Section header -->
     <div class="awards-header text-center arclab-fade-in">
       <h2 class="arclab-heading-2 mb-1">Awards & Recognition</h2>
-      <p class="arclab-text text-sm">Scroll to explore →</p>
+      <p class="arclab-text text-sm opacity-50">Scroll to explore →</p>
     </div>
 
-    <!-- Horizontal scroll — newest on the left, oldest on the right -->
-    <div class="awards-hscroll fp-scroll-x">
-      {years.map((year) => (
-        <div class="year-frame">
-          <!-- Giant faded year background -->
-          <div class="year-bg" aria-hidden="true">{year}</div>
+    <!-- Horizontal timeline -->
+    <div class="tl-viewport fp-scroll-x">
+      <div class="tl-track">
 
-          <!-- Year label -->
-          <p class="year-label">{year}</p>
+        <!-- The line -->
+        <div class="tl-hline" aria-hidden="true"></div>
 
-          <!-- Alternating timeline -->
-          <div class="tl-wrap">
-            <div class="tl-line" aria-hidden="true"></div>
+        {flatItems.map((item) => {
+          if (item.type === 'year') {
+            return (
+              <div class="tl-year-sep" data-year={item.year}>
+                <div class="tl-year-tick" aria-hidden="true"></div>
+                <span class="tl-year-label">{item.year}</span>
+              </div>
+            );
+          }
 
-            {awardsByYear[year].map((award: any, i: number) => {
-              const isLeft = i % 2 === 0;
-              const dotClass = categoryDot[award.category] ?? 'dot-indigo';
-              const badgeClass = categoryBadge[award.category] ?? categoryBadge.academic;
-              return (
-                <div class="tl-row">
-                  {/* Left column: card or spacer */}
-                  {isLeft ? (
-                    <a href={award.link} target="_blank" rel="noopener noreferrer"
-                       class="tl-card award-card group">
-                      <span class={`badge ${badgeClass}`}>{award.category}</span>
-                      <h4 class="card-title group-hover:text-blue-300 transition-colors">
-                        {award.title}
-                      </h4>
-                      <p class="card-org">{award.organization}</p>
-                    </a>
-                  ) : <div />}
+          const { award, idx } = item;
+          const isAbove = idx % 2 === 0;
+          const dotCls   = categoryDot[award.category]  ?? 'dot-indigo';
+          const badgeCls = categoryBadge[award.category] ?? categoryBadge.academic;
 
-                  {/* Center: emoji dot on the timeline */}
-                  <div class="tl-dot-wrap">
-                    <div class={`tl-dot ${dotClass}`}>{award.icon}</div>
-                  </div>
+          return (
+            <div class="tl-col">
+              {/* Top half */}
+              <div class="tl-half tl-top">
+                {isAbove && (
+                  <a href={award.link} target="_blank" rel="noopener noreferrer"
+                     class="award-card group">
+                    <span class={`badge ${badgeCls}`}>{award.category}</span>
+                    <h4 class="card-title group-hover:text-blue-300 transition-colors">
+                      {award.title}
+                    </h4>
+                    <p class="card-org">{award.organization}</p>
+                  </a>
+                )}
+              </div>
 
-                  {/* Right column: card or spacer */}
-                  {!isLeft ? (
-                    <a href={award.link} target="_blank" rel="noopener noreferrer"
-                       class="tl-card award-card group">
-                      <span class={`badge ${badgeClass}`}>{award.category}</span>
-                      <h4 class="card-title group-hover:text-blue-300 transition-colors">
-                        {award.title}
-                      </h4>
-                      <p class="card-org">{award.organization}</p>
-                    </a>
-                  ) : <div />}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+              {/* Dot on the line */}
+              <div class={`tl-dot ${dotCls}`}>{award.icon}</div>
+
+              {/* Bottom half */}
+              <div class="tl-half tl-bot">
+                {!isAbove && (
+                  <a href={award.link} target="_blank" rel="noopener noreferrer"
+                     class="award-card group">
+                    <span class={`badge ${badgeCls}`}>{award.category}</span>
+                    <h4 class="card-title group-hover:text-blue-300 transition-colors">
+                      {award.title}
+                    </h4>
+                    <p class="card-org">{award.organization}</p>
+                  </a>
+                )}
+              </div>
+            </div>
+          );
+        })}
+
+      </div>
     </div>
 
-    <!-- Year indicator -->
+    <!-- Year pills -->
     <div class="year-indicator">
-      {years.map((year, i) => (
-        <button class={`year-btn ${i === 0 ? 'active' : ''}`} data-idx={i}>
+      {years.map((year: number, i: number) => (
+        <button class={`year-btn ${i === 0 ? 'active' : ''}`} data-year={year}>
           {year}
         </button>
       ))}
@@ -99,54 +116,59 @@ const categoryDot: Record<string, string> = {
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const section = document.querySelector('#achievements') as HTMLElement | null;
+    const section = document.querySelector<HTMLElement>('#achievements');
     if (!section) return;
     const vp = section.querySelector<HTMLElement>('.fp-scroll-x');
     if (!vp) return;
 
-    function revealFrame(idx: number) {
-      const frames = section!.querySelectorAll<HTMLElement>('.year-frame');
-      const frame = frames[idx];
-      if (!frame) return;
-
-      section!.querySelectorAll('.year-btn').forEach((btn, i) =>
-        btn.classList.toggle('active', i === idx));
-
-      const cards = [...frame.querySelectorAll<HTMLElement>('.award-card')];
-      // Don't re-trigger animation if cards are already visible
-      if (cards.length === 0 || cards.every(c => c.classList.contains('card-visible'))) return;
-      cards.forEach(c => c.classList.remove('card-visible'));
-      cards.forEach((c, i) => setTimeout(() => c.classList.add('card-visible'), i * 120));
+    function revealVisible() {
+      const left  = vp!.scrollLeft - 160;
+      const right = vp!.scrollLeft + vp!.clientWidth + 160;
+      section!.querySelectorAll<HTMLElement>('.tl-col').forEach(col => {
+        if (col.offsetLeft + col.offsetWidth > left && col.offsetLeft < right) {
+          col.querySelectorAll('.award-card').forEach(c => c.classList.add('card-visible'));
+        }
+      });
     }
 
-    function currentIdx() {
-      return Math.round(vp!.scrollLeft / vp!.clientWidth);
+    function updateActiveYear() {
+      const center = vp!.scrollLeft + vp!.clientWidth / 2;
+      let active: string | null = null;
+      section!.querySelectorAll<HTMLElement>('.tl-year-sep').forEach(sep => {
+        if (sep.offsetLeft <= center) active = sep.dataset.year ?? null;
+      });
+      section!.querySelectorAll('.year-btn').forEach(btn =>
+        btn.classList.toggle('active', (btn as HTMLElement).dataset.year === String(active))
+      );
     }
-
-    section.addEventListener('fp-activate', () => revealFrame(currentIdx()));
 
     let revealTimer: ReturnType<typeof setTimeout>;
     vp.addEventListener('scroll', () => {
-      const idx = currentIdx();
-      section!.querySelectorAll('.year-btn').forEach((btn, i) =>
-        btn.classList.toggle('active', i === idx));
+      updateActiveYear();
       clearTimeout(revealTimer);
-      revealTimer = setTimeout(() => revealFrame(idx), 120);
+      revealTimer = setTimeout(revealVisible, 80);
     }, { passive: true });
 
-    section.querySelectorAll<HTMLButtonElement>('.year-btn').forEach((btn, i) => {
-      btn.addEventListener('click', () =>
-        vp!.scrollTo({ left: i * vp!.clientWidth, behavior: 'smooth' }));
+    section.querySelectorAll<HTMLButtonElement>('.year-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sep = section!.querySelector<HTMLElement>(`.tl-year-sep[data-year="${btn.dataset.year}"]`);
+        if (sep) {
+          const target = sep.offsetLeft - vp!.clientWidth * 0.12;
+          vp!.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+        }
+      });
     });
 
-    new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) revealFrame(0);
+    section.addEventListener('fp-activate', () => { revealVisible(); updateActiveYear(); });
+
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) { revealVisible(); updateActiveYear(); }
     }, { threshold: 0.1 }).observe(section);
   });
 </script>
 
 <style>
-  /* ── Outer flex column ── */
+  /* ── Outer shell ── */
   .awards-outer {
     height: 100%;
     display: flex;
@@ -155,108 +177,99 @@ const categoryDot: Record<string, string> = {
     padding-bottom: 0.75rem;
   }
 
-  .awards-header {
-    flex-shrink: 0;
-    margin-bottom: 0.5rem;
-  }
+  .awards-header { flex-shrink: 0; margin-bottom: 0.25rem; }
 
-  /* ── Horizontal scroll viewport ── */
-  .awards-hscroll {
+  /* ── Scrollable viewport ── */
+  .tl-viewport {
     flex: 1;
     min-height: 0;
-    display: flex;
     overflow-x: scroll;
     overflow-y: hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
-  .awards-hscroll::-webkit-scrollbar { display: none; }
+  .tl-viewport::-webkit-scrollbar { display: none; }
 
-  /* ── Year frame (one viewport wide) ── */
-  .year-frame {
-    flex-shrink: 0;
-    width: 100%;
+  /* ── Track ── */
+  .tl-track {
+    display: flex;
+    align-items: stretch;
     height: 100%;
+    min-width: max-content;
+    padding: 0 12vw;
+    position: relative;
+  }
+
+  /* ── Horizontal centre line ── */
+  .tl-hline {
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%;
+    height: 1px;
+    transform: translateY(-50%);
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(255,255,255,0.10) 5%,
+      rgba(255,255,255,0.18) 12%,
+      rgba(255,255,255,0.18) 88%,
+      rgba(255,255,255,0.10) 95%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Year separator ── */
+  .tl-year-sep {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 72px;
+    flex-shrink: 0;
     position: relative;
-    padding: 0 1.5rem;
+    z-index: 1;
   }
 
-  /* Giant faded year */
-  .year-bg {
-    position: absolute;
-    font-size: min(22vw, 18rem);
-    font-weight: 900;
-    color: rgba(255, 255, 255, 0.03);
-    letter-spacing: -0.04em;
-    line-height: 1;
-    user-select: none;
-    pointer-events: none;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  .tl-year-tick {
+    width: 1px;
+    height: 14px;
+    background: rgba(255,255,255,0.28);
+    border-radius: 1px;
+    margin-bottom: 6px;
+  }
+
+  .tl-year-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.38);
     white-space: nowrap;
   }
 
-  /* Year label */
-  .year-label {
-    font-size: 2.25rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.65);
-    letter-spacing: 0.1em;
-    margin-bottom: 1.5rem;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* ── Alternating timeline ── */
-  .tl-wrap {
-    position: relative;
-    width: 100%;
-    max-width: 760px;
+  /* ── Award column ── */
+  .tl-col {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    width: 250px;
+    flex-shrink: 0;
+    position: relative;
     z-index: 1;
   }
 
-  /* Vertical center line */
-  .tl-line {
-    position: absolute;
-    left: 50%;
-    top: 1rem;
-    bottom: 1rem;
-    width: 1px;
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      rgba(255, 255, 255, 0.18) 15%,
-      rgba(255, 255, 255, 0.18) 85%,
-      transparent
-    );
-    transform: translateX(-50%);
-  }
-
-  /* Each row: 3 columns — [card/spacer] [dot] [spacer/card] */
-  .tl-row {
-    display: grid;
-    grid-template-columns: 1fr 52px 1fr;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 0;
-  }
-
-  /* Dot centred in the middle column */
-  .tl-dot-wrap {
+  .tl-half {
+    flex: 1;
+    width: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    z-index: 2;
+    padding: 0 0.5rem;
   }
 
+  .tl-top { align-items: flex-end;   padding-bottom: 0.75rem; }
+  .tl-bot { align-items: flex-start; padding-top: 0.75rem; }
+
+  /* ── Dot ── */
   .tl-dot {
     width: 40px;
     height: 40px;
@@ -267,62 +280,67 @@ const categoryDot: Record<string, string> = {
     font-size: 1.1rem;
     flex-shrink: 0;
     border: 2px solid;
+    position: relative;
+    z-index: 2;
   }
 
-  .dot-yellow { background: rgba(234,179,8,0.12);  border-color: rgba(234,179,8,0.35); }
-  .dot-blue   { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.35); }
-  .dot-green  { background: rgba(34,197,94,0.12);  border-color: rgba(34,197,94,0.35); }
-  .dot-indigo { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.35); }
+  .dot-yellow { background: rgba(234,179,8,0.12);  border-color: rgba(234,179,8,0.40); }
+  .dot-blue   { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.40); }
+  .dot-green  { background: rgba(34,197,94,0.12);  border-color: rgba(34,197,94,0.40); }
+  .dot-indigo { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.40); }
 
-  /* Award card */
-  .tl-card {
+  /* ── Card ── */
+  .award-card {
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
     padding: 0.875rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255,255,255,0.08);
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255,255,255,0.03);
     text-decoration: none;
+    width: 100%;
     opacity: 0;
     transform: translateY(10px);
     transition: opacity 0.35s ease, transform 0.35s ease,
                 background 0.15s ease, border-color 0.15s ease;
   }
-  .tl-card.card-visible {
+  .award-card.card-visible {
     opacity: 1;
     transform: translateY(0);
   }
-  .tl-card:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(59, 130, 246, 0.3);
+  .award-card:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(59,130,246,0.28);
   }
 
   .badge {
     display: inline-block;
     padding: 2px 8px;
     border-radius: 9999px;
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     text-transform: capitalize;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.15rem;
     width: fit-content;
   }
 
   .card-title {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #e2e8f0;
     line-height: 1.4;
   }
+
   .card-org {
-    font-size: 0.73rem;
+    font-size: 0.7rem;
     color: #64748b;
     line-height: 1.3;
+    margin-top: 0.1rem;
   }
 
-  /* ── Year indicator ── */
+  /* ── Year pills ── */
   .year-indicator {
     flex-shrink: 0;
     display: flex;
@@ -337,31 +355,29 @@ const categoryDot: Record<string, string> = {
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.06em;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255,255,255,0.12);
     background: transparent;
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(255,255,255,0.3);
     cursor: pointer;
     transition: all 0.2s ease;
   }
   .year-btn.active {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.9);
-    border-color: rgba(255, 255, 255, 0.28);
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.9);
+    border-color: rgba(255,255,255,0.28);
   }
-  .year-btn:hover:not(.active) {
-    color: rgba(255, 255, 255, 0.55);
-  }
+  .year-btn:hover:not(.active) { color: rgba(255,255,255,0.55); }
 
   /* ── Mobile ── */
   @media (max-width: 640px) {
-    .year-label { font-size: 1.75rem; margin-bottom: 1rem; }
-    .tl-row { grid-template-columns: 1fr 44px 1fr; gap: 0.25rem; }
-    .tl-dot { width: 34px; height: 34px; font-size: 0.9rem; }
-    .tl-card { padding: 0.625rem 0.75rem; }
-    .card-title { font-size: 0.75rem; }
+    .tl-track { padding: 0 4vw; }
+    .tl-col   { width: 190px; }
+    .tl-year-sep { width: 52px; }
+    .tl-dot   { width: 34px; height: 34px; font-size: 0.9rem; }
+    .card-title { font-size: 0.73rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .tl-card { opacity: 1; transform: none; transition: none; }
+    .award-card { opacity: 1; transform: none; transition: none; }
   }
 </style>

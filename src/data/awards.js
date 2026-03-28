@@ -1,5 +1,14 @@
 export const awards = [
   {
+    id: "award-2026-001",
+    title: "Kerbal Space Program Differential Games Challenge (KSPDG) 2nd Position",
+    organization: "MIT Lincoln Lab",
+    year: 2026,
+    link: "https://www.ll.mit.edu/",
+    category: "research",
+    icon: "🥈"
+  },
+  {
     id: "award-2025-001",
     title: "PhD Admission - Top 3% Pool",
     organization: "MIT Department of Aeronautics and Astronautics",
