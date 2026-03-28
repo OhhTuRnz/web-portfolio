@@ -108,12 +108,15 @@ const categoryDot: Record<string, string> = {
       const frames = section!.querySelectorAll<HTMLElement>('.year-frame');
       const frame = frames[idx];
       if (!frame) return;
-      const cards = [...frame.querySelectorAll<HTMLElement>('.award-card')];
-      cards.forEach(c => c.classList.remove('card-visible'));
-      cards.forEach((c, i) => setTimeout(() => c.classList.add('card-visible'), i * 100));
 
       section!.querySelectorAll('.year-btn').forEach((btn, i) =>
         btn.classList.toggle('active', i === idx));
+
+      const cards = [...frame.querySelectorAll<HTMLElement>('.award-card')];
+      // Don't re-trigger animation if cards are already visible
+      if (cards.length === 0 || cards.every(c => c.classList.contains('card-visible'))) return;
+      cards.forEach(c => c.classList.remove('card-visible'));
+      cards.forEach((c, i) => setTimeout(() => c.classList.add('card-visible'), i * 120));
     }
 
     function currentIdx() {

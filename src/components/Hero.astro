@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import heroImage from '../assets/images/carrusk_zen.png';
 ---
 
 <section id="hero" class="min-h-screen flex items-center justify-center relative overflow-hidden pt-28 md:pt-16">
@@ -72,16 +74,15 @@
             <!-- Hover glow effect - only on hover -->
             <div class="hover-glow-effect"></div>
             
-            <picture>
-              <source srcset="/assets/images/carrusk_zen.webp" type="image/webp" />
-              <img
-                src="/assets/images/carrusk_zen.png"
-                alt="Alejandro Carrasco"
-                class="profile-image w-80 h-80 rounded-full object-cover relative z-10
-                       shadow-2xl"
-                loading="eager"
-              />
-            </picture>
+            <Image
+              src={heroImage}
+              alt="Alejandro Carrasco"
+              width={320}
+              height={320}
+              class="profile-image w-80 h-80 rounded-full object-cover relative z-10 shadow-2xl"
+              loading="eager"
+              fetchpriority="high"
+            />
             
             <!-- Loading animation overlay -->
             <div class="loading-overlay">
@@ -232,7 +233,8 @@
     );
     z-index: 5;
     opacity: 0;
-    animation: 
+    will-change: transform;
+    animation:
       fadeInContour 1s ease-out forwards,
       rotateContour 8s linear infinite;
     animation-delay: 1.2s, 1.2s;
@@ -252,8 +254,8 @@
     );
     z-index: 4;
     opacity: 0;
-    filter: blur(2px);
-    animation: 
+    will-change: transform;
+    animation:
       fadeInContour 1s ease-out forwards,
       rotateContour 12s linear infinite reverse;
     animation-delay: 1.4s, 1.4s;
@@ -650,7 +652,13 @@
         setTimeout(() => {
           descEl.style.opacity = '1';
 
-          const interval = setInterval(() => {
+          let lastTime = 0;
+          const TICK_MS = 25;
+
+          function rafTick(now: number) {
+            if (now - lastTime < TICK_MS) { requestAnimationFrame(rafTick); return; }
+            lastTime = now;
+
             // Lock next batch of positions
             const start = tick * lockPerTick;
             for (let i = start; i < Math.min(start + lockPerTick, order.length); i++) {
@@ -669,11 +677,14 @@
             });
 
             if (locked.size >= order.length) {
-              clearInterval(interval);
               // Restore exact originals
               textNodes.forEach((tn, i) => { tn.textContent = origTexts[i]; });
+              return;
             }
-          }, 25);
+            requestAnimationFrame(rafTick);
+          }
+
+          requestAnimationFrame(rafTick);
         }, 800);
       }
     }
