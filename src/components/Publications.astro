@@ -81,11 +81,8 @@ const pubLink = (pub: any) => {
                 <span class="year-label">{year}</span>
                 <div class="year-rule"></div>
                 {rest.length > 0 && (
-                  <button class="more-btn" data-target={`more-${year}`} aria-expanded="false">
-                    <svg class="more-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                    </svg>
-                    {rest.length} more
+                  <button class="more-btn" data-target={`more-${year}`}>
+                    +{rest.length} more
                   </button>
                 )}
               </div>
@@ -187,6 +184,22 @@ const pubLink = (pub: any) => {
 
   </div>
 </section>
+
+<!-- ── Publication modal overlay ── -->
+<div id="pub-modal" class="pub-modal" role="dialog" aria-modal="true" aria-label="More publications" hidden>
+  <div class="pub-modal-backdrop"></div>
+  <div class="pub-modal-panel">
+    <div class="pub-modal-head">
+      <span class="pub-modal-year"></span>
+      <button class="pub-modal-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="pub-modal-list"></div>
+  </div>
+</div>
 
 <style>
   /* ── Desktop: container fills the fp-mode section (inset:0) ── */
@@ -327,8 +340,17 @@ const pubLink = (pub: any) => {
   .pub-authors { font-size: 0.82rem; color: #8094a8; margin-bottom: 0.2rem; line-height: 1.4; }
   .pub-venue   { font-size: 0.82rem; color: #7c9bc0; font-style: italic; line-height: 1.4; }
 
-  /* Hidden on desktop — cards need to be compact to fit 3 years */
-  .pub-abstract { display: none; }
+  /* 2-line preview on desktop — cards are wide enough */
+  .pub-abstract {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.78rem;
+    color: #7c8fa0;
+    line-height: 1.55;
+    margin-top: 0.3rem;
+  }
 
   /* ── Links ── */
   .pub-links {
@@ -371,15 +393,6 @@ const pubLink = (pub: any) => {
     white-space: nowrap;
   }
   .more-btn:hover { background: rgba(59,130,246,0.1); }
-  .more-btn[aria-expanded="true"] { color: #93c5fd; }
-
-  .more-chevron {
-    width: 0.8rem;
-    height: 0.8rem;
-    transition: transform 0.2s ease;
-    flex-shrink: 0;
-  }
-  .more-btn[aria-expanded="true"] .more-chevron { transform: rotate(180deg); }
 
   .more-inner {
     display: flex;
@@ -387,6 +400,110 @@ const pubLink = (pub: any) => {
     gap: 0.5rem;
   }
   .more-inner[hidden] { display: none; }
+
+  /* ── Modal overlay ── */
+  .pub-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(0.75rem, 4vw, 2.5rem);
+  }
+  .pub-modal[hidden] { display: none; }
+
+  .pub-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(6, 10, 20, 0.82);
+    animation: fade-in 0.15s ease forwards;
+  }
+
+  .pub-modal-panel {
+    position: relative;
+    z-index: 1;
+    background: #0f172a;
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 16px;
+    width: min(680px, 100%);
+    max-height: min(82vh, 720px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    animation: fade-in 0.15s ease forwards;
+    will-change: opacity;
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .pub-modal-panel.closing {
+    animation: fade-out 0.12s ease forwards;
+  }
+  @keyframes fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+
+  .pub-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .pub-modal-year {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .pub-modal-close {
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    cursor: pointer;
+    color: #94a3b8;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+  .pub-modal-close:hover { background: rgba(255,255,255,0.12); color: #e2e8f0; }
+  .pub-modal-close svg { width: 0.875rem; height: 0.875rem; }
+
+  .pub-modal-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.875rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+  .pub-modal-list::-webkit-scrollbar { width: 4px; }
+  .pub-modal-list::-webkit-scrollbar-track { background: transparent; }
+  .pub-modal-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+
+  /* Cards inside modal get full abstract */
+  .pub-modal-list .pub-abstract {
+    display: block !important;
+    -webkit-line-clamp: unset !important;
+    overflow: visible !important;
+    font-size: 0.8rem;
+    color: #7c8fa0;
+    line-height: 1.6;
+    margin-top: 0.4rem;
+  }
+  .pub-modal-list .pub-card {
+    padding: 0.875rem 1rem;
+  }
 
   /* ── Mobile ── */
   @media (max-width: 767px) {
@@ -396,24 +513,74 @@ const pubLink = (pub: any) => {
     .pub-card { flex-direction: column; gap: 0.75rem; padding: 1.25rem 1.5rem; }
     .pub-links { flex-direction: row; }
     .pub-abstract {
-      display: block;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
       font-size: 0.82rem;
       color: #7c8fa0;
       line-height: 1.6;
-      margin-top: 0.5rem;
+      margin-top: 0.45rem;
     }
   }
 </style>
 
 <script>
+  const modal      = document.getElementById('pub-modal') as HTMLElement;
+  const modalPanel = modal.querySelector('.pub-modal-panel') as HTMLElement;
+  const modalYear  = modal.querySelector('.pub-modal-year') as HTMLElement;
+  const modalList  = modal.querySelector('.pub-modal-list') as HTMLElement;
+  const closeBtn   = modal.querySelector('.pub-modal-close') as HTMLButtonElement;
+  const backdrop   = modal.querySelector('.pub-modal-backdrop') as HTMLElement;
+
+  function openModal() {
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    modalPanel.classList.remove('closing');
+  }
+
+  function closeModal() {
+    modalPanel.classList.add('closing');
+    modalPanel.addEventListener('animationend', () => {
+      modal.hidden = true;
+      document.body.style.overflow = '';
+      modalPanel.classList.remove('closing');
+    }, { once: true });
+  }
+
+  // Open modal from "N more" button
   document.querySelectorAll<HTMLButtonElement>('.more-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      const section  = btn.closest('.year-section') as HTMLElement;
+      const yearText = section.querySelector('.year-label')!.textContent!;
       const targetId = btn.dataset.target!;
-      const panel = document.getElementById(targetId);
-      if (!panel) return;
-      const isOpen = !panel.hidden;
-      panel.hidden = isOpen;
-      btn.setAttribute('aria-expanded', String(!isOpen));
+      const moreInner = document.getElementById(targetId);
+
+      // Set year label
+      modalYear.textContent = yearText + ' — All Publications';
+
+      // Populate list: top pub + extra pubs
+      modalList.innerHTML = '';
+      const topCard = section.querySelector('.pub-card')!.cloneNode(true) as HTMLElement;
+      modalList.appendChild(topCard);
+      if (moreInner) {
+        moreInner.querySelectorAll('.pub-card').forEach(card => {
+          modalList.appendChild(card.cloneNode(true));
+        });
+      }
+
+      openModal();
+      // Scroll to top
+      modalList.scrollTop = 0;
     });
+  });
+
+  // Close on backdrop click or close button
+  backdrop.addEventListener('click', closeModal);
+  closeBtn.addEventListener('click', closeModal);
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.hidden) closeModal();
   });
 </script>
