@@ -202,16 +202,16 @@ const pubLink = (pub: any) => {
 </div>
 
 <style>
-  /* ── Desktop: container fills the fp-mode section (inset:0) ── */
+  /* ── Desktop: fp-mode centers direct children via margin:auto ── */
   @media (min-width: 768px) {
     .pub-container {
-      flex: 1 1 0% !important;
-      margin-top: 0 !important;
-      margin-bottom: 0 !important;
-      min-height: 0;
+      /* Don't override fp-mode's margin:auto — let it center the whole block */
+      max-height: calc(100vh - 72px - 3rem);
+      flex-shrink: 1 !important;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      min-height: 0;
     }
 
     .pub-scroll {
@@ -257,7 +257,12 @@ const pubLink = (pub: any) => {
   .stat-sep { width: 1px; height: 2rem; background: rgba(255,255,255,0.1); }
 
   /* ── Year sections ── */
-  .pub-list { display: flex; flex-direction: column; gap: 0.875rem; padding-bottom: 0.25rem; }
+  .pub-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding-bottom: 0.75rem;
+  }
 
   .year-section { display: flex; flex-direction: column; gap: 0.5rem; }
 
@@ -507,21 +512,23 @@ const pubLink = (pub: any) => {
 
   /* ── Mobile ── */
   @media (max-width: 767px) {
+    /* Let the fp-mode section handle scrolling — no inner scroll container */
+    .pub-container {
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      max-height: none !important;
+      overflow: visible !important;
+    }
+    .pub-scroll {
+      overflow: visible !important;
+      max-height: none !important;
+    }
     .stat-sep { display: none; }
     .stats-row { gap: 1.5rem; }
     .stat-num { font-size: 2rem; }
-    .pub-card { flex-direction: column; gap: 0.75rem; padding: 1.25rem 1.5rem; }
+    .pub-card { flex-direction: column; gap: 0.75rem; padding: 0.875rem 1rem; }
     .pub-links { flex-direction: row; }
-    .pub-abstract {
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      font-size: 0.82rem;
-      color: #7c8fa0;
-      line-height: 1.6;
-      margin-top: 0.45rem;
-    }
+    .pub-abstract { display: none; }
   }
 </style>
 
@@ -583,4 +590,17 @@ const pubLink = (pub: any) => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !modal.hidden) closeModal();
   });
+
+  // Trap scroll inside modal — stopPropagation prevents fp-mode's window listener from firing
+  modal.addEventListener('wheel', (e) => {
+    e.stopPropagation();
+    // Prevent default only at list boundaries so the section below doesn't scroll
+    const atTop    = modalList.scrollTop <= 0 && e.deltaY < 0;
+    const atBottom = modalList.scrollTop + modalList.clientHeight >= modalList.scrollHeight - 1 && e.deltaY > 0;
+    if (atTop || atBottom) e.preventDefault();
+  }, { passive: false });
+
+  modal.addEventListener('touchmove', (e) => {
+    e.stopPropagation();
+  }, { passive: true });
 </script>

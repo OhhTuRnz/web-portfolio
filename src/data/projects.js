@@ -42,7 +42,7 @@ export const projects = [
       fallback: "https://img.youtube.com/vi/UNhrkZW-eJc/maxresdefault.jpg"
     },
     links: {
-      github: "https://github.com/acarrasco/kspdg-2025",
+      github: "https://github.com/ARCLab-MIT/kspdg",
       website: "https://github.com/mit-ll/spacegym-kspdg",
       demo: "https://www.youtube.com/watch?v=UNhrkZW-eJc"
     },
@@ -65,7 +65,7 @@ export const projects = [
       fallback: "https://img.youtube.com/vi/ioy0TIyqa8w/maxresdefault.jpg"
     },
     links: {
-      github: "https://github.com/acarrasco/kspdg-2024",
+      github: "https://github.com/ARCLab-MIT/kspdg",
       website: "https://github.com/mit-ll/spacegym-kspdg",
       paper: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=6KamS70AAAAJ&citation_for_view=6KamS70AAAAJ:9yKSN-GCB0IC",
       demo: "https://www.youtube.com/watch?v=ioy0TIyqa8w"

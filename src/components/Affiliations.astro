@@ -32,17 +32,17 @@ const affiliations = [
 
 <section id="affiliations" class="arclab-section">
   <div class="arclab-container">
-    <div class="text-center mb-16 arclab-fade-in">
+    <div class="aff-header text-center mb-16 arclab-fade-in">
       <h2 class="arclab-heading-2">Academic & Professional Affiliations</h2>
       <p class="arclab-text text-lg max-w-3xl mx-auto">
         Educational background and research positions that have shaped my academic journey
       </p>
     </div>
-    
+
     <!-- Current Affiliations -->
-    <div class="mb-16">
-      <h3 class="text-2xl font-medium text-white mb-8 text-center arclab-slide-up" style="animation-delay: 0.2s;">Current</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="aff-current mb-16">
+      <h3 class="aff-section-title text-2xl font-medium text-white mb-8 text-center arclab-slide-up" style="animation-delay: 0.2s;">Current</h3>
+      <div class="aff-grid grid grid-cols-1 md:grid-cols-2 gap-8">
         {affiliations.filter(aff => aff.current).map((affiliation, index) => (
           <a 
             href={affiliation.link} 
@@ -75,9 +75,9 @@ const affiliations = [
     </div>
     
     <!-- Education -->
-    <div>
-      <h3 class="text-2xl font-medium text-white mb-8 text-center arclab-slide-up" style="animation-delay: 0.4s;">Education</h3>
-      <div class="grid grid-cols-1 gap-8 max-w-2xl mx-auto">
+    <div class="aff-education">
+      <h3 class="aff-section-title text-2xl font-medium text-white mb-8 text-center arclab-slide-up" style="animation-delay: 0.4s;">Education</h3>
+      <div class="aff-grid grid grid-cols-1 gap-8 max-w-2xl mx-auto">
         {affiliations.filter(aff => !aff.current).map((affiliation, index) => (
           <a 
             href={affiliation.link} 
@@ -116,8 +116,32 @@ const affiliations = [
     background: linear-gradient(135deg, rgba(15, 20, 25, 0.8), rgba(26, 35, 50, 0.6));
     border: 1px solid rgba(59, 130, 246, 0.2);
   }
-  
-  .affiliation-card:hover {
-    border-color: rgba(59, 130, 246, 0.5);
+  .affiliation-card:hover { border-color: rgba(59, 130, 246, 0.5); }
+
+  /* ── Mobile: compact layout that fits one screen ── */
+  @media (max-width: 767px) {
+    /* Remove auto-centering — let fp-mode section scroll naturally */
+    #affiliations .arclab-container {
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+    }
+
+    /* Header */
+    .aff-header { margin-bottom: 0.75rem !important; }
+    .aff-header h2 { font-size: 1.2rem !important; margin-bottom: 0.25rem !important; }
+    .aff-header p  { font-size: 0.8rem !important; }
+
+    /* Section groups */
+    .aff-current  { margin-bottom: 0.75rem !important; }
+    .aff-section-title { font-size: 1rem !important; margin-bottom: 0.5rem !important; }
+    .aff-grid     { gap: 0.5rem !important; }
+
+    /* Cards */
+    .affiliation-card { padding: 0.75rem 1rem !important; }
+    .affiliation-card .flex { gap: 0.75rem !important; }
+    .affiliation-card img { width: 2.75rem !important; height: 2.75rem !important; }
+    .affiliation-card h4  { font-size: 0.875rem !important; margin-bottom: 0.15rem !important; line-height: 1.35 !important; }
+    .affiliation-card .arclab-text { font-size: 0.78rem !important; margin-bottom: 0.1rem !important; }
+    .affiliation-card .text-sm { font-size: 0.75rem !important; }
   }
 </style>
