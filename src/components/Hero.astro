@@ -296,13 +296,14 @@
   let edgePosAttr: THREE.BufferAttribute | null = null;
 
   let active  = true;
+  let rafId   = 0;
   let t       = 0;
   const DRIFT   = 0.012;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function tick() {
-    if (!active) return;
-    requestAnimationFrame(tick);
+    if (!active) { rafId = 0; return; }
+    rafId = requestAnimationFrame(tick);
     if (!reduced) {
       t += 0.010;
       robot.rotation.y = t * 0.30;
@@ -396,7 +397,7 @@
 
   document.addEventListener('fp-section-change', (e: any) => {
     active = e.detail?.id === 'hero';
-    if (active) tick();
+    if (active && !rafId) tick();
   });
   window.addEventListener('beforeunload', () => {
     active = false;

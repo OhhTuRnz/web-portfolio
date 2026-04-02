@@ -194,9 +194,11 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
             xDotFlipped = true;
             nav.querySelectorAll('.fp-dot').forEach((d, i) =>
               d.classList.toggle('fp-dot-active', i === xSection));
+            document.dispatchEvent(new CustomEvent('fp-section-change', { detail: { id: sections[xSection].id } }));
           } else if (xDotFlipped && xProg <= 0.5) {
             xDotFlipped = false;
             updateDots(); // rolled back past midpoint — restore current dot
+            document.dispatchEvent(new CustomEvent('fp-section-change', { detail: { id: sections[current].id } }));
           }
           if (done) { xFinish(xTarget > 0.5); return; }
           xRaf = requestAnimationFrame(xTick);

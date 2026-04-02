@@ -77,16 +77,20 @@
     setActive((e as CustomEvent).detail.id);
   });
 
-  // Fallback: IntersectionObserver for non-fp mode
-  const sections = document.querySelectorAll('main > section[id]');
-  if (sections.length > 0) {
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) setActive(entry.target.id);
-      });
-    }, { threshold: 0.4 });
-    sections.forEach(s => obs.observe(s));
-  }
+  // Fallback: IntersectionObserver for non-fp mode only.
+  // Delay with rAF so Layout.astro's DOMContentLoaded (which sets fp-mode) runs first.
+  requestAnimationFrame(() => {
+    if (document.body.classList.contains('fp-mode')) return;
+    const sections = document.querySelectorAll('main > section[id]');
+    if (sections.length > 0) {
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      }, { threshold: 0.4 });
+      sections.forEach(s => obs.observe(s));
+    }
+  });
 </script>
 
 <style>

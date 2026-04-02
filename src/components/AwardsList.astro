@@ -143,8 +143,12 @@ const categoryDot: Record<string, string> = {
     }
 
     let revealTimer: ReturnType<typeof setTimeout>;
+    let yearTicking = false;
     vp.addEventListener('scroll', () => {
-      updateActiveYear();
+      if (!yearTicking) {
+        yearTicking = true;
+        requestAnimationFrame(() => { updateActiveYear(); yearTicking = false; });
+      }
       clearTimeout(revealTimer);
       revealTimer = setTimeout(revealVisible, 80);
     }, { passive: true });
