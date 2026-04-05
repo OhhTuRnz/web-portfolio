@@ -412,108 +412,122 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
 
       interface ShootingStar {
         x: number; y: number;
-        vx: number; vy: number;
-        len: number;
+        angle: number;   // direction of travel in radians (0 = straight down)
+        curve: number;   // angular change per frame — produces the arc
+        speed: number;   // px per frame
+        len: number;     // approximate trail length in px
         alpha: number;
         hue: number;
         dead: boolean;
         goRight: boolean;
+        trail: { x: number; y: number }[];
       }
       const stars: ShootingStar[] = [];
+      let occupied = false;
 
-      // Track which horizontal directions are occupied so two stars never share a side
-      let rightOccupied = false;
-      let leftOccupied  = false;
+      function scheduleNext() {
+        const delay = 8000 + Math.random() * 7000;
+        setTimeout(spawn, delay);
+      }
 
-      function spawn(forceRight?: boolean) {
-        const W = sc.width, H = sc.height;
+      function spawn() {
+        if (occupied) return;
+        occupied = true;
+        const W = sc.width;
 
-        // Pick a side that isn't already occupied
-        let goRight: boolean;
-        if (!rightOccupied && !leftOccupied) {
-          goRight = Math.random() < 0.5;
-        } else if (rightOccupied && leftOccupied) {
-          return; // both sides busy — skip
-        } else {
-          goRight = leftOccupied; // pick the free side
-        }
+        const goRight = Math.random() < 0.5;
+        const x = goRight ? Math.random() * W * 0.55 : W * 0.45 + Math.random() * W * 0.55;
+        const y = -20;
 
-        if (goRight) rightOccupied = true; else leftOccupied = true;
+        // 40–65° from vertical — more diagonal, less straight-down
+        const angleDeg = 40 + Math.random() * 25;
+        const angle = (goRight ? 1 : -1) * (angleDeg * Math.PI / 180);
 
-        // Spawn across the full top, varying X significantly each time
-        const x  = Math.random() * W;
-        const y  = -60;
-        // Primary direction: downward. Horizontal drift varies widely
-        const vy = 22 + Math.random() * 14;              // 22–36 px/frame downward
-        const vxMag = 8 + Math.random() * 14;            // 8–22 px/frame sideways
-        const vx = goRight ? vxMag : -vxMag;
+        // Gentle arc curving toward vertical over time
+        const curve = (goRight ? -1 : 1) * (0.001 + Math.random() * 0.003);
 
         stars.push({
-          x, y, vx, vy,
-          len: 120 + Math.random() * 100,
+          x, y,
+          angle,
+          curve,
+          speed: 12 + Math.random() * 6,  // 12–18 px/frame
+          len: 90 + Math.random() * 80,
           alpha: 0,
           hue: Math.random() < 0.5 ? 195 : 270,
           dead: false,
           goRight,
+          trail: [{ x, y }],
         });
       }
 
-      // Spawn first star, then schedule independently per side
-      setTimeout(() => spawn(), 3000);
-      function scheduleSide(isRight: boolean) {
-        const delay = 9000 + Math.random() * 8000;
-        setTimeout(() => {
-          // Only spawn if that side is free
-          if (isRight ? !rightOccupied : !leftOccupied) spawn();
-          scheduleSide(isRight);
-        }, delay);
-      }
-      scheduleSide(true);
-      setTimeout(() => scheduleSide(false), 5000 + Math.random() * 6000); // offset second side by 5–11s
+      setTimeout(spawn, 3000);
 
       function draw() {
         requestAnimationFrame(draw);
         ctx.clearRect(0, 0, sc.width, sc.height);
         const W = sc.width, H = sc.height;
+
         for (const s of stars) {
           if (s.dead) continue;
-          s.alpha = Math.min(s.alpha + 0.06, 0.55);
 
-          const mag = Math.hypot(s.vx, s.vy);
-          const nx  = s.vx / mag, ny = s.vy / mag;
-          const tx  = s.x - nx * s.len;
-          const ty  = s.y - ny * s.len;
+          // Advance along arc: angle rotates slightly each frame
+          s.angle += s.curve;
+          s.x += Math.sin(s.angle) * s.speed;
+          s.y += Math.cos(s.angle) * s.speed;
+          s.trail.push({ x: s.x, y: s.y });
 
-          // ── Outer glow (very faint haze) ──
-          const glow = ctx.createLinearGradient(tx, ty, s.x, s.y);
-          glow.addColorStop(0, `hsla(${s.hue},90%,70%,0)`);
-          glow.addColorStop(1, `hsla(${s.hue},90%,80%,${s.alpha * 0.12})`);
-          ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(s.x, s.y);
-          ctx.strokeStyle = glow; ctx.lineWidth = 3; ctx.stroke();
+          // Keep trail long enough to span ~len pixels
+          const maxPts = Math.ceil(s.len / s.speed) + 1;
+          if (s.trail.length > maxPts) s.trail.splice(0, s.trail.length - maxPts);
 
-          // ── Core: single slim bright line ──
-          const core = ctx.createLinearGradient(tx, ty, s.x, s.y);
-          core.addColorStop(0, `hsla(${s.hue},100%,90%,0)`);
-          core.addColorStop(1, `rgba(255,255,255,${s.alpha})`);
-          ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(s.x, s.y);
-          ctx.strokeStyle = core; ctx.lineWidth = 0.7; ctx.stroke();
+          s.alpha = Math.min(s.alpha + 0.05, 0.55);
+          if (s.trail.length < 2) continue;
 
-          // ── Head: tiny radial glow ──
-          const rad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, 5);
-          rad.addColorStop(0,   `rgba(255,255,255,${s.alpha})`);
-          rad.addColorStop(0.4, `hsla(${s.hue},100%,90%,${s.alpha * 0.4})`);
-          rad.addColorStop(1,   `hsla(${s.hue},90%,70%,0)`);
-          ctx.beginPath(); ctx.arc(s.x, s.y, 5, 0, Math.PI * 2);
-          ctx.fillStyle = rad; ctx.fill();
+          const tail = s.trail[0];
+          const head = s.trail[s.trail.length - 1];
 
-          s.x += s.vx; s.y += s.vy;
-          if (s.x > W + 300 || s.x < -300 || s.y > H + 300) s.dead = true;
+          // ── Outer glow — follows the real curved trail ──
+          const glowGrad = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
+          glowGrad.addColorStop(0, `hsla(${s.hue},90%,70%,0)`);
+          glowGrad.addColorStop(1, `hsla(${s.hue},90%,80%,${s.alpha * 0.1})`);
+          ctx.beginPath();
+          ctx.moveTo(tail.x, tail.y);
+          for (let i = 1; i < s.trail.length; i++) ctx.lineTo(s.trail[i].x, s.trail[i].y);
+          ctx.strokeStyle = glowGrad;
+          ctx.lineWidth = 5;
+          ctx.lineJoin = 'round';
+          ctx.stroke();
+
+          // ── Core streak ──
+          const coreGrad = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
+          coreGrad.addColorStop(0, `hsla(${s.hue},100%,90%,0)`);
+          coreGrad.addColorStop(1, `rgba(255,255,255,${s.alpha})`);
+          ctx.beginPath();
+          ctx.moveTo(tail.x, tail.y);
+          for (let i = 1; i < s.trail.length; i++) ctx.lineTo(s.trail[i].x, s.trail[i].y);
+          ctx.strokeStyle = coreGrad;
+          ctx.lineWidth = 1;
+          ctx.lineJoin = 'round';
+          ctx.stroke();
+
+          // ── Head: small bright point — not a ball ──
+          const headRad = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, 4);
+          headRad.addColorStop(0,   `rgba(255,255,255,${s.alpha})`);
+          headRad.addColorStop(0.4, `hsla(${s.hue},100%,90%,${s.alpha * 0.35})`);
+          headRad.addColorStop(1,   `hsla(${s.hue},90%,70%,0)`);
+          ctx.beginPath();
+          ctx.arc(head.x, head.y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = headRad;
+          ctx.fill();
+
+          if (head.x > W + 300 || head.x < -300 || head.y > H + 300) s.dead = true;
         }
+
         for (let i = stars.length - 1; i >= 0; i--) {
           if (stars[i].dead) {
-            // Free the side so a new star can spawn from it
-            if (stars[i].goRight) rightOccupied = false; else leftOccupied = false;
             stars.splice(i, 1);
+            occupied = false;
+            scheduleNext();
           }
         }
       }
