@@ -27,6 +27,8 @@ except ImportError:
 
 SCHOLAR_ID  = "6KamS70AAAAJ"
 OUTPUT_PATH = Path(__file__).parent.parent / "src" / "data" / "scholar-cache.json"
+MIN_PUBLICATIONS = int(os.environ.get("SCHOLAR_MIN_PUBLICATIONS", "1"))
+MIN_TOTAL_CITATIONS = int(os.environ.get("SCHOLAR_MIN_TOTAL_CITATIONS", "1"))
 ARXIV_NS    = {
     "atom":  "http://www.w3.org/2005/Atom",
     "arxiv": "http://arxiv.org/schemas/atom",
@@ -104,6 +106,28 @@ def fetch_profile(api_key: str) -> dict:
     }
 
 
+def validate_profile(data: dict) -> None:
+    """Reject empty/degraded Scholar payloads before they can reach a deploy."""
+    publications = data.get("publications") or []
+    errors = []
+
+    if len(publications) < MIN_PUBLICATIONS:
+        errors.append(f"expected at least {MIN_PUBLICATIONS} publications, got {len(publications)}")
+
+    total_citations = data.get("total_citations") or 0
+    if total_citations < MIN_TOTAL_CITATIONS:
+        errors.append(f"expected at least {MIN_TOTAL_CITATIONS} total citations, got {total_citations}")
+
+    if not data.get("profile_url") or SCHOLAR_ID not in data.get("profile_url", ""):
+        errors.append("profile URL is missing or does not match the configured Scholar ID")
+
+    if any(not pub.get("title") for pub in publications):
+        errors.append("one or more publications are missing titles")
+
+    if errors:
+        raise RuntimeError("Refusing to write invalid Scholar data: " + "; ".join(errors))
+
+
 # ── arXiv: abstracts + PDF URLs ───────────────────────────────────────────────
 
 def get_arxiv_id(title: str) -> str | None:
@@ -155,6 +179,7 @@ def main():
         sys.exit(1)
 
     data = fetch_profile(api_key)
+    validate_profile(data)
 
     # Match publications to arXiv IDs
     arxiv_ids = []

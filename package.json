@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "pip install requests -q && python scripts/fetch_scholar.py || true && node scripts/precompute-pointcloud.mjs && astro build",
+    "build": "python -m pip install -q requests && python scripts/fetch_scholar.py && node scripts/precompute-pointcloud.mjs && astro build",
+    "build:offline": "node scripts/precompute-pointcloud.mjs && astro build",
     "precompute": "node scripts/precompute-pointcloud.mjs",
     "preview": "astro preview",
     "astro": "astro",

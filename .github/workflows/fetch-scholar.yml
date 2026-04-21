@@ -25,7 +25,6 @@ jobs:
 
       - name: Run Scholar scraper
         run: python scripts/fetch_scholar.py
-        continue-on-error: true   # Don't fail the build if Scholar blocks the request
 
       - name: Check if cache changed
         id: diff
