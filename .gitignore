@@ -35,6 +35,10 @@ yarn-error.log*
 # Vite
 .vite
 
+# Python
+__pycache__/
+*.py[cod]
+
 # Large video originals (convert to webm before committing)
 public/assets/**/*.mp4
 public/assets/**/*.mov
