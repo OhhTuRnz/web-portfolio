@@ -19,9 +19,9 @@ const typeLabel: Record<string, string> = {
 };
 
 const typeColor: Record<string, string> = {
-  journal: '#2563eb',
-  conference: '#7c3aed',
-  workshop: '#16a34a',
+  journal: '#0d9488',
+  conference: '#d97706',
+  workshop: '#65a30d',
   preprint: '#ea580c',
 };
 
@@ -76,13 +76,16 @@ const pubLink = (pub: any) => {
           return (
             <div class="year-section">
 
-              <!-- Year divider — "N more" button lives here -->
+              <!-- Year divider — "N more" toggle lives here -->
               <div class="year-divider">
                 <span class="year-label">{year}</span>
                 <div class="year-rule"></div>
                 {rest.length > 0 && (
-                  <button class="more-btn" data-target={`more-${year}`}>
-                    +{rest.length} more
+                  <button class="more-btn" data-target={`more-${year}`} aria-expanded="false">
+                    <span class="more-btn-label">+{rest.length} more</span>
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="more-btn-chevron">
+                      <path d="m5 7.5 5 5 5-5"/>
+                    </svg>
                   </button>
                 )}
               </div>
@@ -110,9 +113,7 @@ const pubLink = (pub: any) => {
                   <p class="pub-authors">{top.authors.join(', ')}</p>
                   <p class="pub-venue">{top.venue}</p>
                   {top.abstract && (
-                    <p class="pub-abstract">
-                      {top.abstract.length > 220 ? top.abstract.slice(0, 220) + '…' : top.abstract}
-                    </p>
+                    <p class="pub-abstract">{top.abstract}</p>
                   )}
                 </div>
                 <div class="pub-links">
@@ -148,9 +149,7 @@ const pubLink = (pub: any) => {
                         <p class="pub-authors">{pub.authors.join(', ')}</p>
                         <p class="pub-venue">{pub.venue}</p>
                         {pub.abstract && (
-                          <p class="pub-abstract">
-                            {pub.abstract.length > 220 ? pub.abstract.slice(0, 220) + '…' : pub.abstract}
-                          </p>
+                          <p class="pub-abstract">{pub.abstract}</p>
                         )}
                       </div>
                       <div class="pub-links">
@@ -185,52 +184,17 @@ const pubLink = (pub: any) => {
   </div>
 </section>
 
-<!-- ── Publication modal overlay ── -->
-<div id="pub-modal" class="pub-modal" role="dialog" aria-modal="true" aria-label="More publications" hidden>
-  <div class="pub-modal-backdrop"></div>
-  <div class="pub-modal-panel">
-    <div class="pub-modal-head">
-      <span class="pub-modal-year"></span>
-      <button class="pub-modal-close" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <path d="M18 6 6 18M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    <div class="pub-modal-list"></div>
-  </div>
-</div>
-
 <style>
   /* ── Desktop: fp-mode centers direct children via margin:auto ── */
+  /* Publications list grows with the page now — no internal scroll box,
+     the browser's own scrollbar handles a long list. */
   @media (min-width: 768px) {
     .pub-container {
-      /* Don't override fp-mode's margin:auto — let it center the whole block */
-      max-height: calc(100vh - 72px - 3rem);
-      flex-shrink: 1 !important;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-      min-height: 0;
     }
-
-    .pub-scroll {
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding-right: 0.375rem;
-    }
-    .pub-scroll::-webkit-scrollbar { width: 4px; }
-    .pub-scroll::-webkit-scrollbar-track { background: transparent; }
-    .pub-scroll::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.15);
-      border-radius: 2px;
-    }
-    .pub-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.28); }
 
     .pub-footer {
-      flex-shrink: 0;
       padding-top: 0.75rem;
       border-top: 1px solid rgba(255,255,255,0.07);
     }
@@ -290,7 +254,7 @@ const pubLink = (pub: any) => {
   .pub-card {
     display: flex;
     gap: 1rem;
-    padding: 0.875rem 1.25rem;
+    padding: 1rem 1.25rem;
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 10px;
     background: rgba(255,255,255,0.06);
@@ -298,8 +262,8 @@ const pubLink = (pub: any) => {
     transition: background 0.15s ease, border-color 0.15s ease;
   }
   .pub-card:hover {
-    background: rgba(255,255,255,0.04);
-    border-color: rgba(255,255,255,0.11);
+    background: rgba(255,255,255,0.09);
+    border-color: rgba(255,255,255,0.18);
   }
 
   .pub-body { flex: 1; min-width: 0; }
@@ -325,11 +289,11 @@ const pubLink = (pub: any) => {
   .cite-badge {
     font-size: 0.68rem;
     font-weight: 700;
-    color: #bfdbfe;
-    background: rgba(59, 130, 246, 0.12);
+    color: #fde68a;
+    background: rgba(245, 158, 11, 0.12);
     padding: 2px 10px;
     border-radius: 20px;
-    border: 1px solid rgba(59, 130, 246, 0.3);
+    border: 1px solid rgba(245, 158, 11, 0.3);
   }
 
   .pub-title {
@@ -340,21 +304,27 @@ const pubLink = (pub: any) => {
     margin-bottom: 0.35rem;
   }
   .pub-title a { color: inherit; text-decoration: none; transition: color 0.15s; }
-  .pub-title a:hover { color: #60a5fa; }
+  .pub-title a:hover { color: #fbbf24; }
 
-  .pub-authors { font-size: 0.82rem; color: #8094a8; margin-bottom: 0.2rem; line-height: 1.4; }
-  .pub-venue   { font-size: 0.82rem; color: #7c9bc0; font-style: italic; line-height: 1.4; }
+  .pub-authors { font-size: 0.85rem; color: #9fb0c3; margin-bottom: 0.25rem; line-height: 1.5; }
+  .pub-venue   { font-size: 0.85rem; color: #8fadd6; font-style: italic; line-height: 1.5; }
 
-  /* 2-line preview on desktop — cards are wide enough */
+  /* 2-line preview by default — click "Read more" (added by script only when
+     the text is actually clamped) to see the rest in place. */
   .pub-abstract {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    font-size: 0.78rem;
-    color: #7c8fa0;
-    line-height: 1.55;
-    margin-top: 0.3rem;
+    font-size: 0.82rem;
+    color: #9aacc0;
+    line-height: 1.6;
+    margin-top: 0.4rem;
+  }
+  .pub-abstract.expanded {
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
   }
 
   /* ── Links ── */
@@ -374,20 +344,21 @@ const pubLink = (pub: any) => {
     text-align: center;
     letter-spacing: 0.04em;
     transition: all 0.15s ease;
-    background: #2563eb;
+    background: #d97706;
     color: #fff;
-    border: 1px solid #2563eb;
+    border: 1px solid #d97706;
   }
-  .pub-link:hover { background: #1d4ed8; }
+  .pub-link:hover { background: #b45309; }
 
-  /* ── "N more" toggle button (lives in year-divider) ── */
+  /* ── "N more" toggle button (lives in year-divider) — expands the rest
+     of that year's publications inline, right in the page flow. ── */
   .more-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.35rem;
     font-size: 0.72rem;
     font-weight: 600;
-    color: #3b82f6;
+    color: #fbbf24;
     background: none;
     border: none;
     cursor: pointer;
@@ -397,210 +368,83 @@ const pubLink = (pub: any) => {
     flex-shrink: 0;
     white-space: nowrap;
   }
-  .more-btn:hover { background: rgba(59,130,246,0.1); }
+  .more-btn:hover { background: rgba(245,158,11,0.12); color: #fcd34d; }
+  .more-btn-chevron {
+    width: 0.7rem;
+    height: 0.7rem;
+    transition: transform 0.2s ease;
+  }
+  .more-btn[aria-expanded="true"] .more-btn-chevron { transform: rotate(180deg); }
 
   .more-inner {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    overflow: hidden;
   }
   .more-inner[hidden] { display: none; }
 
-  /* ── Modal overlay ── */
-  .pub-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 900;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: clamp(0.75rem, 4vw, 2.5rem);
-  }
-  .pub-modal[hidden] { display: none; }
-
-  .pub-modal-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(6, 10, 20, 0.82);
-    animation: fade-in 0.15s ease forwards;
-  }
-
-  .pub-modal-panel {
-    position: relative;
-    z-index: 1;
-    background: #0f172a;
-    border: 1px solid rgba(255,255,255,0.13);
-    border-radius: 16px;
-    width: min(680px, 100%);
-    max-height: min(82vh, 720px);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.6);
-    animation: fade-in 0.15s ease forwards;
-    will-change: opacity;
-  }
-  @keyframes fade-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  .pub-modal-panel.closing {
-    animation: fade-out 0.12s ease forwards;
-  }
-  @keyframes fade-out {
-    from { opacity: 1; }
-    to   { opacity: 0; }
-  }
-
-  .pub-modal-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.25rem 0.75rem;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    flex-shrink: 0;
-  }
-  .pub-modal-year {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #64748b;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .pub-modal-close {
-    width: 1.75rem;
-    height: 1.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 6px;
+  /* Abstract expand toggle — inserted by script only when text is clamped */
+  .abstract-toggle {
+    display: inline-block;
+    margin-top: 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #fbbf24;
+    background: none;
+    border: none;
     cursor: pointer;
-    color: #94a3b8;
-    transition: background 0.15s, color 0.15s;
-    flex-shrink: 0;
+    padding: 0;
   }
-  .pub-modal-close:hover { background: rgba(255,255,255,0.12); color: #e2e8f0; }
-  .pub-modal-close svg { width: 0.875rem; height: 0.875rem; }
-
-  .pub-modal-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0.875rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.65rem;
-  }
-  .pub-modal-list::-webkit-scrollbar { width: 4px; }
-  .pub-modal-list::-webkit-scrollbar-track { background: transparent; }
-  .pub-modal-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
-
-  /* Cards inside modal get full abstract */
-  .pub-modal-list .pub-abstract {
-    display: block !important;
-    -webkit-line-clamp: unset !important;
-    overflow: visible !important;
-    font-size: 0.8rem;
-    color: #7c8fa0;
-    line-height: 1.6;
-    margin-top: 0.4rem;
-  }
-  .pub-modal-list .pub-card {
-    padding: 0.875rem 1rem;
-  }
+  .abstract-toggle:hover { color: #fcd34d; }
 
   /* ── Mobile ── */
   @media (max-width: 767px) {
-    /* Let the fp-mode section handle scrolling — no inner scroll container */
     .pub-container {
       margin-top: 0 !important;
       margin-bottom: 0 !important;
-      max-height: none !important;
-      overflow: visible !important;
-    }
-    .pub-scroll {
-      overflow: visible !important;
-      max-height: none !important;
     }
     .stat-sep { display: none; }
     .stats-row { gap: 1.5rem; }
     .stat-num { font-size: 2rem; }
     .pub-card { flex-direction: column; gap: 0.75rem; padding: 0.875rem 1rem; }
     .pub-links { flex-direction: row; }
-    .pub-abstract { display: none; }
+    .pub-abstract, .abstract-toggle { display: none; }
   }
 </style>
 
 <script>
-  const modal      = document.getElementById('pub-modal') as HTMLElement;
-  const modalPanel = modal.querySelector('.pub-modal-panel') as HTMLElement;
-  const modalYear  = modal.querySelector('.pub-modal-year') as HTMLElement;
-  const modalList  = modal.querySelector('.pub-modal-list') as HTMLElement;
-  const closeBtn   = modal.querySelector('.pub-modal-close') as HTMLButtonElement;
-  const backdrop   = modal.querySelector('.pub-modal-backdrop') as HTMLElement;
+  // "N more" — expands the rest of a year's publications inline.
+  document.querySelectorAll<HTMLButtonElement>('.more-btn').forEach((btn) => {
+    const targetId = btn.dataset.target!;
+    const moreInner = document.getElementById(targetId);
+    const label = btn.querySelector('.more-btn-label') as HTMLElement;
+    const collapsedLabel = label.textContent!;
+    if (!moreInner) return;
 
-  function openModal() {
-    modal.hidden = false;
-    document.body.style.overflow = 'hidden';
-    modalPanel.classList.remove('closing');
-  }
-
-  function closeModal() {
-    modalPanel.classList.add('closing');
-    modalPanel.addEventListener('animationend', () => {
-      modal.hidden = true;
-      document.body.style.overflow = '';
-      modalPanel.classList.remove('closing');
-    }, { once: true });
-  }
-
-  // Open modal from "N more" button
-  document.querySelectorAll<HTMLButtonElement>('.more-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const section  = btn.closest('.year-section') as HTMLElement;
-      const yearText = section.querySelector('.year-label')!.textContent!;
-      const targetId = btn.dataset.target!;
-      const moreInner = document.getElementById(targetId);
-
-      // Set year label
-      modalYear.textContent = yearText + ' — All Publications';
-
-      // Populate list: top pub + extra pubs
-      modalList.innerHTML = '';
-      const topCard = section.querySelector('.pub-card')!.cloneNode(true) as HTMLElement;
-      modalList.appendChild(topCard);
-      if (moreInner) {
-        moreInner.querySelectorAll('.pub-card').forEach(card => {
-          modalList.appendChild(card.cloneNode(true));
-        });
-      }
-
-      openModal();
-      // Scroll to top
-      modalList.scrollTop = 0;
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      moreInner.hidden = expanded;
+      btn.setAttribute('aria-expanded', String(!expanded));
+      label.textContent = expanded ? collapsedLabel : 'Show fewer';
     });
   });
 
-  // Close on backdrop click or close button
-  backdrop.addEventListener('click', closeModal);
-  closeBtn.addEventListener('click', closeModal);
-
-  // Close on Escape
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !modal.hidden) closeModal();
+  // Abstracts: only show a "Read more" toggle when the text is actually
+  // clamped (scrollHeight > clientHeight), so short abstracts get no
+  // pointless dangling control.
+  requestAnimationFrame(() => {
+    document.querySelectorAll<HTMLElement>('.pub-abstract').forEach((p) => {
+      if (p.scrollHeight <= p.clientHeight + 2) return;
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'abstract-toggle';
+      toggle.textContent = 'Read more';
+      toggle.addEventListener('click', () => {
+        const expanded = p.classList.toggle('expanded');
+        toggle.textContent = expanded ? 'Show less' : 'Read more';
+      });
+      p.insertAdjacentElement('afterend', toggle);
+    });
   });
-
-  // Trap scroll inside modal — stopPropagation prevents fp-mode's window listener from firing
-  modal.addEventListener('wheel', (e) => {
-    e.stopPropagation();
-    // Prevent default only at list boundaries so the section below doesn't scroll
-    const atTop    = modalList.scrollTop <= 0 && e.deltaY < 0;
-    const atBottom = modalList.scrollTop + modalList.clientHeight >= modalList.scrollHeight - 1 && e.deltaY > 0;
-    if (atTop || atBottom) e.preventDefault();
-  }, { passive: false });
-
-  modal.addEventListener('touchmove', (e) => {
-    e.stopPropagation();
-  }, { passive: true });
 </script>

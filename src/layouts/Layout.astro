@@ -29,386 +29,168 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Electrolize&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="/styles/arclab-theme.css">
     <link rel="preload" href="/assets/robot-pointcloud.bin" as="fetch" crossorigin>
   </head>
   <body class="bg-slate-900 text-white antialiased">
-    <!-- Shooting stars — fixed, behind everything, all sections -->
-    <canvas id="stars-canvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+    <!-- Shooting stars — fixed, behind everything, all sections.
+         z-index 11: Hero's own translucent backdrop (z-10) isn't a stacking
+         context root, so it competes directly in this same root context —
+         without this, it paints over the stars/Kerbal for the entire time
+         Hero is on screen. Still well below Hero's actual content (z-20). -->
+    <canvas id="stars-canvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:11;pointer-events:none;"></canvas>
+
+    <!-- Kerbal — a small background easter egg, tumbling past every so often -->
+    <svg id="kerbal-sprite" viewBox="-28 -34 56 68" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="kb-suit" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#e7e2d2"/>
+        </linearGradient>
+        <radialGradient id="kb-visor" cx="35%" cy="30%" r="75%">
+          <stop offset="0%" stop-color="#eaf8ff"/>
+          <stop offset="55%" stop-color="#5fc3e8"/>
+          <stop offset="100%" stop-color="#1c5c86"/>
+        </radialGradient>
+      </defs>
+
+      <!-- backpack -->
+      <rect x="-8" y="-6" width="16" height="22" rx="4" fill="#b7c0ca"/>
+      <rect x="-5" y="-2" width="10" height="6" rx="2" fill="#838d99"/>
+      <circle cx="-4" cy="17" r="2.1" fill="#5b6472"/>
+      <circle cx="4" cy="17" r="2.1" fill="#5b6472"/>
+
+      <!-- legs (grouped so they can drift together) -->
+      <g class="kb-legs">
+        <ellipse cx="-4" cy="20" rx="4.4" ry="7.8" fill="url(#kb-suit)"/>
+        <ellipse cx="-4.3" cy="27.3" rx="4.8" ry="3.1" fill="#96a0ac"/>
+        <ellipse cx="4" cy="20" rx="4.4" ry="7.8" fill="url(#kb-suit)"/>
+        <ellipse cx="4.3" cy="27.3" rx="4.8" ry="3.1" fill="#96a0ac"/>
+      </g>
+
+      <!-- arms — fixed, relaxed floating pose -->
+      <ellipse cx="-12" cy="0" rx="4" ry="7.6" fill="url(#kb-suit)" transform="rotate(-20 -12 0)"/>
+      <circle cx="-15.6" cy="7" r="3.4" fill="#f4f1e6"/>
+      <ellipse cx="12" cy="0" rx="4" ry="7.6" fill="url(#kb-suit)" transform="rotate(20 12 0)"/>
+      <circle cx="15.6" cy="7" r="3.4" fill="#f4f1e6"/>
+
+      <!-- torso -->
+      <ellipse cx="0" cy="1" rx="10.8" ry="13.8" fill="url(#kb-suit)"/>
+      <ellipse cx="0" cy="5.5" rx="10.8" ry="4" fill="#f97316"/>
+      <rect x="-3.4" y="-6" width="6.8" height="5.5" rx="1.6" fill="#8a93a0"/>
+      <circle cx="0" cy="-3.4" r="0.9" fill="#4ade80"/>
+
+      <!-- neck collar -->
+      <ellipse cx="0" cy="-11" rx="6" ry="2" fill="#6b7480"/>
+
+      <!-- helmet -->
+      <circle cx="0" cy="-17.5" r="5.9" fill="#9ee066"/>
+      <circle cx="-1.9" cy="-18.3" r="0.95" fill="#0f172a"/>
+      <circle cx="1.9" cy="-18.3" r="0.95" fill="#0f172a"/>
+      <path d="M -2 -15 Q 0 -13.4 2 -15" stroke="#0f172a" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+      <circle cx="0" cy="-17.5" r="11.5" fill="none" stroke="#ffffff" stroke-width="1.6"/>
+      <circle cx="0" cy="-17.5" r="10" fill="url(#kb-visor)" fill-opacity="0.82"/>
+      <ellipse cx="-3.6" cy="-21.3" rx="2.8" ry="1.5" fill="rgba(255,255,255,0.75)"/>
+
+      <!-- antenna, tip blinks -->
+      <line x1="0" y1="-29" x2="0" y2="-33" stroke="#b7c0ca" stroke-width="1.1"/>
+      <circle class="kb-blink" cx="0" cy="-33.5" r="1.2" fill="#ff5b5b"/>
+    </svg>
+
     <slot />
 
     <script>
+      // ── Natural scroll + scroll-reveal ──────────────────────────────────────
+      // Sections live in normal document flow — the browser's own momentum
+      // scrolling (trackpad/wheel/touch) carries the user between them. This
+      // script only adds two things on top of that: (1) each section fades /
+      // slides its content in the first time it's scrolled into view, and
+      // (2) a slim side-nav that tracks + jumps between sections.
       document.addEventListener('DOMContentLoaded', () => {
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const sections = [...document.querySelectorAll('main > section')];
+        const sections = [...document.querySelectorAll<HTMLElement>('main > section[id]')];
         if (sections.length === 0) return;
 
-        // ── Fallback: smooth-scroll for reduced-motion only ───────────────────
-        if (reducedMotion) {
-          document.querySelectorAll('a[href^="#"]').forEach(link => {
-            link.addEventListener('click', function (e) {
-              const href = (this as HTMLAnchorElement).getAttribute('href');
-              if (!href || href.length <= 1) return;
-              const target = document.querySelector(href);
-              if (!target) return;
-              e.preventDefault();
-              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ── Reveal-on-scroll ───────────────────────────────────────────────
+        // Adds `.in-view` once a section crosses into the viewport, which
+        // un-pauses the existing .arclab-fade-in / .arclab-slide-up keyframes
+        // (see arclab-theme.css) — same per-element animation-delay staggering
+        // as before, just triggered by scroll position instead of page load.
+        if (!reducedMotion && 'IntersectionObserver' in window) {
+          const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add('in-view');
+              revealObserver.unobserve(entry.target);
             });
-          });
-          return;
+          }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+          sections.forEach((s) => revealObserver.observe(s));
+        } else {
+          sections.forEach((s) => s.classList.add('in-view'));
         }
 
-        // ── Fullpage mode ─────────────────────────────────────────────────────
-        // Set initial state atomically with fp-init disabling transitions.
-        // This prevents hero from flashing opacity 0→1 on load.
-        document.body.classList.add('fp-mode', 'fp-init');
-        sections[0].classList.add('fp-active');
-        document.dispatchEvent(new CustomEvent('fp-section-change', { detail: { id: sections[0].id } }));
-
-        // Enable transitions after first painted frame
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          document.body.classList.remove('fp-init');
-        }));
-
-        let current = 0;
-        let locked = false;
-        const LOCK_MS         = 650; // h-scroll snap cooldown
-        const LOCK_SNAP       = 280; // cooldown after rAF-lerp commit (animation already done)
-        const LOCK_DIRECT     = 480; // cooldown after CSS-transition commit (must outlast 0.45s)
-        const LOCK_SLIDE_ENTRY = 820; // longer entry lock when landing on h-scroll sections
-
-        // Boundary guard: keep true while h-scroll is actively moving; only allow
-        // section navigation once the horizontal scroll has fully settled.
-        let boundaryHit = false;
-        let boundaryTimer: ReturnType<typeof setTimeout>;
-
-        // Side-nav dots
+        // ── Side-nav dots — reflect scroll position, click to jump ─────────
         const nav = document.createElement('nav');
-        nav.id = 'fp-nav';
+        nav.id = 'side-nav';
         nav.setAttribute('aria-label', 'Page sections');
-        sections.forEach((_, i) => {
+        const dots = sections.map((s, i) => {
           const dot = document.createElement('button');
-          dot.className = 'fp-dot' + (i === 0 ? ' fp-dot-active' : '');
-          dot.setAttribute('aria-label', `Section ${i + 1}`);
-          dot.addEventListener('click', () => goTo(i));
+          dot.type = 'button';
+          dot.className = 'side-dot' + (i === 0 ? ' side-dot-active' : '');
+          dot.setAttribute('aria-label', s.id.replace(/-/g, ' '));
+          dot.addEventListener('click', () => {
+            s.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+          });
           nav.appendChild(dot);
+          return dot;
         });
         document.body.appendChild(nav);
 
-        function updateDots() {
-          nav.querySelectorAll('.fp-dot').forEach((d, i) =>
-            d.classList.toggle('fp-dot-active', i === current)
-          );
+        let activeId = sections[0].id;
+        function setActive(id: string) {
+          if (id === activeId) return;
+          activeId = id;
+          dots.forEach((d, i) => d.classList.toggle('side-dot-active', sections[i].id === id));
+          document.dispatchEvent(new CustomEvent('fp-section-change', { detail: { id } }));
         }
 
-        // ── Horizontal-scroll section helpers (.fp-scroll-x) ─────────────────
-        function getHScroll(section: HTMLElement) {
-          const vp = section.querySelector<HTMLElement>('.fp-scroll-x');
-          if (!vp || vp.scrollWidth <= vp.clientWidth + 4) return null;
-          const w = vp.clientWidth;
-          const cur = Math.round(vp.scrollLeft / w);
-          const total = Math.round(vp.scrollWidth / w);
-          const maxScroll = vp.scrollWidth - vp.clientWidth;
-          return { vp, cur, total, w, atStart: vp.scrollLeft <= 4, atEnd: vp.scrollLeft >= maxScroll - 4 };
-        }
-
-        function scrollHTo(vp: HTMLElement, idx: number) {
-          locked = true;
-          vp.scrollTo({ left: idx * vp.clientWidth, behavior: 'smooth' });
-          setTimeout(() => { locked = false; }, LOCK_MS);
-        }
-
-        // ── Section transitions — rAF-lerped fade + drift ───────────────────
-        // Visual state runs in a requestAnimationFrame loop (60fps, decoupled
-        // from wheel event rate). Wheel events only update a target value.
-        // The lerp gives smooth acceleration/deceleration. No full-page slide.
-        const DRIFT       = 24;   // px drift on outgoing/incoming sections
-        const LERP        = 0.16; // per-frame lerp (higher = snappier, lower = floatier)
-        const DRAG_THRESH = 380;  // cumulative delta needed to complete a transition
-
-        let xDir     = 0;    // +1 | -1 | 0
-        let xSection = -1;   // target section index
-        let xProg    = 0;    // animated progress [0..1]
-        let xTarget  = 0;    // target for xProg (wheel events update this)
-        let xAccum   = 0;    // accumulated wheel delta
-        let xRaf       = 0;
-        let xIdle: ReturnType<typeof setTimeout>;
-        let xCommitting = false; // true when idle has decided to commit — locks + speeds up final lerp
-
-        // Apply opacity + drift to both sections based on current progress
-        function xApply(p: number) {
-          if (xSection < 0) return;
-          sections[current].style.opacity   = String(1 - p);
-          sections[current].style.transform = `translateY(${xDir > 0 ? -p * DRIFT : p * DRIFT}px)`;
-          sections[xSection].style.opacity  = String(p);
-          sections[xSection].style.transform = `translateY(${xDir > 0 ? (1-p)*DRIFT : -(1-p)*DRIFT}px)`;
-        }
-
-        // Commit or cancel — called when lerp settles at xTarget
-        function xFinish(commit: boolean) {
-          xRaf = 0;
-          xCommitting = false;
-          clearTimeout(xIdle);
-          const toIdx = xSection, fromIdx = current;
-          // Set inline styles to match what CSS will give after cleanup,
-          // then disable transition so cssText removal causes zero visual change.
-          sections[fromIdx].style.transition = 'none';
-          sections[toIdx].style.transition   = 'none';
-          sections[fromIdx].style.opacity    = commit ? '0' : '1';
-          sections[fromIdx].style.transform  = '';
-          sections[toIdx].style.opacity      = commit ? '1' : '0';
-          sections[toIdx].style.transform    = '';
-          void sections[fromIdx].offsetHeight; // flush paint
-          if (commit) {
-            sections[fromIdx].classList.remove('fp-active');
-            sections[toIdx].classList.add('fp-active');
-          }
-          sections[fromIdx].style.cssText = '';
-          sections[toIdx].style.cssText   = '';
-          if (commit) {
-            sections[toIdx].dispatchEvent(new CustomEvent('fp-activate', { bubbles: false }));
-            current = toIdx;
-            updateDots();
-            xDotFlipped = false;
-            history.replaceState(null, '', '#' + (sections[toIdx].id || ''));
-            document.dispatchEvent(new CustomEvent('fp-section-change', { detail: { id: sections[toIdx].id } }));
-            locked = true;
-            const snapDur = sections[toIdx].classList.contains('fp-slide-section') ? LOCK_SLIDE_ENTRY : LOCK_SNAP;
-            setTimeout(() => { locked = false; xDir = 0; xSection = -1; xProg = 0; xTarget = 0; xAccum = 0; }, snapDur);
-          } else {
-            xDir = 0; xSection = -1; xProg = 0; xTarget = 0; xAccum = 0; xDotFlipped = false;
-          }
-        }
-
-        // rAF loop — runs at display refresh rate regardless of input speed
-        let xDotFlipped = false; // tracks whether nav dot was already updated mid-transition
-        function xTick() {
-          xProg += (xTarget - xProg) * (xCommitting ? 0.28 : LERP);
-          const done = Math.abs(xTarget - xProg) < 0.002;
-          if (done) xProg = xTarget;
-          xApply(xProg);
-          // Update nav dot at midpoint so it feels responsive, not laggy
-          if (!xDotFlipped && xProg > 0.5 && xSection >= 0) {
-            xDotFlipped = true;
-            nav.querySelectorAll('.fp-dot').forEach((d, i) =>
-              d.classList.toggle('fp-dot-active', i === xSection));
-            document.dispatchEvent(new CustomEvent('fp-section-change', { detail: { id: sections[xSection].id } }));
-          } else if (xDotFlipped && xProg <= 0.5) {
-            xDotFlipped = false;
-            updateDots(); // rolled back past midpoint — restore current dot
-            document.dispatchEvent(new CustomEvent('fp-section-change', { detail: { id: sections[current].id } }));
-          }
-          if (done) { xFinish(xTarget > 0.5); return; }
-          xRaf = requestAnimationFrame(xTick);
-        }
-        function xStart() { if (!xRaf) xRaf = requestAnimationFrame(xTick); }
-
-        // Prepare both sections for a new drag transition (no animation yet)
-        function xBegin(dir: number, tgtIdx: number) {
-          xDir = dir; xSection = tgtIdx; xAccum = 0; xProg = 0; xTarget = 0; xDotFlipped = false;
-          sections[tgtIdx].style.transition = 'none';
-          sections[tgtIdx].style.opacity    = '0';
-          sections[tgtIdx].style.transform  = `translateY(${dir > 0 ? DRIFT : -DRIFT}px)`;
-          sections[current].style.transition = 'none';
-          void sections[tgtIdx].offsetHeight;
-        }
-
-        // Direct navigation (keyboard / nav dots / links) — CSS transition, no drag
-        function commitDirect(toIdx: number) {
-          locked = true;
-          const fromIdx    = current;
-          const going_down = toIdx > fromIdx;
-          const tr = 'opacity 0.45s ease, transform 0.45s ease';
-          sections[toIdx].style.transition = 'none';
-          sections[toIdx].style.opacity    = '0';
-          sections[toIdx].style.transform  = `translateY(${going_down ? DRIFT : -DRIFT}px)`;
-          void sections[toIdx].offsetHeight;
-          requestAnimationFrame(() => {
-            sections[fromIdx].style.transition = tr;
-            sections[fromIdx].style.opacity    = '0';
-            sections[fromIdx].style.transform  = `translateY(${going_down ? -DRIFT : DRIFT}px)`;
-            sections[toIdx].style.transition   = tr;
-            sections[toIdx].style.opacity      = '1';
-            sections[toIdx].style.transform    = 'translateY(0)';
-            sections[fromIdx].classList.remove('fp-active');
-            sections[toIdx].classList.add('fp-active');
-            sections[toIdx].dispatchEvent(new CustomEvent('fp-activate', { bubbles: false }));
-            current = toIdx;
-            updateDots();
-            history.replaceState(null, '', '#' + (sections[toIdx].id || ''));
-            document.dispatchEvent(new CustomEvent('fp-section-change', { detail: { id: sections[toIdx].id } }));
-          });
-          const directDur = sections[toIdx].classList.contains('fp-slide-section') ? LOCK_SLIDE_ENTRY : LOCK_DIRECT;
-          setTimeout(() => {
-            sections[fromIdx].style.cssText = '';
-            sections[toIdx].style.cssText   = '';
-            locked = false;
-          }, directDur);
-        }
-
-        function goTo(idx: number, resetScroll = true) {
-          if (locked || idx < 0 || idx >= sections.length || idx === current) return;
-          if (xDir !== 0) {
-            cancelAnimationFrame(xRaf); xRaf = 0; clearTimeout(xIdle);
-            xFinish(false); // cancel any in-progress drag
-          }
-          if (resetScroll) {
-            sections[idx].scrollTop = 0;
-            const vp = sections[idx].querySelector<HTMLElement>('.fp-scroll-x');
-            if (vp) {
-              const targetLeft = idx > current ? 0 : vp.scrollWidth - vp.clientWidth;
-              vp.scrollTo({ left: targetLeft, behavior: 'instant' });
+        const navObserver = new IntersectionObserver((entries) => {
+          // Pick whichever observed section has the largest visible share —
+          // avoids flicker when two sections are both partly on screen.
+          let best: IntersectionObserverEntry | null = null;
+          for (const entry of entries) {
+            if (entry.isIntersecting && (!best || entry.intersectionRatio > best.intersectionRatio)) {
+              best = entry;
             }
           }
-          commitDirect(idx);
-        }
+          if (best) setActive((best.target as HTMLElement).id);
+        }, { threshold: [0.25, 0.5, 0.75] });
+        sections.forEach((s) => navObserver.observe(s));
 
-        // Wheel — only updates xTarget; rAF loop handles the visuals
-        window.addEventListener('wheel', (e) => {
-          e.preventDefault();
-          if (locked) return;
-          const s  = sections[current];
-          const d  = e.deltaY;
-          const hs = getHScroll(s);
-
-          if (hs) {
-            if (xDir !== 0) { xTarget = 0; xStart(); return; }
-            if (d > 0 && !hs.atEnd) {
-              hs.vp.scrollLeft += Math.abs(d) * 2;
-              clearTimeout(boundaryTimer);
-              boundaryHit = true;
-              boundaryTimer = setTimeout(() => { boundaryHit = false; }, 400);
-              return;
-            }
-            if (d < 0 && !hs.atStart) {
-              hs.vp.scrollLeft -= Math.abs(d) * 2;
-              clearTimeout(boundaryTimer);
-              boundaryHit = true;
-              boundaryTimer = setTimeout(() => { boundaryHit = false; }, 400);
-              return;
-            }
-            // At boundary — only navigate once horizontal scroll has settled
-            if (boundaryHit) return;
-            if (d > 0) goTo(current + 1);
-            else if (d < 0) goTo(current - 1);
-            return;
-          }
-
-          const atBottom = s.scrollTop + s.clientHeight >= s.scrollHeight - 2;
-          const atTop    = s.scrollTop <= 2;
-          if (d > 0 && !atBottom) { s.scrollTop += d; if (xDir !== 0) { xTarget = 0; xStart(); } return; }
-          if (d < 0 && !atTop)    { s.scrollTop += d; if (xDir !== 0) { xTarget = 0; xStart(); } return; }
-
-          const newDir = d > 0 ? 1 : -1;
-          const tgtIdx = current + newDir;
-          if (tgtIdx < 0 || tgtIdx >= sections.length) return;
-
-          if (xDir !== 0 && newDir !== xDir) { xTarget = 0; xStart(); return; }
-          if (xDir === 0) xBegin(newDir, tgtIdx);
-
-          xAccum  += Math.abs(d);
-          xTarget  = Math.min(xAccum / DRAG_THRESH, 1);
-
-          // Snap when scrolling stops
-          clearTimeout(xIdle);
-          xIdle = setTimeout(() => {
-            if (xProg >= 0.3) {
-              xTarget = 1;
-              xCommitting = true; // lock out reversals; use faster lerp to finish cleanly
-              locked = true;
-            } else {
-              xTarget = 0;
-            }
-            xStart();
-          }, 140);
-
-          xStart();
-        }, { passive: false });
-
-        // Keyboard
-        window.addEventListener('keydown', (e) => {
-          if (locked) return;
-          const s = sections[current];
-          const hs = getHScroll(s);
-          if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-            e.preventDefault();
-            if (hs) {
-              if (!hs.atEnd) scrollHTo(hs.vp, hs.cur + 1); else goTo(current + 1);
-            } else if (s.scrollTop + s.clientHeight >= s.scrollHeight - 2) {
-              goTo(current + 1);
-            } else { s.scrollTop += 120; }
-          } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-            e.preventDefault();
-            if (hs) {
-              if (!hs.atStart) scrollHTo(hs.vp, hs.cur - 1); else goTo(current - 1);
-            } else if (s.scrollTop <= 2) {
-              goTo(current - 1);
-            } else { s.scrollTop -= 120; }
-          }
+        // Keep the URL hash in sync without triggering a jump
+        document.addEventListener('fp-section-change', (e) => {
+          const id = (e as CustomEvent<{ id: string }>).detail.id;
+          history.replaceState(null, '', '#' + id);
         });
-
-        // Touch — native horizontal scroll handles swipe on fp-scroll-x elements;
-        // vertical swipe still navigates sections
-        let touchX = 0;
-        let touchY = 0;
-        window.addEventListener('touchstart', e => {
-          touchX = e.touches[0].clientX;
-          touchY = e.touches[0].clientY;
-        }, { passive: true });
-        window.addEventListener('touchend', e => {
-          if (locked) return;
-          const dx = touchX - e.changedTouches[0].clientX;
-          const dy = touchY - e.changedTouches[0].clientY;
-          const s = sections[current];
-          const hs = getHScroll(s);
-
-          if (hs && Math.abs(dx) > Math.abs(dy)) {
-            // Horizontal swipe — native scroll handles it; just check boundary for section nav
-            if (Math.abs(dx) < 48) return;
-            if (dx > 0 && hs.atEnd)   { goTo(current + 1); return; }
-            if (dx < 0 && hs.atStart) { goTo(current - 1); return; }
-            return;
-          }
-
-          if (Math.abs(dy) < 48) return;
-          if (hs) {
-            // Vertical swipe on h-scroll section → navigate sections if at boundary
-            if (dy > 0 && hs.atEnd)   goTo(current + 1);
-            if (dy < 0 && hs.atStart) goTo(current - 1);
-            return;
-          }
-          if (dy > 0 && s.scrollTop + s.clientHeight >= s.scrollHeight - 2) goTo(current + 1);
-          else if (dy < 0 && s.scrollTop <= 2) goTo(current - 1);
-        }, { passive: true });
-
-        // Header nav links
-        document.querySelectorAll('a[href^="#"]').forEach(link => {
-          link.addEventListener('click', (e) => {
-            const href = (link as HTMLAnchorElement).getAttribute('href');
-            if (!href || href.length <= 1) return;
-            const idx = sections.findIndex(s => '#' + s.id === href);
-            if (idx >= 0) { e.preventDefault(); goTo(idx); }
-          });
-        });
-
-        // Honour initial URL hash
-        if (location.hash) {
-          const idx = sections.findIndex(s => '#' + s.id === location.hash);
-          if (idx > 0) setTimeout(() => goTo(idx, false), 150);
-        }
       });
     </script>
 
     <script>
-      // ── Shooting stars — global fixed background ──
+      // ── Shooting stars + a goofy tumbling Kerbal — global fixed background ──
       const sc = document.getElementById('stars-canvas') as HTMLCanvasElement;
       const ctx = sc.getContext('2d')!;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       function resize() { sc.width = window.innerWidth; sc.height = window.innerHeight; }
       resize();
       window.addEventListener('resize', resize);
+
+      if (reducedMotion) {
+        // Static/no motion — skip shooting stars and the Kerbal entirely.
+      } else {
 
       interface ShootingStar {
         x: number; y: number;
@@ -532,72 +314,64 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
         }
       }
       draw();
+
+      } // end reducedMotion guard
+    </script>
+
+    <script>
+      // ── Kerbal flight — a tween-based sprite pass, not a per-frame physics
+      // sim: pick a start/end/duration/spin, hand it to a CSS keyframe
+      // animation, let the compositor do the work. Re-schedules itself on
+      // animationend so flights never overlap.
+      const kerbal = document.getElementById('kerbal-sprite') as HTMLElement | null;
+      const kerbalReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (kerbal && !kerbalReducedMotion) {
+        function scheduleFlight() {
+          setTimeout(flyKerbal, 30000 + Math.random() * 30000); // every 30–60s
+        }
+
+        function flyKerbal() {
+          if (!kerbal) return;
+          const fromLeft = Math.random() < 0.5;
+          const y = Math.round(window.innerHeight * (0.12 + Math.random() * 0.55));
+          const duration = 15 + Math.random() * 9; // 15–24s to cross
+          const spins = (fromLeft ? 1 : -1) * (280 + Math.random() * 260);
+
+          kerbal.style.setProperty('--kb-start-x', fromLeft ? '-70px' : `${window.innerWidth + 70}px`);
+          kerbal.style.setProperty('--kb-end-x', fromLeft ? `${window.innerWidth + 70}px` : '-70px');
+          kerbal.style.setProperty('--kb-y', `${y}px`);
+          kerbal.style.setProperty('--kb-duration', `${duration}s`);
+          kerbal.style.setProperty('--kb-spin', `${spins}deg`);
+
+          kerbal.classList.remove('flying');
+          void kerbal.offsetWidth; // reflow so the animation restarts cleanly
+          kerbal.classList.add('flying');
+        }
+
+        kerbal.addEventListener('animationend', (e) => {
+          if (e.animationName === 'kb-flight') scheduleFlight();
+        });
+        setTimeout(flyKerbal, 6000); // first pass early enough to actually notice
+      }
     </script>
 
     <style is:global>
-      /* ── Fullpage layout ── */
-      body.fp-mode { overflow: hidden; }
-
-      body.fp-mode main {
-        position: fixed;
-        inset: 0;
-        overflow: hidden;
+      /* ── Natural scroll rhythm ── */
+      html {
+        scroll-behavior: smooth;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
       }
 
-      body.fp-mode main > section {
-        position: absolute;
-        inset: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.48s ease, transform 0.48s ease;
-        will-change: opacity, transform;
-        display: flex;
-        flex-direction: column;
+      /* Anchor jumps / scrollIntoView land clear of the fixed header */
+      main > section[id] {
+        scroll-margin-top: 76px;
       }
 
-      body.fp-mode main > section.fp-active {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      /* Kill transitions during initial setup — prevents flash on load */
-      body.fp-mode.fp-init main > section {
-        transition: none !important;
-      }
-
-      /* Push content below the 64px fixed header; breathing room at bottom */
-      body.fp-mode main > section:not(#hero) {
-        padding-top: 72px !important;
-        padding-bottom: 2rem !important;
-      }
-
-      /* Center content vertically when it fits; scrolls naturally when it overflows */
-      body.fp-mode main > section:not(#hero) > * {
-        flex-shrink: 0;
-        margin-top: auto;
-        margin-bottom: auto;
-        width: 100%;
-      }
-
-      /* fp-slide-section (e.g. awards carousel): fill full height */
-      body.fp-mode main > .fp-slide-section {
-        padding-bottom: 0 !important;
-      }
-      body.fp-mode main > .fp-slide-section > * {
-        margin-top: 0 !important;
-        margin-bottom: 0 !important;
-        flex: 1 !important;
-        min-height: 0 !important;
-      }
-
-      /* Footer unreachable in fp-mode */
-      body.fp-mode footer { display: none; }
-
-      /* ── Side-nav dots ── */
-      #fp-nav {
+      /* ── Side-nav dots — track scroll position, click to jump ── */
+      #side-nav {
         position: fixed;
         right: 1.25rem;
         top: 50%;
@@ -608,7 +382,7 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
         gap: 0.5rem;
       }
 
-      .fp-dot {
+      .side-dot {
         width: 6px;
         height: 6px;
         border-radius: 50%;
@@ -619,14 +393,57 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
         transition: all 0.3s ease;
       }
 
-      .fp-dot.fp-dot-active {
+      .side-dot.side-dot-active {
         background: rgba(255, 255, 255, 0.85);
         transform: scale(1.5);
         border-color: transparent;
       }
 
       @media (max-width: 768px) {
-        #fp-nav { display: none; }
+        #side-nav { display: none; }
+      }
+
+      /* ── Kerbal sprite — sized and glowed to actually read against the dark
+         background rather than disappearing into it ── */
+      #kerbal-sprite {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 88px;
+        height: 88px;
+        z-index: 12;
+        pointer-events: none;
+        opacity: 0;
+        filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.35)) drop-shadow(0 0 14px rgba(255, 255, 255, 0.15));
+        will-change: transform, opacity;
+      }
+      #kerbal-sprite.flying {
+        animation: kb-flight var(--kb-duration, 20s) linear forwards;
+      }
+      @keyframes kb-flight {
+        0%   { transform: translate(var(--kb-start-x), var(--kb-y)) rotate(0deg); opacity: 0; }
+        6%   { opacity: 1; }
+        94%  { opacity: 1; }
+        100% { transform: translate(var(--kb-end-x), var(--kb-y)) rotate(var(--kb-spin, 360deg)); opacity: 0; }
+      }
+      #kerbal-sprite .kb-legs {
+        transform-box: fill-box;
+        transform-origin: 50% 0%;
+        animation: kb-leg-drift 3.6s ease-in-out infinite;
+      }
+      @keyframes kb-leg-drift {
+        0%, 100% { transform: rotate(-5deg); }
+        50%      { transform: rotate(5deg); }
+      }
+      #kerbal-sprite .kb-blink {
+        animation: kb-blink 2.4s steps(1) infinite;
+      }
+      @keyframes kb-blink {
+        0%, 100% { opacity: 1; }
+        50%      { opacity: 0.2; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #kerbal-sprite { display: none; }
       }
     </style>
   </body>

@@ -1,11 +1,14 @@
 /* MIT ARC Lab Visual Identity */
 :root {
-  /* ARC Lab Brand Colors */
+  /* Mission-control accent palette — warm amber/signal-orange + teal,
+     deliberately not the blue/purple gradient every AI-generated site
+     defaults to. Variable names kept for low-risk migration; --arclab-blue
+     and --arclab-cyan now hold amber/teal values, not blue/cyan. */
   --arclab-primary: #0f1419;
   --arclab-secondary: #1a2332;
-  --arclab-accent: #2563eb;
-  --arclab-blue: #3b82f6;
-  --arclab-cyan: #06b6d4;
+  --arclab-accent: #d97706;
+  --arclab-blue: #f59e0b;
+  --arclab-cyan: #2dd4bf;
   --arclab-gray-50: #f8fafc;
   --arclab-gray-100: #f1f5f9;
   --arclab-gray-200: #e2e8f0;
@@ -20,6 +23,7 @@
   /* Typography */
   --arclab-font-primary: 'Inter', system-ui, sans-serif;
   --arclab-font-mono: 'JetBrains Mono', monospace;
+  --arclab-font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   
   /* Spacing */
   --arclab-spacing-xs: 0.25rem;
@@ -83,7 +87,7 @@
 .arclab-button:hover {
   background: var(--arclab-blue);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
 .arclab-button-secondary {
@@ -152,8 +156,10 @@
 }
 
 .arclab-heading-2 {
+  font-family: var(--arclab-font-display);
   font-size: 2.25rem;
-  font-weight: 400;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   line-height: 1.3;
   color: white;
   margin-bottom: var(--arclab-spacing-md);
@@ -221,16 +227,35 @@
   }
 }
 
-/* Animation utilities */
+/* Animation utilities — paused until the section scrolls into view (see
+   `.in-view`, toggled by the IntersectionObserver in Layout.astro). Keeping
+   these as animations (not transitions) means each element's own inline
+   `animation-delay` still staggers the reveal exactly as before. */
 .arclab-fade-in {
   animation: fadeIn 0.6s ease-out forwards;
+  animation-play-state: paused;
   opacity: 0;
 }
 
 .arclab-slide-up {
   animation: slideUp 0.8s ease-out forwards;
+  animation-play-state: paused;
   opacity: 0;
   transform: translateY(30px);
+}
+
+.in-view .arclab-fade-in,
+.in-view .arclab-slide-up {
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arclab-fade-in,
+  .arclab-slide-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @keyframes fadeIn {

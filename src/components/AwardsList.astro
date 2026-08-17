@@ -1,114 +1,101 @@
 ---
 import { awards } from '../data/awards.js';
 
-// Newest first
-const sorted = [...awards].sort((a, b) => b.year - a.year);
-const years  = [...new Set(sorted.map((a: any) => a.year))];
+// Chronological order — natural "career story" reading/tab order, independent
+// of where a node ends up sitting visually on the ring.
+const sorted = [...awards].sort((a, b) => a.year - b.year || a.id.localeCompare(b.id));
+const years = [...new Set(sorted.map((a) => a.year))]; // ascending
+const byYear = Object.fromEntries(years.map((y) => [y, sorted.filter((a) => a.year === y)]));
+const defaultYear = years[years.length - 1]; // most recent, matches the rest of the site
 
-// Flat list: year markers interleaved with awards
-const flatItems: Array<{ type: 'year'; year: number } | { type: 'award'; award: any; idx: number }> = [];
-let awardCount = 0;
-let prevYear: number | null = null;
-for (const award of sorted) {
-  if (award.year !== prevYear) {
-    flatItems.push({ type: 'year', year: award.year });
-    prevYear = award.year;
-  }
-  flatItems.push({ type: 'award', award, idx: awardCount++ });
+// Place `items` evenly around a ring of a given radius (percent of the square
+// container). Only one ring is ever shown at a time (either the year picker,
+// or one year's awards), so a single fixed radius is all that's needed — no
+// multi-ring layout math.
+const RING_R = 36; // % from center
+function ring(items) {
+  const n = items.length;
+  return items.map((item, i) => {
+    const deg = -90 + (360 / n) * i;
+    const rad = (deg * Math.PI) / 180;
+    const x = 50 + RING_R * Math.cos(rad);
+    const y = 50 + RING_R * Math.sin(rad);
+    return {
+      ...item,
+      x,
+      y,
+      // Build-time quadrant flip so a tooltip never clips off the container edge —
+      // no runtime measurement needed since these 6-ish positions never move.
+      tipV: y < 35 ? 'below' : 'above',
+      tipH: x < 35 ? 'right' : x > 65 ? 'left' : 'center',
+    };
+  });
 }
 
-const categoryBadge: Record<string, string> = {
-  research:   'bg-yellow-500/15 text-yellow-300 border border-yellow-500/30',
-  fellowship: 'bg-blue-500/15 text-blue-300 border border-blue-500/30',
-  funding:    'bg-green-500/15 text-green-300 border border-green-500/30',
-  academic:   'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30',
-};
-
-const categoryDot: Record<string, string> = {
-  research:   'dot-yellow',
-  fellowship: 'dot-blue',
-  funding:    'dot-green',
-  academic:   'dot-indigo',
-};
+const yearNodes = ring(years.map((y) => ({ year: y })));
+const awardRings = Object.fromEntries(years.map((y) => [y, ring(byYear[y])]));
 ---
 
-<section id="achievements" class="arclab-section fp-slide-section">
+<section id="achievements" class="arclab-section">
   <div class="arclab-container awards-outer">
 
-    <!-- Section header -->
     <div class="awards-header text-center arclab-fade-in">
-      <h2 class="arclab-heading-2 mb-1">Awards & Recognition</h2>
-      <p class="arclab-text text-sm opacity-50">Scroll to explore →</p>
+      <h2 class="arclab-heading-2 mb-1">Awards &amp; Recognition</h2>
+      <p class="arclab-text text-sm opacity-50" id="awards-hint">Click the year to explore</p>
     </div>
 
-    <!-- Horizontal timeline -->
-    <div class="tl-viewport fp-scroll-x">
-      <div class="tl-track">
+    <div class="constellation-wrap arclab-fade-in" style="animation-delay: 0.15s;">
+      <div class="constellation" id="constellation">
+        <div class="ring-guide" aria-hidden="true"></div>
 
-        <!-- The line -->
-        <div class="tl-hline" aria-hidden="true"></div>
-
-        {flatItems.map((item) => {
-          if (item.type === 'year') {
-            return (
-              <div class="tl-year-sep" data-year={item.year}>
-                <div class="tl-year-tick" aria-hidden="true"></div>
-                <span class="tl-year-label">{item.year}</span>
-              </div>
-            );
-          }
-
-          const { award, idx } = item;
-          const isAbove = idx % 2 === 0;
-          const dotCls   = categoryDot[award.category]  ?? 'dot-indigo';
-          const badgeCls = categoryBadge[award.category] ?? categoryBadge.academic;
-
-          return (
-            <div class="tl-col">
-              {/* Top half */}
-              <div class="tl-half tl-top">
-                {isAbove && (
-                  <a href={award.link} target="_blank" rel="noopener noreferrer"
-                     class="award-card group">
-                    <span class={`badge ${badgeCls}`}>{award.category}</span>
-                    <h4 class="card-title group-hover:text-blue-300 transition-colors">
-                      {award.title}
-                    </h4>
-                    <p class="card-org">{award.organization}</p>
-                  </a>
-                )}
-              </div>
-
-              {/* Dot on the line */}
-              <div class={`tl-dot ${dotCls}`}>{award.icon}</div>
-
-              {/* Bottom half */}
-              <div class="tl-half tl-bot">
-                {!isAbove && (
-                  <a href={award.link} target="_blank" rel="noopener noreferrer"
-                     class="award-card group">
-                    <span class={`badge ${badgeCls}`}>{award.category}</span>
-                    <h4 class="card-title group-hover:text-blue-300 transition-colors">
-                      {award.title}
-                    </h4>
-                    <p class="card-org">{award.organization}</p>
-                  </a>
-                )}
-              </div>
-            </div>
-          );
-        })}
-
-      </div>
-    </div>
-
-    <!-- Year pills -->
-    <div class="year-indicator">
-      {years.map((year: number, i: number) => (
-        <button class={`year-btn ${i === 0 ? 'active' : ''}`} data-year={year}>
-          {year}
+        <button type="button" class="sun" id="sun-button" aria-expanded="false" aria-label="Change year">
+          <span class="sun-year" id="sun-year">{defaultYear}</span>
         </button>
-      ))}
+
+        <!-- Year picker — hidden until the sun is clicked -->
+        <div class="node-ring" id="year-ring" hidden>
+          {yearNodes.map((n) => (
+            <button
+              type="button"
+              class="year-node"
+              style={`--x:${n.x}%; --y:${n.y}%`}
+              data-year={n.year}
+              aria-current={n.year === defaultYear ? 'true' : 'false'}
+            >
+              {n.year}
+            </button>
+          ))}
+        </div>
+
+        <!-- One ring per year — only the selected year's ring is visible -->
+        {years.map((y) => (
+          <div class="node-ring award-ring" data-year-ring={y} hidden={y !== defaultYear}>
+            {awardRings[y].map((n) => (
+              <a
+                href={n.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="orbit-node"
+                style={`--x:${n.x}%; --y:${n.y}%`}
+                aria-label={`${n.title} — ${n.organization}, ${n.year}`}
+              >
+                <span class="node-mark">
+                  {n.image ? (
+                    <img src={n.image} alt="" class="node-img" loading="lazy" decoding="async" />
+                  ) : (
+                    <span class="node-fallback" aria-hidden="true">{(n.organization || n.title || '?').trim().charAt(0)}</span>
+                  )}
+                </span>
+                <span class="tooltip" data-tip-v={n.tipV} data-tip-h={n.tipH} aria-hidden="true">
+                  <span class="tip-title">{n.title}</span>
+                  <span class="tip-org">{n.organization} · {n.year}</span>
+                  <span class="tip-category">{n.category}</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
 
   </div>
@@ -116,272 +103,338 @@ const categoryDot: Record<string, string> = {
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const section = document.querySelector<HTMLElement>('#achievements');
-    if (!section) return;
-    const vp = section.querySelector<HTMLElement>('.fp-scroll-x');
-    if (!vp) return;
+    const constellation = document.getElementById('constellation') as HTMLElement | null;
+    if (!constellation) return;
 
-    function revealVisible() {
-      const left  = vp!.scrollLeft - 160;
-      const right = vp!.scrollLeft + vp!.clientWidth + 160;
-      section!.querySelectorAll<HTMLElement>('.tl-col').forEach(col => {
-        if (col.offsetLeft + col.offsetWidth > left && col.offsetLeft < right) {
-          col.querySelectorAll('.award-card').forEach(c => c.classList.add('card-visible'));
-        }
-      });
-    }
+    const sunButton = document.getElementById('sun-button') as HTMLButtonElement;
+    const sunYear   = document.getElementById('sun-year') as HTMLElement;
+    const yearRing  = document.getElementById('year-ring') as HTMLElement;
+    const hint      = document.getElementById('awards-hint') as HTMLElement;
+    const awardRings = Array.from(constellation.querySelectorAll<HTMLElement>('.award-ring'));
 
-    function updateActiveYear() {
-      const center = vp!.scrollLeft + vp!.clientWidth / 2;
-      let active: string | null = null;
-      section!.querySelectorAll<HTMLElement>('.tl-year-sep').forEach(sep => {
-        if (sep.offsetLeft <= center) active = sep.dataset.year ?? null;
-      });
-      section!.querySelectorAll('.year-btn').forEach(btn =>
-        btn.classList.toggle('active', (btn as HTMLElement).dataset.year === String(active))
-      );
-    }
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ZOOM_MS = 560; // must match .constellation.zooming's animation-duration below
 
-    let revealTimer: ReturnType<typeof setTimeout>;
-    let yearTicking = false;
-    vp.addEventListener('scroll', () => {
-      if (!yearTicking) {
-        yearTicking = true;
-        requestAnimationFrame(() => { updateActiveYear(); yearTicking = false; });
+    // Swap which ring is visible with a single camera-style zoom on the whole
+    // constellation (sun, guide ring and all) — push in, swap content at the
+    // peak, ease back out. One cohesive motion, not rings scaling on their own.
+    let zoomTimers: ReturnType<typeof setTimeout>[] = [];
+    function swapRing(hideEl: HTMLElement | null, showEl: HTMLElement | null) {
+      if (reducedMotion) {
+        if (hideEl) hideEl.hidden = true;
+        if (showEl) showEl.hidden = false;
+        return;
       }
-      clearTimeout(revealTimer);
-      revealTimer = setTimeout(revealVisible, 80);
-    }, { passive: true });
+      zoomTimers.forEach(clearTimeout);
+      zoomTimers = [];
+      constellation.classList.remove('zooming');
+      void constellation.offsetWidth; // restart cleanly if a zoom is already in flight
+      constellation.classList.add('zooming');
+      zoomTimers.push(setTimeout(() => {
+        if (hideEl) hideEl.hidden = true;
+        if (showEl) showEl.hidden = false;
+      }, ZOOM_MS / 2));
+      zoomTimers.push(setTimeout(() => {
+        constellation.classList.remove('zooming');
+      }, ZOOM_MS));
+    }
 
-    section.querySelectorAll<HTMLButtonElement>('.year-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const sep = section!.querySelector<HTMLElement>(`.tl-year-sep[data-year="${btn.dataset.year}"]`);
-        if (sep) {
-          const target = sep.offsetLeft - vp!.clientWidth * 0.12;
-          vp!.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
-        }
+    let mode: 'awards' | 'years' = 'awards';
+    let selectedYear = sunYear.textContent?.trim() ?? '';
+
+    function showYearPicker() {
+      mode = 'years';
+      const activeAwardRing = awardRings.find((r) => !r.hidden) ?? null;
+      swapRing(activeAwardRing, yearRing);
+      sunButton.setAttribute('aria-expanded', 'true');
+      hint.textContent = 'Pick a year';
+      const current = yearRing.querySelector<HTMLElement>(`[data-year="${selectedYear}"]`);
+      (current ?? yearRing.querySelector<HTMLElement>('.year-node'))?.focus();
+    }
+
+    function showAwards(year: string, focusSun = true) {
+      mode = 'awards';
+      selectedYear = year;
+      sunYear.textContent = year;
+      const target = awardRings.find((r) => r.dataset.yearRing === year) ?? null;
+      swapRing(yearRing, target);
+      awardRings.forEach((r) => { if (r !== target) r.hidden = true; });
+      yearRing.querySelectorAll<HTMLElement>('.year-node').forEach((btn) => {
+        btn.setAttribute('aria-current', btn.dataset.year === year ? 'true' : 'false');
       });
+      sunButton.setAttribute('aria-expanded', 'false');
+      hint.textContent = 'Click the year to explore';
+      if (focusSun) sunButton.focus();
+    }
+
+    sunButton.addEventListener('click', () => {
+      if (mode === 'years') showAwards(selectedYear);
+      else showYearPicker();
     });
 
-    section.addEventListener('fp-activate', () => { revealVisible(); updateActiveYear(); });
+    yearRing.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.year-node');
+      if (btn?.dataset.year) showAwards(btn.dataset.year);
+    });
 
-    new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) { revealVisible(); updateActiveYear(); }
-    }, { threshold: 0.1 }).observe(section);
+    constellation.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mode === 'years') showAwards(selectedYear);
+    });
+
+    // Touch/coarse-pointer only: first tap on an award reveals its tooltip
+    // (and suppresses navigation so it can be read); a second tap, or a tap
+    // while already open, lets the link proceed. Tapping elsewhere closes it.
+    // On real hover-capable pointers this never runs — CSS :hover/:focus-visible
+    // handle the reveal instead, so the two paths can never conflict.
+    if (matchMedia('(hover: none), (pointer: coarse)').matches) {
+      document.addEventListener('click', (e) => {
+        const node = (e.target as HTMLElement).closest<HTMLElement>('.orbit-node');
+        document.querySelectorAll('.orbit-node.open').forEach((n) => {
+          if (n !== node) n.classList.remove('open');
+        });
+        if (node && !node.classList.contains('open')) {
+          e.preventDefault();
+          node.classList.add('open');
+        }
+      });
+    }
   });
 </script>
 
 <style>
-  /* ── Outer shell ── */
   .awards-outer {
-    height: 100%;
+    min-height: min(78vh, 700px);
     display: flex;
     flex-direction: column;
+    align-items: center;
     padding-top: 1rem;
-    padding-bottom: 0.75rem;
+    padding-bottom: 1.5rem;
   }
-
   .awards-header { flex-shrink: 0; margin-bottom: 0.25rem; }
 
-  /* ── Scrollable viewport ── */
-  .tl-viewport {
+  .constellation-wrap {
     flex: 1;
     min-height: 0;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .tl-viewport::-webkit-scrollbar { display: none; }
-
-  /* ── Track ── */
-  .tl-track {
-    display: flex;
-    align-items: stretch;
-    height: 100%;
-    min-width: max-content;
-    padding: 0 12vw;
-    position: relative;
-  }
-
-  /* ── Horizontal centre line ── */
-  .tl-hline {
-    position: absolute;
-    left: 0; right: 0;
-    top: 50%;
-    height: 1px;
-    transform: translateY(-50%);
-    background: linear-gradient(
-      to right,
-      transparent 0%,
-      rgba(255,255,255,0.10) 5%,
-      rgba(255,255,255,0.18) 12%,
-      rgba(255,255,255,0.18) 88%,
-      rgba(255,255,255,0.10) 95%,
-      transparent 100%
-    );
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ── Year separator ── */
-  .tl-year-sep {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 72px;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1;
-  }
-
-  .tl-year-tick {
-    width: 1px;
-    height: 14px;
-    background: rgba(255,255,255,0.28);
-    border-radius: 1px;
-    margin-bottom: 6px;
-  }
-
-  .tl-year-label {
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    color: rgba(255,255,255,0.38);
-    white-space: nowrap;
-  }
-
-  /* ── Award column ── */
-  .tl-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 250px;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1;
-  }
-
-  .tl-half {
-    flex: 1;
     width: 100%;
     display: flex;
-    padding: 0 0.5rem;
+    align-items: center;
+    justify-content: center;
   }
 
-  .tl-top { align-items: flex-end;   padding-bottom: 0.75rem; }
-  .tl-bot { align-items: flex-start; padding-top: 0.75rem; }
+  .constellation {
+    position: relative;
+    width: min(90vw, 520px);
+    aspect-ratio: 1 / 1;
+    max-height: 100%;
+  }
 
-  /* ── Dot ── */
-  .tl-dot {
-    width: 40px;
-    height: 40px;
+  /* Static guide ring — gives the layout an "orbit" to sit on regardless of
+     mode. A slow continuous spin (dashes only, node positions never move)
+     is what actually sells the "orbiting" feel without disturbing the
+     build-time tooltip-quadrant math, which assumes fixed node coordinates. */
+  .ring-guide {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 72%; height: 72%;
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    pointer-events: none;
+    animation: ring-guide-spin 90s linear infinite;
+  }
+  @keyframes ring-guide-spin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to   { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  /* ── Sun — the one permanent accent-colored element in the whole section ── */
+  .sun {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 22%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 35% 32%, var(--arclab-blue), var(--arclab-accent) 70%);
+    box-shadow:
+      0 0 24px 4px rgba(217, 119, 6, 0.45),
+      0 0 60px 12px rgba(217, 119, 6, 0.18);
+    animation: sun-pulse 5s ease-in-out infinite;
+    transition: transform 0.2s ease;
+    z-index: 2;
+  }
+  .sun:hover { transform: translate(-50%, -50%) scale(1.05); }
+  .sun:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  .sun-year {
+    font-family: var(--arclab-font-mono);
+    font-size: clamp(0.95rem, 3vw, 1.35rem);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: 0.02em;
+  }
+  @keyframes sun-pulse {
+    0%, 100% { box-shadow: 0 0 24px 4px rgba(217,119,6,.45), 0 0 60px 12px rgba(217,119,6,.18); }
+    50%      { box-shadow: 0 0 30px 6px rgba(217,119,6,.6),  0 0 74px 16px rgba(217,119,6,.24); }
+  }
+
+  /* ── Shared ring container for both the year picker and each award ring ── */
+  .node-ring { position: absolute; inset: 0; }
+
+  /* ── Camera zoom — the whole constellation (sun, guide ring, nodes) pushes
+     in as one unit and eases back out; the ring swap happens invisibly at
+     the peak (see swapRing() in the script above). One cohesive "camera"
+     motion rather than the ring scaling independently of the sun. ── */
+  .constellation.zooming {
+    animation: constellation-zoom 0.56s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes constellation-zoom {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50%      { transform: scale(1.16); filter: brightness(1.12); }
+  }
+
+  /* Year picker node — same ring position system as award nodes */
+  .year-node {
+    position: absolute;
+    top: var(--y);
+    left: var(--x);
+    transform: translate(-50%, -50%);
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-    border: 2px solid;
-    position: relative;
-    z-index: 2;
+    font-family: var(--arclab-font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    z-index: 3;
+  }
+  .year-node:hover,
+  .year-node:focus-visible {
+    color: #fff;
+    background: rgba(217, 119, 6, 0.25);
+    border-color: var(--arclab-blue);
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+  .year-node:focus-visible { outline: none; }
+  .year-node[aria-current="true"] {
+    border-color: var(--arclab-blue);
+    color: #fff;
   }
 
-  .dot-yellow { background: rgba(234,179,8,0.12);  border-color: rgba(234,179,8,0.40); }
-  .dot-blue   { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.40); }
-  .dot-green  { background: rgba(34,197,94,0.12);  border-color: rgba(34,197,94,0.40); }
-  .dot-indigo { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.40); }
+  /* ── Award node — 44px tap target, image (or fallback monogram) as the mark ── */
+  .orbit-node {
+    position: absolute;
+    top: var(--y);
+    left: var(--x);
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    z-index: 1;
+  }
+  .orbit-node:hover, .orbit-node:focus-visible, .orbit-node.open { z-index: 5; }
+  .orbit-node:focus-visible { outline: none; }
 
-  /* ── Card ── */
-  .award-card {
+  .node-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.15);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .node-img { width: 100%; height: 100%; object-fit: cover; }
+  .node-fallback {
+    font-family: var(--arclab-font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  /* Mouse-hover brighten — gated behind (hover:hover) so it can never fight
+     the touch .open toggle (sticky synthetic :hover on some mobile browsers). */
+  @media (hover: hover) {
+    .orbit-node:hover .node-mark {
+      border-color: var(--arclab-blue);
+      box-shadow: 0 0 14px 3px rgba(245, 158, 11, 0.5);
+      transform: scale(1.12);
+    }
+    .orbit-node:hover .tooltip { opacity: 1; visibility: visible; }
+  }
+  /* Keyboard focus + touch .open — unconditional, identical visual result */
+  .orbit-node:focus-visible .node-mark,
+  .orbit-node.open .node-mark {
+    border-color: var(--arclab-blue);
+    box-shadow: 0 0 0 2px var(--arclab-accent), 0 0 14px 3px rgba(245, 158, 11, 0.5);
+    transform: scale(1.12);
+  }
+  .orbit-node:focus-visible .tooltip,
+  .orbit-node.open .tooltip { opacity: 1; visibility: visible; }
+
+  /* ── Tooltip — anchored to the node itself (never position:fixed), so it's
+     immune to `main > section { will-change: transform }` creating a new
+     containing block in fullpage mode. Flip direction is a build-time
+     quadrant lookup, not a runtime measurement. ── */
+  .tooltip {
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    /* .orbit-node (the containing block, since it's also position:absolute) is
+       only 44px wide, which makes shrink-to-fit collapse an auto-width tooltip
+       toward min-content (one word per line) despite max-width. Forcing
+       max-content sizing first, then clamping, sidesteps that entirely. */
+    width: max-content;
+    max-width: min(220px, 42vw);
+    padding: 0.6rem 0.75rem;
+    border-radius: 10px;
+    background: rgba(15, 20, 25, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
-    padding: 0.875rem 1rem;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
-    background: rgba(255,255,255,0.03);
-    text-decoration: none;
-    width: 100%;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.35s ease, transform 0.35s ease,
-                background 0.15s ease, border-color 0.15s ease;
+    gap: 0.15rem;
+    white-space: normal;
+    transition: opacity 0.15s ease;
   }
-  .award-card.card-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .award-card:hover {
-    background: rgba(255,255,255,0.07);
-    border-color: rgba(59,130,246,0.28);
-  }
+  .tooltip[data-tip-v="above"]  { bottom: calc(100% + 10px); top: auto; }
+  .tooltip[data-tip-v="below"]  { top: calc(100% + 10px); bottom: auto; }
+  .tooltip[data-tip-h="center"] { left: 50%; transform: translateX(-50%); }
+  .tooltip[data-tip-h="right"]  { left: 0; transform: none; }
+  .tooltip[data-tip-h="left"]   { right: 0; left: auto; transform: none; }
 
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 9999px;
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: capitalize;
-    margin-bottom: 0.15rem;
-    width: fit-content;
-  }
+  .tip-title    { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.92); line-height: 1.35; }
+  .tip-org      { font-size: 0.68rem; color: rgba(255,255,255,0.55); }
+  .tip-category { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.4); }
 
-  .card-title {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #e2e8f0;
-    line-height: 1.4;
-  }
-
-  .card-org {
-    font-size: 0.7rem;
-    color: #64748b;
-    line-height: 1.3;
-    margin-top: 0.1rem;
-  }
-
-  /* ── Year pills ── */
-  .year-indicator {
-    flex-shrink: 0;
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    padding-top: 0.75rem;
-  }
-
-  .year-btn {
-    padding: 0.2rem 0.875rem;
-    border-radius: 9999px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: transparent;
-    color: rgba(255,255,255,0.3);
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .year-btn.active {
-    background: rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.9);
-    border-color: rgba(255,255,255,0.28);
-  }
-  .year-btn:hover:not(.active) { color: rgba(255,255,255,0.55); }
-
-  /* ── Mobile ── */
   @media (max-width: 640px) {
-    .tl-track { padding: 0 4vw; }
-    .tl-col   { width: 190px; }
-    .tl-year-sep { width: 52px; }
-    .tl-dot   { width: 34px; height: 34px; font-size: 0.9rem; }
-    .card-title { font-size: 0.73rem; }
+    .constellation { width: min(94vw, 380px); }
+    .year-node { width: 40px; height: 40px; font-size: 0.7rem; }
+    .node-mark { width: 34px; height: 34px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .award-card { opacity: 1; transform: none; transition: none; }
+    .sun, .ring-guide { animation: none; }
+    .sun, .year-node, .node-mark, .tooltip { transition: none; }
+    .constellation.zooming { animation: none; }
   }
 </style>

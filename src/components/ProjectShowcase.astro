@@ -16,13 +16,18 @@ const allProjects = getAllProjects();
 
     <!-- Carousel -->
     <div
-      class="project-carousel relative arclab-fade-in"
+      class="project-carousel relative arclab-fade-in hud-frame"
       id="project-carousel"
       role="region"
       aria-label="Projects carousel"
       tabindex="0"
       style="animation-delay: 0.2s;"
     >
+      <span class="hud-corner hud-corner-tl" aria-hidden="true"></span>
+      <span class="hud-corner hud-corner-tr" aria-hidden="true"></span>
+      <span class="hud-corner hud-corner-bl" aria-hidden="true"></span>
+      <span class="hud-corner hud-corner-br" aria-hidden="true"></span>
+
       <!-- Track -->
       <div class="carousel-track overflow-hidden rounded-2xl">
         <div class="carousel-slides flex" id="carousel-slides">
@@ -74,9 +79,14 @@ const allProjects = getAllProjects();
                   <h3 class="text-base md:text-2xl font-semibold text-white mb-1 md:mb-2 leading-tight drop-shadow-lg">
                     {project.title}
                   </h3>
-                  <p class="hidden sm:block text-slate-300 text-sm leading-relaxed mb-3 md:mb-5 line-clamp-2 max-w-xl drop-shadow">
+                  <p class="hidden sm:block text-slate-300 text-sm leading-relaxed mb-3 line-clamp-2 max-w-xl drop-shadow">
                     {project.shortDescription}
                   </p>
+                  <div class="hidden sm:flex gap-1.5 flex-wrap mb-3 md:mb-5">
+                    {project.technologies.slice(0, 3).map((tech) => (
+                      <span class="tech-chip">{tech}</span>
+                    ))}
+                  </div>
                   <div class="flex gap-2 md:gap-3 flex-wrap">
                     {project.links?.github && (
                       <a
@@ -104,9 +114,9 @@ const allProjects = getAllProjects();
                   </div>
                 </div>
 
-                <!-- Category badge -->
+                <!-- Category badge — text differentiates, not color -->
                 <div class="absolute top-3 right-3 md:top-4 md:right-4 z-10">
-                  <span class={`px-2 py-0.5 md:px-3 md:py-1 rounded-full text-xs font-medium text-white backdrop-blur-sm ${project.category === 'research' ? 'bg-blue-600/80' : 'bg-purple-600/80'}`}>
+                  <span class="px-2 py-0.5 md:px-3 md:py-1 rounded-full text-xs font-medium text-white/85 bg-white/10 border border-white/15 backdrop-blur-sm">
                     {project.category === 'research' ? 'Research' : 'Personal'}
                   </span>
                 </div>
@@ -239,34 +249,60 @@ const allProjects = getAllProjects();
     buildDots();
     updateArrows();
 
-    // Section visibility — only play media when projects is the active section
+    // Section visibility — only play media while Projects is actually on screen
     const projectSection = carousel.closest<HTMLElement>('section');
     if (projectSection) {
-      // fp-activate fires when fp-mode transitions into this section
-      projectSection.addEventListener('fp-activate', () => {
-        setGif(currentIndex, true);
-      });
-      // fp-section-change fires on every section switch — pause when leaving
-      document.addEventListener('fp-section-change', (e: Event) => {
-        if ((e as CustomEvent<{ id: string }>).detail.id !== projectSection.id) {
-          setGif(currentIndex, false);
-        }
-      });
-      // Fallback: if fp-mode never activates (reduced-motion / static scroll),
-      // use IntersectionObserver to start/stop based on visibility
-      requestAnimationFrame(() => {
-        if (!document.body.classList.contains('fp-mode')) {
-          const io = new IntersectionObserver((entries) => {
-            setGif(currentIndex, entries[0].isIntersecting);
-          }, { threshold: 0.4 });
-          io.observe(projectSection);
-        }
-      });
+      const io = new IntersectionObserver((entries) => {
+        setGif(currentIndex, entries[0].isIntersecting);
+      }, { threshold: 0.4 });
+      io.observe(projectSection);
     }
   });
 </script>
 
 <style>
+  /* ── HUD corner brackets — the one "spaceship" accent kept from the last pass,
+     now in the site's single accent color instead of a second cyan hue ── */
+  .hud-frame { padding: 10px; }
+
+  .hud-corner {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: 2px solid rgba(245, 158, 11, 0.45);
+    z-index: 21;
+    pointer-events: none;
+    transition: border-color 0.3s ease, width 0.3s ease, height 0.3s ease;
+  }
+  .hud-corner-tl { top: 0;    left: 0;    border-right: none;  border-bottom: none; border-top-left-radius: 4px; }
+  .hud-corner-tr { top: 0;    right: 0;   border-left: none;   border-bottom: none; border-top-right-radius: 4px; }
+  .hud-corner-bl { bottom: 0; left: 0;    border-right: none;  border-top: none;    border-bottom-left-radius: 4px; }
+  .hud-corner-br { bottom: 0; right: 0;   border-left: none;   border-top: none;    border-bottom-right-radius: 4px; }
+  .hud-frame:hover .hud-corner { width: 28px; height: 28px; border-color: var(--arclab-blue); }
+
+  @media (max-width: 640px) {
+    .hud-frame { padding: 6px; }
+    .hud-corner { width: 14px; height: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hud-corner { transition: none; }
+  }
+
+  /* ── Domain tags — a quiet signal of the research focus (real-time
+     systems, physical AI, autonomous agents), pulled straight from each
+     project's own tech stack rather than a separate rebrand ── */
+  .tech-chip {
+    font-family: var(--arclab-font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.02em;
+    padding: 2px 9px;
+    border-radius: 20px;
+    color: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.04);
+    white-space: nowrap;
+  }
+
   /* ── Carousel track ── */
   .carousel-slides {
     will-change: transform;
@@ -300,13 +336,13 @@ const allProjects = getAllProjects();
   .carousel-btn-next { right: 1rem; }
 
   .carousel-btn:hover {
-    background: rgba(37, 99, 235, 0.5);
-    border-color: rgba(59, 130, 246, 0.5);
-    box-shadow: 0 0 16px rgba(59, 130, 246, 0.25);
+    background: rgba(217, 119, 6, 0.5);
+    border-color: rgba(245, 158, 11, 0.5);
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.25);
   }
 
   .carousel-btn:focus-visible {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid var(--arclab-blue);
     outline-offset: 2px;
   }
 
@@ -330,12 +366,12 @@ const allProjects = getAllProjects();
 
   .carousel-dot.active {
     width: 1.5rem;
-    background: #3b82f6;
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    background: var(--arclab-blue);
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
   }
 
   .carousel-dot:focus-visible {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid var(--arclab-blue);
     outline-offset: 2px;
   }
 
@@ -354,14 +390,14 @@ const allProjects = getAllProjects();
   }
 
   .slide-btn-primary {
-    background: rgba(59, 130, 246, 0.9);
+    background: rgba(245, 158, 11, 0.9);
     color: white;
-    border: 1px solid rgba(59, 130, 246, 0.5);
+    border: 1px solid rgba(245, 158, 11, 0.5);
   }
 
   .slide-btn-primary:hover {
-    background: #3b82f6;
-    box-shadow: 0 0 16px rgba(59, 130, 246, 0.35);
+    background: var(--arclab-blue);
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
   }
 
   .slide-btn-ghost {
