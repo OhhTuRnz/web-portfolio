@@ -38,66 +38,9 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
     <!-- Shooting stars — fixed, behind everything, all sections.
          z-index 11: Hero's own translucent backdrop (z-10) isn't a stacking
          context root, so it competes directly in this same root context —
-         without this, it paints over the stars/Kerbal for the entire time
+         without this, it paints over the stars for the entire time
          Hero is on screen. Still well below Hero's actual content (z-20). -->
     <canvas id="stars-canvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:11;pointer-events:none;"></canvas>
-
-    <!-- Kerbal — a small background easter egg, tumbling past every so often -->
-    <svg id="kerbal-sprite" viewBox="-28 -34 56 68" aria-hidden="true" focusable="false">
-      <defs>
-        <linearGradient id="kb-suit" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#ffffff"/>
-          <stop offset="100%" stop-color="#e7e2d2"/>
-        </linearGradient>
-        <radialGradient id="kb-visor" cx="35%" cy="30%" r="75%">
-          <stop offset="0%" stop-color="#eaf8ff"/>
-          <stop offset="55%" stop-color="#5fc3e8"/>
-          <stop offset="100%" stop-color="#1c5c86"/>
-        </radialGradient>
-      </defs>
-
-      <!-- backpack -->
-      <rect x="-8" y="-6" width="16" height="22" rx="4" fill="#b7c0ca"/>
-      <rect x="-5" y="-2" width="10" height="6" rx="2" fill="#838d99"/>
-      <circle cx="-4" cy="17" r="2.1" fill="#5b6472"/>
-      <circle cx="4" cy="17" r="2.1" fill="#5b6472"/>
-
-      <!-- legs (grouped so they can drift together) -->
-      <g class="kb-legs">
-        <ellipse cx="-4" cy="20" rx="4.4" ry="7.8" fill="url(#kb-suit)"/>
-        <ellipse cx="-4.3" cy="27.3" rx="4.8" ry="3.1" fill="#96a0ac"/>
-        <ellipse cx="4" cy="20" rx="4.4" ry="7.8" fill="url(#kb-suit)"/>
-        <ellipse cx="4.3" cy="27.3" rx="4.8" ry="3.1" fill="#96a0ac"/>
-      </g>
-
-      <!-- arms — fixed, relaxed floating pose -->
-      <ellipse cx="-12" cy="0" rx="4" ry="7.6" fill="url(#kb-suit)" transform="rotate(-20 -12 0)"/>
-      <circle cx="-15.6" cy="7" r="3.4" fill="#f4f1e6"/>
-      <ellipse cx="12" cy="0" rx="4" ry="7.6" fill="url(#kb-suit)" transform="rotate(20 12 0)"/>
-      <circle cx="15.6" cy="7" r="3.4" fill="#f4f1e6"/>
-
-      <!-- torso -->
-      <ellipse cx="0" cy="1" rx="10.8" ry="13.8" fill="url(#kb-suit)"/>
-      <ellipse cx="0" cy="5.5" rx="10.8" ry="4" fill="#f97316"/>
-      <rect x="-3.4" y="-6" width="6.8" height="5.5" rx="1.6" fill="#8a93a0"/>
-      <circle cx="0" cy="-3.4" r="0.9" fill="#4ade80"/>
-
-      <!-- neck collar -->
-      <ellipse cx="0" cy="-11" rx="6" ry="2" fill="#6b7480"/>
-
-      <!-- helmet -->
-      <circle cx="0" cy="-17.5" r="5.9" fill="#9ee066"/>
-      <circle cx="-1.9" cy="-18.3" r="0.95" fill="#0f172a"/>
-      <circle cx="1.9" cy="-18.3" r="0.95" fill="#0f172a"/>
-      <path d="M -2 -15 Q 0 -13.4 2 -15" stroke="#0f172a" stroke-width="0.9" fill="none" stroke-linecap="round"/>
-      <circle cx="0" cy="-17.5" r="11.5" fill="none" stroke="#ffffff" stroke-width="1.6"/>
-      <circle cx="0" cy="-17.5" r="10" fill="url(#kb-visor)" fill-opacity="0.82"/>
-      <ellipse cx="-3.6" cy="-21.3" rx="2.8" ry="1.5" fill="rgba(255,255,255,0.75)"/>
-
-      <!-- antenna, tip blinks -->
-      <line x1="0" y1="-29" x2="0" y2="-33" stroke="#b7c0ca" stroke-width="1.1"/>
-      <circle class="kb-blink" cx="0" cy="-33.5" r="1.2" fill="#ff5b5b"/>
-    </svg>
 
     <slot />
 
@@ -179,7 +122,7 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
     </script>
 
     <script>
-      // ── Shooting stars + a goofy tumbling Kerbal — global fixed background ──
+      // ── Shooting stars — global fixed background ──
       const sc = document.getElementById('stars-canvas') as HTMLCanvasElement;
       const ctx = sc.getContext('2d')!;
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -189,7 +132,7 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
       window.addEventListener('resize', resize);
 
       if (reducedMotion) {
-        // Static/no motion — skip shooting stars and the Kerbal entirely.
+        // Static/no motion — skip shooting stars entirely.
       } else {
 
       interface ShootingStar {
@@ -318,44 +261,6 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
       } // end reducedMotion guard
     </script>
 
-    <script>
-      // ── Kerbal flight — a tween-based sprite pass, not a per-frame physics
-      // sim: pick a start/end/duration/spin, hand it to a CSS keyframe
-      // animation, let the compositor do the work. Re-schedules itself on
-      // animationend so flights never overlap.
-      const kerbal = document.getElementById('kerbal-sprite') as HTMLElement | null;
-      const kerbalReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      if (kerbal && !kerbalReducedMotion) {
-        function scheduleFlight() {
-          setTimeout(flyKerbal, 30000 + Math.random() * 30000); // every 30–60s
-        }
-
-        function flyKerbal() {
-          if (!kerbal) return;
-          const fromLeft = Math.random() < 0.5;
-          const y = Math.round(window.innerHeight * (0.12 + Math.random() * 0.55));
-          const duration = 15 + Math.random() * 9; // 15–24s to cross
-          const spins = (fromLeft ? 1 : -1) * (280 + Math.random() * 260);
-
-          kerbal.style.setProperty('--kb-start-x', fromLeft ? '-70px' : `${window.innerWidth + 70}px`);
-          kerbal.style.setProperty('--kb-end-x', fromLeft ? `${window.innerWidth + 70}px` : '-70px');
-          kerbal.style.setProperty('--kb-y', `${y}px`);
-          kerbal.style.setProperty('--kb-duration', `${duration}s`);
-          kerbal.style.setProperty('--kb-spin', `${spins}deg`);
-
-          kerbal.classList.remove('flying');
-          void kerbal.offsetWidth; // reflow so the animation restarts cleanly
-          kerbal.classList.add('flying');
-        }
-
-        kerbal.addEventListener('animationend', (e) => {
-          if (e.animationName === 'kb-flight') scheduleFlight();
-        });
-        setTimeout(flyKerbal, 6000); // first pass early enough to actually notice
-      }
-    </script>
-
     <style is:global>
       /* ── Natural scroll rhythm ── */
       html {
@@ -403,48 +308,6 @@ const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engi
         #side-nav { display: none; }
       }
 
-      /* ── Kerbal sprite — sized and glowed to actually read against the dark
-         background rather than disappearing into it ── */
-      #kerbal-sprite {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 88px;
-        height: 88px;
-        z-index: 12;
-        pointer-events: none;
-        opacity: 0;
-        filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.35)) drop-shadow(0 0 14px rgba(255, 255, 255, 0.15));
-        will-change: transform, opacity;
-      }
-      #kerbal-sprite.flying {
-        animation: kb-flight var(--kb-duration, 20s) linear forwards;
-      }
-      @keyframes kb-flight {
-        0%   { transform: translate(var(--kb-start-x), var(--kb-y)) rotate(0deg); opacity: 0; }
-        6%   { opacity: 1; }
-        94%  { opacity: 1; }
-        100% { transform: translate(var(--kb-end-x), var(--kb-y)) rotate(var(--kb-spin, 360deg)); opacity: 0; }
-      }
-      #kerbal-sprite .kb-legs {
-        transform-box: fill-box;
-        transform-origin: 50% 0%;
-        animation: kb-leg-drift 3.6s ease-in-out infinite;
-      }
-      @keyframes kb-leg-drift {
-        0%, 100% { transform: rotate(-5deg); }
-        50%      { transform: rotate(5deg); }
-      }
-      #kerbal-sprite .kb-blink {
-        animation: kb-blink 2.4s steps(1) infinite;
-      }
-      @keyframes kb-blink {
-        0%, 100% { opacity: 1; }
-        50%      { opacity: 0.2; }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        #kerbal-sprite { display: none; }
-      }
     </style>
   </body>
 </html>
