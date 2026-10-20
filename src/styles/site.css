@@ -16,7 +16,8 @@
   --surface-hover: rgba(255, 255, 255, 0.06);
   --accent-wash: rgba(219, 190, 144, 0.08);
   --code-background: #0b1120;
-  --star-color: 213, 202, 184;
+  --star-color: 231, 226, 216;
+  --constellation-opacity: 0.14;
   --display: 'adorn-serif', 'Adorn Serif Local', Georgia, 'Times New Roman', serif;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-synthesis: none;
@@ -39,6 +40,7 @@
   --surface-hover: rgba(15, 23, 42, 0.06);
   --accent-wash: rgba(15, 23, 42, 0.07);
   --star-color: 112, 117, 128;
+  --constellation-opacity: 0.2;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

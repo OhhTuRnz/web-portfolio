@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "fetch-scholar": "py scripts/fetch_scholar.py",
-    "test:build": "node --test scripts/tests/prepare-scholar.test.mjs"
+    "test:build": "node --test scripts/tests/prepare-scholar.test.mjs",
+    "test:sky": "node --test scripts/tests/generate-sky.test.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
+    "astronomy-engine": "2.1.19",
     "typescript": "^5.0.0"
   }
 }
