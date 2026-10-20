@@ -1,0 +1,108 @@
+<canvas class="star-background" data-star-background aria-hidden="true"></canvas>
+
+<script>
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-star-background]');
+  const context = canvas?.getContext('2d');
+  if (canvas && context) startStarfield(canvas, context);
+
+  function startStarfield(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const color = getComputedStyle(document.documentElement).getPropertyValue('--star-color').trim();
+    const stars = Array.from({ length: 110 }, () => ({
+      x: Math.random(), y: Math.random(),
+      radius: 0.45 + Math.random() * 0.8,
+      alpha: 0.12 + Math.random() * 0.24,
+      phase: Math.random() * Math.PI * 2,
+    }));
+    let width = 0;
+    let height = 0;
+    let frame = 0;
+    let lastPaint = 0;
+    let nextShootingStar = performance.now() + 6000 + Math.random() * 4000;
+    let shootingStar: { x: number; y: number; distance: number; started: number } | undefined;
+
+    function paint(time: number) {
+      ctx.clearRect(0, 0, width, height);
+      const count = Math.min(stars.length, Math.max(30, Math.round(width * height / 14000)));
+      for (const star of stars.slice(0, count)) {
+        const twinkle = reducedMotion.matches ? 1 : 0.8 + Math.sin(time / 2800 + star.phase) * 0.2;
+        ctx.fillStyle = `rgba(${color}, ${star.alpha * twinkle})`;
+        ctx.beginPath();
+        ctx.arc(star.x * width, star.y * height, star.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (reducedMotion.matches) return;
+      if (!shootingStar && time >= nextShootingStar) {
+        shootingStar = {
+          x: width * (0.05 + Math.random() * 0.5),
+          y: height * (0.04 + Math.random() * 0.24),
+          distance: Math.min(width * 0.7, 480),
+          started: time,
+        };
+      }
+      if (!shootingStar) return;
+      const progress = (time - shootingStar.started) / 1700;
+      if (progress >= 1) {
+        shootingStar = undefined;
+        nextShootingStar = time + 16000 + Math.random() * 14000;
+        return;
+      }
+      const point = (t: number) => ({
+        x: shootingStar!.x + shootingStar!.distance * t,
+        y: shootingStar!.y + shootingStar!.distance * (0.4 * t + 0.12 * t * t),
+      });
+      const tailProgress = Math.max(0, progress - 0.18);
+      const tail = point(tailProgress);
+      const head = point(progress);
+      if (head.x === tail.x && head.y === tail.y) return;
+      const gradient = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
+      gradient.addColorStop(0, `rgba(${color}, 0)`);
+      gradient.addColorStop(1, `rgba(${color}, ${Math.sin(progress * Math.PI) * 0.38})`);
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 1.3;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(tail.x, tail.y);
+      for (let i = 1; i <= 8; i++) {
+        const p = point(tailProgress + (progress - tailProgress) * i / 8);
+        ctx.lineTo(p.x, p.y);
+      }
+      ctx.stroke();
+    }
+
+    function animate(time: number) {
+      if (time - lastPaint >= 1000 / 30) {
+        paint(time);
+        lastPaint = time;
+      }
+      frame = requestAnimationFrame(animate);
+    }
+    function stop() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+    }
+    function resume() {
+      stop();
+      shootingStar = undefined;
+      nextShootingStar = performance.now() + 6000 + Math.random() * 4000;
+      paint(performance.now());
+      if (!reducedMotion.matches && !document.hidden) frame = requestAnimationFrame(animate);
+    }
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(width * ratio);
+      canvas.height = Math.round(height * ratio);
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      paint(performance.now());
+    }
+    window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('pagehide', stop);
+    window.addEventListener('pageshow', resume);
+    document.addEventListener('visibilitychange', resume);
+    reducedMotion.addEventListener('change', resume);
+    resize();
+    resume();
+  }
+</script>

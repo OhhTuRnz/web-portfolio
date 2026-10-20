@@ -5,21 +5,15 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "python -m pip install -q requests && python scripts/fetch_scholar.py && node scripts/precompute-pointcloud.mjs && astro build",
-    "build:offline": "node scripts/precompute-pointcloud.mjs && astro build",
-    "precompute": "node scripts/precompute-pointcloud.mjs",
+    "build": "python -m pip install -q requests && python scripts/fetch_scholar.py && astro build",
+    "build:offline": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "fetch-scholar": "py scripts/fetch_scholar.py"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",
-    "@astrojs/tailwind": "^6.0.2",
-    "@types/three": "^0.183.1",
-    "astro": "^5.18.1",
-    "autoprefixer": "^10.4.16",
-    "tailwindcss": "^3.3.0",
-    "three": "^0.183.2"
+    "astro": "^5.18.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",

@@ -1,313 +1,76 @@
 ---
+import Header from '../components/Header.astro';
+import SectionNav from '../components/SectionNav.astro';
+import StarBackground from '../components/StarBackground.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+import '../styles/site.css';
+
 export interface Props {
   title: string;
   description?: string;
+  article?: {
+    title: string;
+    publishedAt: Date;
+    updatedAt?: Date;
+    image?: string;
+  };
 }
 
-const { title, description = "Alejandro Carrasco - AI Researcher & Robotics Engineer at MIT ARC Lab" } = Astro.props;
+const { title, description = site.description, article } = Astro.props;
+const isBlog = Astro.url.pathname.startsWith('/blog');
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+const pageTitle = title === site.name ? title : `${title} · ${site.name}`;
+const image = new URL(article?.image ?? '/assets/images/carrusk_zen.png', canonical);
+const fontKit = import.meta.env.PUBLIC_ADOBE_FONTS_KIT_ID?.trim();
+if (fontKit && !/^[a-z0-9]{7}$/i.test(fontKit)) {
+  throw new Error('PUBLIC_ADOBE_FONTS_KIT_ID must be the seven-character Adobe Fonts web-project ID.');
+}
+const structuredData = article ? {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: article.title,
+  description,
+  datePublished: article.publishedAt.toISOString(),
+  dateModified: (article.updatedAt ?? article.publishedAt).toISOString(),
+  mainEntityOfPage: canonical.href,
+  image: image.href,
+  author: { '@type': 'Person', name: site.name, url: Astro.site?.href },
+} : undefined;
 ---
-
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme={isBlog ? 'blog' : 'portfolio'}>
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content={isBlog ? '#dbbe90' : '#0f172a'} />
+    <title>{pageTitle}</title>
     <link rel="icon" type="image/svg+xml" href="/carrusk.svg" />
-    <title>{title}</title>
-
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name} — Writing`} href="/blog/rss.xml" />
+    {fontKit && <link rel="stylesheet" href={`https://use.typekit.net/${fontKit}.css`} />}
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="https://e1193dbe.carrusk-web-portfolio.pages.dev/assets/images/carrusk_zen.png" />
-    <meta property="og:url" content="https://e1193dbe.carrusk-web-portfolio.pages.dev" />
-
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta property="og:site_name" content={site.name} />
+    {article && <meta property="article:published_time" content={article.publishedAt.toISOString()} />}
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
+    <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content="https://e1193dbe.carrusk-web-portfolio.pages.dev/assets/images/carrusk_zen.png" />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="/styles/arclab-theme.css">
-    <link rel="preload" href="/assets/robot-pointcloud.bin" as="fetch" crossorigin>
+    <meta name="twitter:image" content={image} />
+    {structuredData && <script type="application/ld+json" is:inline set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />}
   </head>
-  <body class="bg-slate-900 text-white antialiased">
-    <!-- Shooting stars — fixed, behind everything, all sections.
-         z-index 11: Hero's own translucent backdrop (z-10) isn't a stacking
-         context root, so it competes directly in this same root context —
-         without this, it paints over the stars for the entire time
-         Hero is on screen. Still well below Hero's actual content (z-20). -->
-    <canvas id="stars-canvas" style="position:fixed;inset:0;width:100%;height:100%;z-index:11;pointer-events:none;"></canvas>
-
-    <slot />
-
-    <script>
-      // ── Natural scroll + scroll-reveal ──────────────────────────────────────
-      // Sections live in normal document flow — the browser's own momentum
-      // scrolling (trackpad/wheel/touch) carries the user between them. This
-      // script only adds two things on top of that: (1) each section fades /
-      // slides its content in the first time it's scrolled into view, and
-      // (2) a slim side-nav that tracks + jumps between sections.
-      document.addEventListener('DOMContentLoaded', () => {
-        const sections = [...document.querySelectorAll<HTMLElement>('main > section[id]')];
-        if (sections.length === 0) return;
-
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        // ── Reveal-on-scroll ───────────────────────────────────────────────
-        // Adds `.in-view` once a section crosses into the viewport, which
-        // un-pauses the existing .arclab-fade-in / .arclab-slide-up keyframes
-        // (see arclab-theme.css) — same per-element animation-delay staggering
-        // as before, just triggered by scroll position instead of page load.
-        if (!reducedMotion && 'IntersectionObserver' in window) {
-          const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-              if (!entry.isIntersecting) return;
-              entry.target.classList.add('in-view');
-              revealObserver.unobserve(entry.target);
-            });
-          }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
-          sections.forEach((s) => revealObserver.observe(s));
-        } else {
-          sections.forEach((s) => s.classList.add('in-view'));
-        }
-
-        // ── Side-nav dots — reflect scroll position, click to jump ─────────
-        const nav = document.createElement('nav');
-        nav.id = 'side-nav';
-        nav.setAttribute('aria-label', 'Page sections');
-        const dots = sections.map((s, i) => {
-          const dot = document.createElement('button');
-          dot.type = 'button';
-          dot.className = 'side-dot' + (i === 0 ? ' side-dot-active' : '');
-          dot.setAttribute('aria-label', s.id.replace(/-/g, ' '));
-          dot.addEventListener('click', () => {
-            s.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
-          });
-          nav.appendChild(dot);
-          return dot;
-        });
-        document.body.appendChild(nav);
-
-        let activeId = sections[0].id;
-        function setActive(id: string) {
-          if (id === activeId) return;
-          activeId = id;
-          dots.forEach((d, i) => d.classList.toggle('side-dot-active', sections[i].id === id));
-          document.dispatchEvent(new CustomEvent('fp-section-change', { detail: { id } }));
-        }
-
-        const navObserver = new IntersectionObserver((entries) => {
-          // Pick whichever observed section has the largest visible share —
-          // avoids flicker when two sections are both partly on screen.
-          let best: IntersectionObserverEntry | null = null;
-          for (const entry of entries) {
-            if (entry.isIntersecting && (!best || entry.intersectionRatio > best.intersectionRatio)) {
-              best = entry;
-            }
-          }
-          if (best) setActive((best.target as HTMLElement).id);
-        }, { threshold: [0.25, 0.5, 0.75] });
-        sections.forEach((s) => navObserver.observe(s));
-
-        // Keep the URL hash in sync without triggering a jump
-        document.addEventListener('fp-section-change', (e) => {
-          const id = (e as CustomEvent<{ id: string }>).detail.id;
-          history.replaceState(null, '', '#' + id);
-        });
-      });
-    </script>
-
-    <script>
-      // ── Shooting stars — global fixed background ──
-      const sc = document.getElementById('stars-canvas') as HTMLCanvasElement;
-      const ctx = sc.getContext('2d')!;
-      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      function resize() { sc.width = window.innerWidth; sc.height = window.innerHeight; }
-      resize();
-      window.addEventListener('resize', resize);
-
-      if (reducedMotion) {
-        // Static/no motion — skip shooting stars entirely.
-      } else {
-
-      interface ShootingStar {
-        x: number; y: number;
-        angle: number;   // direction of travel in radians (0 = straight down)
-        curve: number;   // angular change per frame — produces the arc
-        speed: number;   // px per frame
-        len: number;     // approximate trail length in px
-        alpha: number;
-        hue: number;
-        dead: boolean;
-        goRight: boolean;
-        trail: { x: number; y: number }[];
-      }
-      const stars: ShootingStar[] = [];
-      let occupied = false;
-
-      function scheduleNext() {
-        const delay = 8000 + Math.random() * 7000;
-        setTimeout(spawn, delay);
-      }
-
-      function spawn() {
-        if (occupied) return;
-        occupied = true;
-        const W = sc.width;
-
-        const goRight = Math.random() < 0.5;
-        const x = goRight ? Math.random() * W * 0.55 : W * 0.45 + Math.random() * W * 0.55;
-        const y = -20;
-
-        // 40–65° from vertical — more diagonal, less straight-down
-        const angleDeg = 40 + Math.random() * 25;
-        const angle = (goRight ? 1 : -1) * (angleDeg * Math.PI / 180);
-
-        // Gentle arc curving toward vertical over time
-        const curve = (goRight ? -1 : 1) * (0.001 + Math.random() * 0.003);
-
-        stars.push({
-          x, y,
-          angle,
-          curve,
-          speed: 12 + Math.random() * 6,  // 12–18 px/frame
-          len: 90 + Math.random() * 80,
-          alpha: 0,
-          hue: Math.random() < 0.5 ? 195 : 270,
-          dead: false,
-          goRight,
-          trail: [{ x, y }],
-        });
-      }
-
-      setTimeout(spawn, 3000);
-
-      function draw() {
-        requestAnimationFrame(draw);
-        ctx.clearRect(0, 0, sc.width, sc.height);
-        const W = sc.width, H = sc.height;
-
-        for (const s of stars) {
-          if (s.dead) continue;
-
-          // Advance along arc: angle rotates slightly each frame
-          s.angle += s.curve;
-          s.x += Math.sin(s.angle) * s.speed;
-          s.y += Math.cos(s.angle) * s.speed;
-          s.trail.push({ x: s.x, y: s.y });
-
-          // Keep trail long enough to span ~len pixels
-          const maxPts = Math.ceil(s.len / s.speed) + 1;
-          if (s.trail.length > maxPts) s.trail.splice(0, s.trail.length - maxPts);
-
-          s.alpha = Math.min(s.alpha + 0.05, 0.55);
-          if (s.trail.length < 2) continue;
-
-          const tail = s.trail[0];
-          const head = s.trail[s.trail.length - 1];
-
-          // ── Outer glow — follows the real curved trail ──
-          const glowGrad = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
-          glowGrad.addColorStop(0, `hsla(${s.hue},90%,70%,0)`);
-          glowGrad.addColorStop(1, `hsla(${s.hue},90%,80%,${s.alpha * 0.1})`);
-          ctx.beginPath();
-          ctx.moveTo(tail.x, tail.y);
-          for (let i = 1; i < s.trail.length; i++) ctx.lineTo(s.trail[i].x, s.trail[i].y);
-          ctx.strokeStyle = glowGrad;
-          ctx.lineWidth = 5;
-          ctx.lineJoin = 'round';
-          ctx.stroke();
-
-          // ── Core streak ──
-          const coreGrad = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
-          coreGrad.addColorStop(0, `hsla(${s.hue},100%,90%,0)`);
-          coreGrad.addColorStop(1, `rgba(255,255,255,${s.alpha})`);
-          ctx.beginPath();
-          ctx.moveTo(tail.x, tail.y);
-          for (let i = 1; i < s.trail.length; i++) ctx.lineTo(s.trail[i].x, s.trail[i].y);
-          ctx.strokeStyle = coreGrad;
-          ctx.lineWidth = 1;
-          ctx.lineJoin = 'round';
-          ctx.stroke();
-
-          // ── Head: small bright point — not a ball ──
-          const headRad = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, 4);
-          headRad.addColorStop(0,   `rgba(255,255,255,${s.alpha})`);
-          headRad.addColorStop(0.4, `hsla(${s.hue},100%,90%,${s.alpha * 0.35})`);
-          headRad.addColorStop(1,   `hsla(${s.hue},90%,70%,0)`);
-          ctx.beginPath();
-          ctx.arc(head.x, head.y, 4, 0, Math.PI * 2);
-          ctx.fillStyle = headRad;
-          ctx.fill();
-
-          if (head.x > W + 300 || head.x < -300 || head.y > H + 300) s.dead = true;
-        }
-
-        for (let i = stars.length - 1; i >= 0; i--) {
-          if (stars[i].dead) {
-            stars.splice(i, 1);
-            occupied = false;
-            scheduleNext();
-          }
-        }
-      }
-      draw();
-
-      } // end reducedMotion guard
-    </script>
-
-    <style is:global>
-      /* ── Natural scroll rhythm ── */
-      html {
-        scroll-behavior: smooth;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        html { scroll-behavior: auto; }
-      }
-
-      /* Anchor jumps / scrollIntoView land clear of the fixed header */
-      main > section[id] {
-        scroll-margin-top: 76px;
-      }
-
-      /* ── Side-nav dots — track scroll position, click to jump ── */
-      #side-nav {
-        position: fixed;
-        right: 1.25rem;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 200;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-
-      .side-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        cursor: pointer;
-        padding: 0;
-        transition: all 0.3s ease;
-      }
-
-      .side-dot.side-dot-active {
-        background: rgba(255, 255, 255, 0.85);
-        transform: scale(1.5);
-        border-color: transparent;
-      }
-
-      @media (max-width: 768px) {
-        #side-nav { display: none; }
-      }
-
-    </style>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <StarBackground />
+    <div class="site-shell">
+      <Header />
+      <slot />
+      <Footer />
+    </div>
+    {!isBlog && <SectionNav />}
   </body>
 </html>

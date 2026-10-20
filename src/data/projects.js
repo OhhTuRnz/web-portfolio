@@ -10,7 +10,7 @@ export const projects = [
     status: "active",
     startDate: "2024-01",
     team: ["Alejandro Carrasco", "Alex Posadas-Nava", "Victor Rodriguez-Fernandez", "Richard Linares"],
-    funding: "MIT ARC Lab",
+    funding: "MIT ARCLab",
     venue: "ICCR 2025, Kyoto",
     media: {
       type: "webm",
