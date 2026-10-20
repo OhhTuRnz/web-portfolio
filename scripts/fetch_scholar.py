@@ -46,6 +46,12 @@ ARXIV_ID_TABLE = {
 
 # ── SerpAPI: author profile + citation counts ─────────────────────────────────
 
+def parse_publication_year(value: object) -> int | None:
+    """Accept a four-digit Scholar year without inferring missing dates."""
+    year = str(value).strip()
+    return int(year) if re.fullmatch(r"[1-9][0-9]{3}", year) else None
+
+
 def fetch_profile(api_key: str) -> dict:
     print(f"Fetching Scholar profile via SerpAPI (id={SCHOLAR_ID})...")
     r = requests.get("https://serpapi.com/search", params={
@@ -76,12 +82,16 @@ def fetch_profile(api_key: str) -> dict:
 
     publications = []
     for article in data.get("articles", []):
+        year = parse_publication_year(article.get("year"))
+        if year is None:
+            print(f"  Skipping publication without a valid year: {article.get('title', '')}")
+            continue
         publications.append({
             "scholar_id":  article.get("citation_id", ""),
             "title":       article.get("title", ""),
             "authors":     [a.strip() for a in article.get("authors", "").split(",") if a.strip()],
             "venue":       article.get("publication", ""),
-            "year":        int(article.get("year") or 0),
+            "year":        year,
             "citations":   article.get("cited_by", {}).get("value", 0) or 0,
             "scholar_url": article.get("link", ""),
             "eprint_url":  "",

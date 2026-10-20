@@ -34,6 +34,7 @@ yarn-error.log*
 
 # Vite
 .vite
+.astro/
 
 # Python
 __pycache__/

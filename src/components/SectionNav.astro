@@ -1,0 +1,67 @@
+---
+import { portfolioSections } from '../data/site';
+---
+<nav class="position-nav" aria-label="Page sections">
+  <div class="position-track">
+    {portfolioSections.map((section, index) => (
+      <a href={`#${section.id}`} class:list={['position-step', { 'is-current': index === 0 }]}
+        data-section-link={section.id} data-section-title={section.title}
+        aria-label={section.title} aria-current={index === 0 ? 'location' : undefined}
+        title={section.title}>
+        <span class="position-rule" aria-hidden="true"></span>
+      </a>
+    ))}
+  </div>
+  <div class="position-caption">
+    <span data-position-title>{portfolioSections[0].title}</span>
+  </div>
+</nav>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('.position-nav');
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-section-link]')];
+  const sections = links
+    .map((link) => document.getElementById(link.dataset.sectionLink ?? ''))
+    .filter((section): section is HTMLElement => section !== null);
+  const label = nav?.querySelector<HTMLElement>('[data-position-title]');
+  let activeId = '';
+  let pending = false;
+
+  function updatePosition() {
+    if (!sections.length || !links.length) return;
+    const readingLine = Math.min(128, window.innerHeight * 0.25);
+    let active = sections[0];
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= readingLine) active = section;
+    }
+    // Keep the final tracked section active when the reader reaches the bottom.
+    if (window.scrollY > 0 &&
+        window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+      active = sections[sections.length - 1];
+    }
+    if (active.id === activeId) return;
+    activeId = active.id;
+    const index = links.findIndex((link) => link.dataset.sectionLink === activeId);
+    links.forEach((link) => {
+      const current = link.dataset.sectionLink === activeId;
+      link.classList.toggle('is-current', current);
+      if (current) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+    if (label) label.textContent = links[index]?.dataset.sectionTitle ?? '';
+    if (window.scrollY > 0 || window.location.hash) history.replaceState(null, '', `#${activeId}`);
+  }
+
+  function scheduleUpdate() {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(() => {
+      pending = false;
+      updatePosition();
+    });
+  }
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', scheduleUpdate);
+  window.addEventListener('load', scheduleUpdate, { once: true });
+  scheduleUpdate();
+</script>

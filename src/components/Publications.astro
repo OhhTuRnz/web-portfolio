@@ -1,450 +1,61 @@
 ---
-import { publications, scholarProfile } from '../data/publications.js';
+import { scholarProfile } from '../data/publications.js';
+import PublicationCard from './PublicationCard.astro';
+import { getPublicationGroups } from '../lib/publications';
 
-// Sort by citations descending, then group by year (newest first)
-const sorted = [...publications].sort((a, b) => b.citations - a.citations);
-
-const byYear: Record<number, typeof publications> = {};
-for (const pub of sorted) {
-  if (!byYear[pub.year]) byYear[pub.year] = [];
-  byYear[pub.year].push(pub);
-}
-const years = Object.keys(byYear).map(Number).sort((a, b) => b - a);
-
-const typeLabel: Record<string, string> = {
-  journal: 'Journal',
-  conference: 'Conference',
-  workshop: 'Workshop',
-  preprint: 'Preprint',
-};
-
-const typeColor: Record<string, string> = {
-  journal: '#0d9488',
-  conference: '#d97706',
-  workshop: '#65a30d',
-  preprint: '#ea580c',
-};
-
-const pubLink = (pub: any) => {
-  if (pub.scholar_url?.includes('view_op=view_citation')) return pub.scholar_url;
-  if (pub.doi?.includes('doi.org')) return pub.doi;
-  return pub.scholar_url || null;
-};
+const groups = getPublicationGroups();
+const metrics = [
+  { value: scholarProfile.totalCitations, label: 'Citations' },
+  { value: scholarProfile.hIndex, label: 'h-index' },
+  { value: scholarProfile.i10Index, label: 'i10-index' },
+  { value: groups.reduce((total, group) => total + group.entries.length, 0), label: 'Publications' },
+];
 ---
-
-<section id="publications" class="arclab-section">
-  <div class="pub-container arclab-container">
-
-    <!-- Header -->
-    <div class="pub-header text-center arclab-fade-in">
-      <h2 class="arclab-heading-2 mb-2">Publications</h2>
-      <p class="arclab-text max-w-2xl mx-auto">
-        Research publications and academic contributions
-      </p>
-    </div>
-
-    <!-- Scholar stats -->
-    <div class="stats-row arclab-fade-in" style="animation-delay: 0.1s;">
-      <div class="stat">
-        <span class="stat-num">{scholarProfile.totalCitations}</span>
-        <span class="stat-lbl">Citations</span>
-      </div>
-      <div class="stat-sep"></div>
-      <div class="stat">
-        <span class="stat-num">{scholarProfile.hIndex}</span>
-        <span class="stat-lbl">h-index</span>
-      </div>
-      <div class="stat-sep"></div>
-      <div class="stat">
-        <span class="stat-num">{scholarProfile.i10Index}</span>
-        <span class="stat-lbl">i10-index</span>
-      </div>
-      <div class="stat-sep"></div>
-      <div class="stat">
-        <span class="stat-num">{publications.length}</span>
-        <span class="stat-lbl">Publications</span>
-      </div>
-    </div>
-
-    <!-- Scrollable pub list -->
-    <div class="pub-scroll arclab-fade-in" style="animation-delay: 0.2s;">
-      <div class="pub-list">
-        {years.map((year) => {
-          const pubs = byYear[year];
-          const top  = pubs[0];
-          const rest = pubs.slice(1);
-          return (
-            <div class="year-section">
-
-              <!-- Year divider — "N more" toggle lives here -->
-              <div class="year-divider">
-                <span class="year-label">{year}</span>
-                <div class="year-rule"></div>
-                {rest.length > 0 && (
-                  <button class="more-btn" data-target={`more-${year}`} aria-expanded="false">
-                    <span class="more-btn-label">+{rest.length} more</span>
-                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="more-btn-chevron">
-                      <path d="m5 7.5 5 5 5-5"/>
-                    </svg>
-                  </button>
-                )}
-              </div>
-
-              <!-- Top pub — always visible -->
-              <div class="pub-card">
-                <div class="pub-body">
-                  <div class="pub-meta">
-                    <span class="type-badge" style={`background:${typeColor[top.type] ?? '#475569'}`}>
-                      {typeLabel[top.type] ?? top.type}
-                    </span>
-                    {top.citations > 0 && (
-                      <span class="cite-badge">
-                        {top.citations} {top.citations === 1 ? 'citation' : 'citations'}
-                      </span>
-                    )}
-                  </div>
-                  <h4 class="pub-title">
-                    {pubLink(top) ? (
-                      <a href={pubLink(top)} target="_blank" rel="noopener noreferrer">
-                        {top.title}
-                      </a>
-                    ) : top.title}
-                  </h4>
-                  <p class="pub-authors">{top.authors.join(', ')}</p>
-                  <p class="pub-venue">{top.venue}</p>
-                  {top.abstract && (
-                    <p class="pub-abstract">{top.abstract}</p>
-                  )}
-                </div>
-                <div class="pub-links">
-                  {top.pdfUrl && (
-                    <a href={top.pdfUrl} target="_blank" rel="noopener noreferrer" class="pub-link">PDF</a>
-                  )}
-                </div>
-              </div>
-
-              <!-- Extra pubs — hidden by default, toggled by year-divider button -->
-              {rest.length > 0 && (
-                <div class="more-inner" id={`more-${year}`} hidden>
-                  {rest.map(pub => (
-                    <div class="pub-card">
-                      <div class="pub-body">
-                        <div class="pub-meta">
-                          <span class="type-badge" style={`background:${typeColor[pub.type] ?? '#475569'}`}>
-                            {typeLabel[pub.type] ?? pub.type}
-                          </span>
-                          {pub.citations > 0 && (
-                            <span class="cite-badge">
-                              {pub.citations} {pub.citations === 1 ? 'citation' : 'citations'}
-                            </span>
-                          )}
-                        </div>
-                        <h4 class="pub-title">
-                          {pubLink(pub) ? (
-                            <a href={pubLink(pub)} target="_blank" rel="noopener noreferrer">
-                              {pub.title}
-                            </a>
-                          ) : pub.title}
-                        </h4>
-                        <p class="pub-authors">{pub.authors.join(', ')}</p>
-                        <p class="pub-venue">{pub.venue}</p>
-                        {pub.abstract && (
-                          <p class="pub-abstract">{pub.abstract}</p>
-                        )}
-                      </div>
-                      <div class="pub-links">
-                        {pub.pdfUrl && (
-                          <a href={pub.pdfUrl} target="_blank" rel="noopener noreferrer" class="pub-link">PDF</a>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-            </div>
-          );
-        })}
-      </div>
-    </div>
-
-    <!-- Scholar link -->
-    <div class="pub-footer text-center">
-      <a
-        href={scholarProfile.profileUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="arclab-button-secondary text-sm inline-flex items-center gap-2"
-      >
-        <i class="fas fa-graduation-cap"></i>
-        View full profile on Google Scholar
-      </a>
-    </div>
-
+<section id="publications" class="content-section" aria-labelledby="publications-title">
+  <div class="section-heading">
+    <h2 id="publications-title">Publications</h2>
   </div>
+  <dl class="scholar-metrics" aria-label="Google Scholar metrics">
+    {metrics.map((metric) => (
+      <div><dt>{metric.label}</dt><dd>{metric.value}</dd></div>
+    ))}
+  </dl>
+  <div class="publication-years">
+    {groups.map(({ year, entries }) => (
+      <div class="publication-year">
+        <div class="publication-year-heading">
+          <h3 class="year-divider"><span>{year}</span></h3>
+          {entries.length > 1 && (
+            <button type="button" class="publication-toggle" data-publication-toggle
+              aria-label={`Other publications from ${year}`} aria-expanded="false"
+              aria-controls={`more-publications-${year}`} title={`Other publications from ${year}`}>
+              <span class="toggle-plus" aria-hidden="true">+</span>
+              <span class="toggle-minus" aria-hidden="true">−</span>
+            </button>
+          )}
+        </div>
+        <PublicationCard publication={entries[0]} />
+        {entries.length > 1 && (
+          <div class="publication-more" id={`more-publications-${year}`} hidden>
+            {entries.slice(1).map((publication) => <PublicationCard publication={publication} />)}
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+  <a class="scholar-profile" href={scholarProfile.profileUrl} target="_blank" rel="noopener noreferrer">
+    Full Google Scholar profile <span aria-hidden="true">↗</span>
+  </a>
 </section>
 
-<style>
-  /* ── Desktop: fp-mode centers direct children via margin:auto ── */
-  /* Publications list grows with the page now — no internal scroll box,
-     the browser's own scrollbar handles a long list. */
-  @media (min-width: 768px) {
-    .pub-container {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .pub-footer {
-      padding-top: 0.75rem;
-      border-top: 1px solid rgba(255,255,255,0.07);
-    }
-  }
-
-  /* ── Fixed parts ── */
-  .pub-header { flex-shrink: 0; padding-bottom: 0.25rem; }
-
-  /* ── Stats ── */
-  .stats-row {
-    flex-shrink: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
-    padding: 0.35rem 0 0.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-    margin-bottom: 0.5rem;
-  }
-  .stat { text-align: center; }
-  .stat-num { display: block; font-size: 1.75rem; font-weight: 700; color: #fff; line-height: 1; }
-  .stat-lbl { display: block; font-size: 0.7rem; color: #94a3b8; margin-top: 0.2rem; }
-  .stat-sep { width: 1px; height: 2rem; background: rgba(255,255,255,0.1); }
-
-  /* ── Year sections ── */
-  .pub-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.875rem;
-    padding-bottom: 0.75rem;
-  }
-
-  .year-section { display: flex; flex-direction: column; gap: 0.5rem; }
-
-  .year-divider {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0;
-  }
-  .year-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #64748b;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    flex-shrink: 0;
-  }
-  .year-rule {
-    flex: 1;
-    height: 1px;
-    background: rgba(255,255,255,0.07);
-  }
-
-  /* ── Publication card ── */
-  .pub-card {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    background: rgba(255,255,255,0.06);
-    align-items: flex-start;
-    transition: background 0.15s ease, border-color 0.15s ease;
-  }
-  .pub-card:hover {
-    background: rgba(255,255,255,0.09);
-    border-color: rgba(255,255,255,0.18);
-  }
-
-  .pub-body { flex: 1; min-width: 0; }
-
-  .pub-meta {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .type-badge {
-    font-size: 0.62rem;
-    font-weight: 700;
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 20px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .cite-badge {
-    font-size: 0.68rem;
-    font-weight: 700;
-    color: #fde68a;
-    background: rgba(245, 158, 11, 0.12);
-    padding: 2px 10px;
-    border-radius: 20px;
-    border: 1px solid rgba(245, 158, 11, 0.3);
-  }
-
-  .pub-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #e2e8f0;
-    line-height: 1.5;
-    margin-bottom: 0.35rem;
-  }
-  .pub-title a { color: inherit; text-decoration: none; transition: color 0.15s; }
-  .pub-title a:hover { color: #fbbf24; }
-
-  .pub-authors { font-size: 0.85rem; color: #9fb0c3; margin-bottom: 0.25rem; line-height: 1.5; }
-  .pub-venue   { font-size: 0.85rem; color: #8fadd6; font-style: italic; line-height: 1.5; }
-
-  /* 2-line preview by default — click "Read more" (added by script only when
-     the text is actually clamped) to see the rest in place. */
-  .pub-abstract {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    font-size: 0.82rem;
-    color: #9aacc0;
-    line-height: 1.6;
-    margin-top: 0.4rem;
-  }
-  .pub-abstract.expanded {
-    display: block;
-    -webkit-line-clamp: unset;
-    overflow: visible;
-  }
-
-  /* ── Links ── */
-  .pub-links {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    flex-shrink: 0;
-  }
-
-  .pub-link {
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    text-align: center;
-    letter-spacing: 0.04em;
-    transition: all 0.15s ease;
-    background: #d97706;
-    color: #fff;
-    border: 1px solid #d97706;
-  }
-  .pub-link:hover { background: #b45309; }
-
-  /* ── "N more" toggle button (lives in year-divider) — expands the rest
-     of that year's publications inline, right in the page flow. ── */
-  .more-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #fbbf24;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.2rem 0.5rem;
-    border-radius: 5px;
-    transition: background 0.15s, color 0.15s;
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-  .more-btn:hover { background: rgba(245,158,11,0.12); color: #fcd34d; }
-  .more-btn-chevron {
-    width: 0.7rem;
-    height: 0.7rem;
-    transition: transform 0.2s ease;
-  }
-  .more-btn[aria-expanded="true"] .more-btn-chevron { transform: rotate(180deg); }
-
-  .more-inner {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    overflow: hidden;
-  }
-  .more-inner[hidden] { display: none; }
-
-  /* Abstract expand toggle — inserted by script only when text is clamped */
-  .abstract-toggle {
-    display: inline-block;
-    margin-top: 0.25rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #fbbf24;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-  }
-  .abstract-toggle:hover { color: #fcd34d; }
-
-  /* ── Mobile ── */
-  @media (max-width: 767px) {
-    .pub-container {
-      margin-top: 0 !important;
-      margin-bottom: 0 !important;
-    }
-    .stat-sep { display: none; }
-    .stats-row { gap: 1.5rem; }
-    .stat-num { font-size: 2rem; }
-    .pub-card { flex-direction: column; gap: 0.75rem; padding: 0.875rem 1rem; }
-    .pub-links { flex-direction: row; }
-    .pub-abstract, .abstract-toggle { display: none; }
-  }
-</style>
-
 <script>
-  // "N more" — expands the rest of a year's publications inline.
-  document.querySelectorAll<HTMLButtonElement>('.more-btn').forEach((btn) => {
-    const targetId = btn.dataset.target!;
-    const moreInner = document.getElementById(targetId);
-    const label = btn.querySelector('.more-btn-label') as HTMLElement;
-    const collapsedLabel = label.textContent!;
-    if (!moreInner) return;
-
-    btn.addEventListener('click', () => {
-      const expanded = btn.getAttribute('aria-expanded') === 'true';
-      moreInner.hidden = expanded;
-      btn.setAttribute('aria-expanded', String(!expanded));
-      label.textContent = expanded ? collapsedLabel : 'Show fewer';
-    });
-  });
-
-  // Abstracts: only show a "Read more" toggle when the text is actually
-  // clamped (scrollHeight > clientHeight), so short abstracts get no
-  // pointless dangling control.
-  requestAnimationFrame(() => {
-    document.querySelectorAll<HTMLElement>('.pub-abstract').forEach((p) => {
-      if (p.scrollHeight <= p.clientHeight + 2) return;
-      const toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.className = 'abstract-toggle';
-      toggle.textContent = 'Read more';
-      toggle.addEventListener('click', () => {
-        const expanded = p.classList.toggle('expanded');
-        toggle.textContent = expanded ? 'Show less' : 'Read more';
-      });
-      p.insertAdjacentElement('afterend', toggle);
+  document.querySelectorAll<HTMLButtonElement>('[data-publication-toggle]').forEach((button) => {
+    const panel = document.getElementById(button.getAttribute('aria-controls') ?? '');
+    if (!panel) return;
+    button.addEventListener('click', () => {
+      const expanded = button.getAttribute('aria-expanded') === 'true';
+      panel.hidden = expanded;
+      button.setAttribute('aria-expanded', String(!expanded));
     });
   });
 </script>

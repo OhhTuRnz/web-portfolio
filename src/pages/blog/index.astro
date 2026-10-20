@@ -1,0 +1,30 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getPublishedPosts, postPath, formatPostDate } from '../../lib/blog';
+const posts = await getPublishedPosts();
+---
+<Layout title="Blog" description="Notes and writing by Alejandro Carrasco.">
+  <main id="main-content" class="blog-index">
+    <header class="page-heading">
+      <h1>Blog</h1>
+      <p class="page-description">This is my mind palace, the escape, the urge for my curiosity to tinker. My connection with what exists; therefore I am.</p>
+    </header>
+    {posts.length ? (
+      <ul class="entry-list post-list">
+        {posts.map((post) => (
+          <li>
+            <time class="entry-year" datetime={post.data.publishedAt.toISOString()}>{formatPostDate(post.data.publishedAt)}</time>
+            <h2><a href={postPath(post.id)}>{post.data.title}</a></h2>
+            <p>{post.data.description}</p>
+            {post.data.tags.length > 0 && <p class="post-tags">{post.data.tags.join(' · ')}</p>}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <div class="empty-writing">
+        <p>Nothing published yet.</p>
+        <p class="entry-note">New notes will appear here.</p>
+      </div>
+    )}
+  </main>
+</Layout>

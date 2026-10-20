@@ -1,0 +1,33 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { getPublishedPosts, formatPostDate } from '../../lib/blog';
+
+export async function getStaticPaths() {
+  return (await getPublishedPosts()).map((post) => ({
+    params: { id: post.id }, props: { post },
+  }));
+}
+interface Props { post: CollectionEntry<'blog'>; }
+const { post } = Astro.props;
+const { Content } = await render(post);
+const minutes = Math.max(1, Math.ceil((post.body?.trim().split(/\s+/).length ?? 0) / 220));
+---
+<Layout title={post.data.title} description={post.data.description} article={{
+  title: post.data.title, publishedAt: post.data.publishedAt,
+  updatedAt: post.data.updatedAt, image: post.data.image,
+}}>
+  <main id="main-content" class="post-page">
+    <header class="page-heading post-heading">
+      <a href="/blog/" class="back-link">All writing</a>
+      <p class="post-meta"><time datetime={post.data.publishedAt.toISOString()}>{formatPostDate(post.data.publishedAt)}</time><span aria-hidden="true"> · </span>{minutes} min read</p>
+      <h1>{post.data.title}</h1>
+      <p class="page-description">{post.data.description}</p>
+      {post.data.tags.length > 0 && <p class="post-tags">{post.data.tags.join(' · ')}</p>}
+    </header>
+    {post.data.image && <img class="post-cover" src={post.data.image} alt="" />}
+    <article id="post-content" class="prose"><Content /></article>
+    <a class="post-return" href="/blog/">Back to all writing</a>
+  </main>
+</Layout>
