@@ -1,0 +1,22 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatPostDate, postPath } from '../lib/blog';
+
+interface Props { posts: CollectionEntry<'blog'>[]; }
+const { posts } = Astro.props;
+---
+<nav class="blog-contents" aria-labelledby="blog-index-title">
+  <h2 id="blog-index-title">Index</h2>
+  {posts.length ? (
+    <ul class="blog-title-list">
+      {posts.map((post) => (
+        <li>
+          <a href={postPath(post.id)}>{post.data.title}</a>
+          <time datetime={post.data.publishedAt.toISOString()}>{formatPostDate(post.data.publishedAt)}</time>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="entry-note">Nothing published yet.</p>
+  )}
+</nav>

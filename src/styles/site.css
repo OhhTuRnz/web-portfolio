@@ -148,15 +148,13 @@ h3 a:hover { text-decoration: underline; }
 .back-link:hover { color: var(--accent); }
 .page-description { margin-top: 1.3rem; max-width: 640px; font-size: 1.05rem; line-height: 1.75; }
 .blog-index { min-height: 65vh; }
-.post-list > li { padding-block: 1.8rem; }
-.post-list > li + li { margin-top: 0; }
-.post-list h2 { font-size: 1.9rem; margin-top: 0.6rem; line-height: 1.35; }
-.post-list h2 a { text-decoration: none; }
-.post-list h2 a:hover { text-decoration: underline; }
-.post-list li > p { margin-top: 0.7rem; font-size: 0.94rem; }
-.post-tags, .post-list li > .post-tags { color: var(--muted); font-size: 0.7rem; }
-.empty-writing { padding: 2rem 0 4rem; }
-.empty-writing > p:first-child { color: var(--heading); }
+.blog-contents { padding-bottom: 3rem; }
+.blog-contents h2 { font-size: 1.55rem; margin-bottom: 1.5rem; }
+.blog-title-list { list-style: none; padding: 0; margin: 0; }
+.blog-title-list li { display: flex; align-items: baseline; justify-content: space-between; gap: 0.4rem 2rem; padding-block: 0.65rem; }
+.blog-title-list a { font-size: 1rem; font-weight: 500; overflow-wrap: anywhere; }
+.blog-title-list time { flex-shrink: 0; font-size: 0.76rem; }
+.post-tags { color: var(--muted); font-size: 0.7rem; }
 .post-heading { padding-bottom: 2.5rem; }
 .post-heading h1 { font-size: clamp(2.3rem, 5.5vw, 3.6rem); line-height: 1.2; overflow-wrap: anywhere; }
 .post-meta { font-size: 0.76rem; color: var(--muted); margin-bottom: 1.2rem; }
@@ -214,7 +212,7 @@ h3 a:hover { text-decoration: underline; }
   .site-footer { align-items: start; flex-direction: column; gap: 0.75rem; }
   .page-heading { padding-top: 3rem; padding-bottom: 2.5rem; }
   .back-link { margin-bottom: 2.25rem; }
-  .post-list h2 { font-size: 1.7rem; }
+  .blog-title-list li { flex-direction: column; gap: 0.15rem; }
   .prose { font-size: 1rem; overflow-wrap: break-word; }
   .prose pre { padding: 1rem; }
 }

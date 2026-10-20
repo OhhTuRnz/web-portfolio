@@ -5,11 +5,13 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "python -m pip install -q requests && python scripts/fetch_scholar.py && astro build",
+    "prebuild": "node scripts/prepare-scholar.mjs",
+    "build": "astro build",
     "build:offline": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "fetch-scholar": "py scripts/fetch_scholar.py"
+    "fetch-scholar": "py scripts/fetch_scholar.py",
+    "test:build": "node --test scripts/tests/prepare-scholar.test.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",
